@@ -30,20 +30,18 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^24",
-    "@types/node": "^8.0.4",
-    "@types/uuid": "^3.0.0",
-    "aws-sdk": "^2.7.0",
-    "jest": "^24",
+    "@aws-sdk/client-dynamodb": "^3.27.0",
+    "@types/jest": "^27.0.1",
+    "@types/node": "^16.7.1",
+    "jest": "^27.0.6",
     "typedoc": "^0.14.0",
-    "typescript": "^3.4"
+    "typescript": "^4.3.5"
   },
   "dependencies": {
     "@aws/dynamodb-auto-marshaller": "^0.7.1",
     "@aws/dynamodb-data-mapper": "^0.7.3",
     "@aws/dynamodb-data-marshaller": "^0.7.3",
-    "reflect-metadata": "^0.1.10",
-    "tslib": "^1.9",
-    "uuid": "^3.0.0"
+    "reflect-metadata": "^0.1.13",
+    "tslib": "^2.3.1"
   }
 }

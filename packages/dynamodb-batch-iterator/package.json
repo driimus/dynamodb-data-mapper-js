@@ -28,18 +28,18 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^24",
-    "@types/node": "^8.0.4",
-    "aws-sdk": "^2.7.0",
-    "jest": "^24",
+    "@aws-sdk/client-dynamodb": "^3.27.0",
+    "@types/jest": "^27.0.1",
+    "@types/node": "^16.7.1",
+    "jest": "^27.0.6",
     "typedoc": "^0.14.0",
-    "typescript": "^3.4"
+    "typescript": "^4.3.5"
   },
   "peerDependencies": {
-    "aws-sdk": "^2.7.0"
+    "@aws-sdk/client-dynamodb": "^3.27.0"
   },
   "dependencies": {
-    "tslib": "^1.9",
+    "tslib": "^2.3.1",
     "utf8-bytes": "^0.0.1"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "dynamodb-data-mapper-js",
+  "name": "dynamodb-data-mapper-js-v3",
   "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap",
@@ -11,23 +11,32 @@
     "name": "AWS SDK for JavaScript Team",
     "email": "aws-sdk-js@amazon.com"
   },
+  "contributors": [
+    {
+      "name": "Cristian Petre",
+      "email": "driimus@vivaldi.net"
+    }
+  ],
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^24",
-    "@types/node": "^8.0.4",
-    "jest": "^24",
+    "@types/jest": "^27.0.1",
+    "@types/node": "^16.7.1",
+    "jest": "^27.0.6",
     "lerna": "^3.13",
     "typedoc": "^0.14.0",
-    "typescript": "^3.4"
+    "typescript": "^4.3.5"
   },
   "dependencies": {
-    "aws-sdk": "^2.7.0"
+    "@aws-sdk/client-dynamodb": "^3.27.0"
   },
   "workspaces": [
     "packages/*"
   ],
   "jest": {
     "testEnvironment": "node",
-    "testPathIgnorePatterns": ["/node_modules/", ".ts"]
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      ".ts"
+    ]
   }
 }

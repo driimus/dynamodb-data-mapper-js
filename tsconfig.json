@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "es5"
-    ],
+    "target": "es2020",
     "module": "commonjs",
     "strict": true
   },
@@ -14,6 +10,6 @@
     "excludeNotExported": true,
     "excludePrivate": true,
     "hideGenerator": true,
-    "name": "Amazon DynamoDB DataMapper For JavaScript"
+    "name": "Amazon DynamoDB DataMapper For JavaScript - V3"
   }
 }
