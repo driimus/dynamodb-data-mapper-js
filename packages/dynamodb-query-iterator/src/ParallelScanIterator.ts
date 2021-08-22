@@ -4,11 +4,11 @@ import {
     ParallelScanPaginator,
     ParallelScanState,
 } from './ParallelScanPaginator';
-import DynamoDB = require('aws-sdk/clients/dynamodb');
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 export class ParallelScanIterator extends ItemIterator<ParallelScanPaginator> {
     constructor(
-        client: DynamoDB,
+        client: DynamoDBClient,
         input: ParallelScanInput,
         scanState?: ParallelScanState
     ) {

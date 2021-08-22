@@ -1,5 +1,6 @@
 import { DynamoDbPaginatorInterface } from './DynamoDbPaginatorInterface';
-import { AttributeMap, ConsumedCapacity } from 'aws-sdk/clients/dynamodb';
+import { ConsumedCapacity } from '@aws-sdk/client-dynamodb';
+import { AttributeMap } from './DynamoDbResultsPage';
 
 if (Symbol && !Symbol.asyncIterator) {
     (Symbol as any).asyncIterator = Symbol.for("__@@asyncIterator__");
@@ -70,7 +71,7 @@ export abstract class ItemIterator<
     /**
      * @inheritDoc
      */
-    return(): Promise<IteratorResult<AttributeMap>> {
+    async return(): Promise<IteratorResult<AttributeMap>> {
         // Prevent any further use of this iterator
         this.lastResolved = Promise.reject(new Error(
             'Iteration has been manually interrupted and may not be resumed'
@@ -79,7 +80,9 @@ export abstract class ItemIterator<
 
         // Clear the pending queue to free up memory
         this.pending.length = 0;
-        return this.paginator.return().then(doneSigil);
+        // const result_1 = await this.paginator.return();
+        // return doneSigil(result_1);
+        return doneSigil();
     }
 
     /**
@@ -92,7 +95,7 @@ export abstract class ItemIterator<
         return this.paginator.scannedCount;
     }
 
-    private getNext(): Promise<IteratorResult<AttributeMap>> {
+    private async getNext(): Promise<IteratorResult<AttributeMap>> {
         if (this.pending.length > 0) {
             this._iteratedCount++;
             return Promise.resolve({
@@ -101,14 +104,12 @@ export abstract class ItemIterator<
             });
         }
 
-        return this.paginator.next().then(({done, value}) => {
-            if (done) {
-                return {done} as IteratorResult<AttributeMap>;
-            }
-
-            this.pending.push(...value.Items || []);
-            return this.getNext();
-        });
+        const { done, value: value_1 } = await this.paginator.next();
+        if (done) {
+            return { done } as IteratorResult<AttributeMap>;
+        }
+        this.pending.push(...value_1.Items || []);
+        return this.getNext();
     }
 }
 

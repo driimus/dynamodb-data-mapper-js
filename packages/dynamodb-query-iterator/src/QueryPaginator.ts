@@ -1,13 +1,12 @@
 import { DynamoDbPaginator } from './DynamoDbPaginator';
 import { DynamoDbResultsPage } from './DynamoDbResultsPage';
-import { QueryInput } from 'aws-sdk/clients/dynamodb';
-import DynamoDB = require('aws-sdk/clients/dynamodb');
+import { DynamoDBClient, QueryInput, QueryCommand } from '@aws-sdk/client-dynamodb';
 
 export class QueryPaginator extends DynamoDbPaginator {
     private nextRequest?: QueryInput;
 
     constructor(
-        private readonly client: DynamoDB,
+        private readonly client: DynamoDBClient,
         input: QueryInput,
         limit?: number
     ) {
@@ -15,28 +14,26 @@ export class QueryPaginator extends DynamoDbPaginator {
         this.nextRequest = {...input};
     }
 
-    protected getNext(): Promise<IteratorResult<DynamoDbResultsPage>> {
+    protected async getNext(): Promise<IteratorResult<DynamoDbResultsPage>> {
         if (this.nextRequest) {
-            return this.client.query({
+            const output = await this.client.send(new QueryCommand({
                 ...this.nextRequest,
                 Limit: this.getNextPageSize(this.nextRequest.Limit)
-            })
-                .promise()
-                .then(output => {
-                    if (this.nextRequest && output.LastEvaluatedKey) {
-                        this.nextRequest = {
-                            ...this.nextRequest,
-                            ExclusiveStartKey: output.LastEvaluatedKey
-                        };
-                    } else {
-                        this.nextRequest = undefined;
-                    }
+            }));
 
-                    return Promise.resolve({
-                        value: output,
-                        done: false
-                    });
-                });
+            if (this.nextRequest && output.LastEvaluatedKey) {
+                this.nextRequest = {
+                    ...this.nextRequest,
+                    ExclusiveStartKey: output.LastEvaluatedKey
+                };
+            } else {
+                this.nextRequest = undefined;
+            }
+            
+            return await Promise.resolve({
+                value: output,
+                done: false
+            });
         }
 
         return Promise.resolve(

@@ -1,10 +1,9 @@
 import { DynamoDbPaginatorInterface } from './DynamoDbPaginatorInterface';
-import { DynamoDbResultsPage } from './DynamoDbResultsPage';
+import { DynamoDbResultsPage, Key } from './DynamoDbResultsPage';
 import { mergeConsumedCapacities } from './mergeConsumedCapacities';
 import { ParallelScanInput } from './ParallelScanInput';
 import { ScanPaginator } from './ScanPaginator';
-import { ConsumedCapacity, Key } from 'aws-sdk/clients/dynamodb';
-import DynamoDB = require('aws-sdk/clients/dynamodb');
+import { ConsumedCapacity, DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 /**
  * Pagination state for a scan segment for which the first page has not yet been
@@ -55,7 +54,7 @@ export class ParallelScanPaginator implements DynamoDbPaginatorInterface {
     > = Promise.resolve() as any;
 
     constructor(
-        client: DynamoDB,
+        client: DynamoDBClient,
         input: ParallelScanInput,
         scanState: ParallelScanState = nullScanState(input.TotalSegments)
     ) {
@@ -215,16 +214,8 @@ function doneSigil() {
     return {done: true} as IteratorResult<any>;
 }
 
-/**
- * `Array.prototype.fill` is not available in IE, so a loop is used instead
- */
 function nullScanState(length: number): ParallelScanState {
-    const target: ParallelScanState = new Array(length);
-    for (let i = 0; i < length; i++) {
-        target[i] = {initialized: false};
-    }
-
-    return target;
+    return new Array(length).fill({initialized: false});
 }
 
 interface PendingResult {

@@ -1,8 +1,9 @@
 import {
     Capacity,
     ConsumedCapacity,
-    SecondaryIndexesCapacityMap,
-} from 'aws-sdk/clients/dynamodb';
+} from '@aws-sdk/client-dynamodb';
+
+export type SecondaryIndexesCapacityMap = Record<string, Capacity>;
 
 /**
  * @internal
@@ -37,13 +38,10 @@ export function mergeConsumedCapacities(
     }
 }
 
-function mergeCapacities(a?: Capacity, b?: Capacity): Capacity|undefined {
-    if (a || b) {
-        return {
-            CapacityUnits: ((a && a.CapacityUnits) || 0) +
-                ((b && b.CapacityUnits) || 0),
-        };
-    }
+function mergeCapacities(a?: Capacity, b?: Capacity): Capacity {
+    return {
+        CapacityUnits: (a?.CapacityUnits ?? 0) + (b?.CapacityUnits ?? 0)
+    };
 }
 
 function mergeCapacityMaps(
@@ -55,15 +53,10 @@ function mergeCapacityMaps(
 
         a = a || {};
         b = b || {};
-        const keys = new Set<string>();
-        for (const map of [a, b]) {
-            for (const indexName of Object.keys(map)) {
-                keys.add(indexName);
-            }
-        }
+        const keys = new Set<string>([...Object.keys(a), ...Object.keys(b)]);
 
         for (const key of keys) {
-            out[key] = mergeCapacities(a[key], b[key])!;
+            out[key] = mergeCapacities(a[key], b[key]);
         }
 
         return out;
