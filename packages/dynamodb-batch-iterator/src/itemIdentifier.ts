@@ -1,5 +1,5 @@
-import { WriteRequest } from './types';
-import { AttributeMap, BinaryAttributeValue } from 'aws-sdk/clients/dynamodb';
+import { AttributeMap, WriteRequest } from './types';
+import { AttributeValue } from '@aws-sdk/client-dynamodb';
 const bytes = require('utf8-bytes');
 
 /**
@@ -9,11 +9,11 @@ export function itemIdentifier(
     tableName: string, 
     {DeleteRequest, PutRequest}: WriteRequest
 ): string {
-    if (DeleteRequest) {
+    if (DeleteRequest?.Key) {
         return `${tableName}::delete::${
             serializeKeyTypeAttributes(DeleteRequest.Key)
         }`;
-    } else if (PutRequest) {
+    } else if (PutRequest?.Item) {
         return `${tableName}::put::${
             serializeKeyTypeAttributes(PutRequest.Item)
         }`;
@@ -27,7 +27,7 @@ function serializeKeyTypeAttributes(attributes: AttributeMap): string {
     for (const property of Object.keys(attributes).sort()) {
         const attribute = attributes[property];
         if (attribute.B) {
-            keyTypeProperties.push(`${property}=${toByteArray(attribute.B)}`);
+            keyTypeProperties.push(`${property}=${toByteArray(attribute)}`);
         } else if (attribute.N) {
             keyTypeProperties.push(`${property}=${attribute.N}`);
         } else if (attribute.S) {
@@ -38,7 +38,7 @@ function serializeKeyTypeAttributes(attributes: AttributeMap): string {
     return keyTypeProperties.join('&');
 }
 
-function toByteArray(value: BinaryAttributeValue): Uint8Array {
+function toByteArray({B: value}: AttributeValue.BMember): Uint8Array {
     if (ArrayBuffer.isView(value)) {
         return new Uint8Array(
             value.buffer,

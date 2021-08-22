@@ -1,5 +1,6 @@
 import { BatchGet, MAX_READ_BATCH_SIZE } from './BatchGet';
-import {AttributeMap, BatchGetItemInput, BatchGetItemOutput} from 'aws-sdk/clients/dynamodb';
+import {BatchGetItemInput, BatchGetItemOutput} from '@aws-sdk/client-dynamodb';
+import { AttributeMap } from './types';
 
 describe('BatchGet', () => {
     const promiseFunc = jest.fn(() => Promise.resolve({
@@ -291,7 +292,7 @@ describe('BatchGet', () => {
                                 response.UnprocessedKeys[tableName] = {Keys: []};
                             }
 
-                            response.UnprocessedKeys[tableName].Keys.push(item);
+                            response.UnprocessedKeys[tableName].Keys?.push(item);
                             toBeFailed.delete(item.fizz.N);
                         } else {
                             if (!response.Responses) {
@@ -354,8 +355,8 @@ describe('BatchGet', () => {
                     [{RequestItems}]
                 ) => {
                     const keys = [];
-                    for (const table of Object.keys(RequestItems)) {
-                        keys.push(...RequestItems[table].Keys);
+                    for (const table of Object.keys(RequestItems!)) {
+                        keys.push(...RequestItems![table].Keys!);
                     }
                     for (const {fizz: {N: key}} of keys) {
                         if (key) {

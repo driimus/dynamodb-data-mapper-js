@@ -1,3 +1,4 @@
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
     BatchState,
     SyncOrAsyncIterable,
@@ -5,7 +6,6 @@ import {
     TableStateElement,
     ThrottledTableConfiguration,
 } from './types';
-import DynamoDB = require('aws-sdk/clients/dynamodb');
 
 if (Symbol && !Symbol.asyncIterator) {
     (Symbol as any).asyncIterator = Symbol.for("__@@asyncIterator__");
@@ -50,7 +50,7 @@ export abstract class BatchOperation<
      *                  the operation.
      */
     constructor(
-        protected readonly client: DynamoDB,
+        protected readonly client: DynamoDBClient,
         items: SyncOrAsyncIterable<[string, Element]>
     ) {
         if (isIterable(items)) {
@@ -142,7 +142,7 @@ export abstract class BatchOperation<
             const [table, attributes] = this.toSend[i];
             if (unprocessedTables.has(table)) {
                 (this.state[table] as ThrottledTableConfiguration<Element>)
-                    .tableThrottling.unprocessed.push(attributes);
+                    .tableThrottling?.unprocessed.push(attributes);
                 this.toSend.splice(i, 1);
             }
         }
@@ -164,16 +164,15 @@ export abstract class BatchOperation<
     private enqueueThrottled(
         table: ThrottledTableConfiguration<Element>
     ): void {
-        const {
-            tableThrottling: {backoffWaiter, unprocessed}
-        } = table;
-        if (unprocessed.length > 0) {
+        const  {backoffWaiter, unprocessed}
+         = table.tableThrottling ?? {};
+        if (unprocessed?.length) {
             this.toSend.push(...unprocessed.map(
                 attr => [table.name, attr] as [string, Element]
             ));
         }
 
-        this.throttled.delete(backoffWaiter);
+        if (backoffWaiter) this.throttled.delete(backoffWaiter);
         delete table.tableThrottling;
     }
 
@@ -211,7 +210,7 @@ export abstract class BatchOperation<
                 ]);
 
             if (isIteratorResult(toProcess)) {
-                this.sourceDone = toProcess.done;
+                this.sourceDone = Boolean(toProcess.done);
                 if (!this.sourceDone) {
                     this.addToSendQueue(toProcess.value);
                     this.sourceNext = this.iterator.next();

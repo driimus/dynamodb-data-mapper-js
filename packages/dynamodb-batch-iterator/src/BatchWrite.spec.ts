@@ -1,6 +1,6 @@
 import { BatchWrite, MAX_WRITE_BATCH_SIZE } from './BatchWrite';
 import { WriteRequest } from './types';
-import {BatchWriteItemInput, BatchWriteItemOutput} from 'aws-sdk/clients/dynamodb';
+import {BatchWriteItemInput, BatchWriteItemOutput} from '@aws-sdk/client-dynamodb';
 
 describe('BatchWrite', () => {
     const promiseFunc = jest.fn(() => Promise.resolve({
@@ -93,7 +93,7 @@ describe('BatchWrite', () => {
 
                 for await (const [tableName, req] of new BatchWrite(mockDynamoDbClient as any, input)) {
                     const id = req.DeleteRequest
-                        ? parseInt(req.DeleteRequest.Key.fizz.N as string)
+                        ? parseInt(req.DeleteRequest.Key!.fizz.N as string)
                         : parseInt((req.PutRequest as any).Item.fizz.N as string);
 
                     if (id % 3 === 0) {
@@ -126,9 +126,9 @@ describe('BatchWrite', () => {
                     ? {DeleteRequest: {Key: {fizz}}}
                     : {PutRequest: {Item: {
                         fizz,
-                        buzz: {B: new ArrayBuffer(3)},
+                        // buzz: {B: new ArrayBuffer(3)},
                         pop: {B: Uint8Array.from([i])},
-                        foo: {B: String.fromCharCode(i + 32)},
+                        // foo: {B: String.fromCharCode(i + 32)},
                         quux: {S: 'string'}
                     }}};
                 writes.push([table, req]);
@@ -180,7 +180,7 @@ describe('BatchWrite', () => {
             const seen = new Set<number>();
             for await (const [tableName, req] of new BatchWrite(mockDynamoDbClient as any, input)) {
                 const id = req.DeleteRequest
-                    ? parseInt(req.DeleteRequest.Key.fizz.N as string)
+                    ? parseInt(req.DeleteRequest.Key!.fizz.N as string)
                     : parseInt((req.PutRequest as any).Item.fizz.N as string);
 
                 expect(seen.has(id)).toBe(false);
@@ -206,10 +206,10 @@ describe('BatchWrite', () => {
                     keyUseCount: {[key: string]: number},
                     [{RequestItems}]
                 ) => {
-                    for (const table of Object.keys(RequestItems)) {
-                        for (const {PutRequest, DeleteRequest} of RequestItems[table]) {
+                    for (const table of Object.keys(RequestItems!)) {
+                        for (const {PutRequest, DeleteRequest} of RequestItems![table]) {
                             let key = DeleteRequest
-                                ? DeleteRequest.Key.fizz.N
+                                ? DeleteRequest.Key!.fizz.N
                                 : (PutRequest as any).Item.fizz.N;
                             if (key in keyUseCount) {
                                 keyUseCount[key]++;

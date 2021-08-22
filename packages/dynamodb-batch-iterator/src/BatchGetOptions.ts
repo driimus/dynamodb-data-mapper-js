@@ -1,8 +1,4 @@
-import {
-    ConsistentRead,
-    ExpressionAttributeNameMap,
-    ProjectionExpression,
-} from "aws-sdk/clients/dynamodb";
+import { ConsistentRead, ExpressionAttributeNameMap, ProjectionExpression } from "./types";
 
 export interface BatchGetOptions {
     /**
