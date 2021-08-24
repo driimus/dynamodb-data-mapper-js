@@ -1,6 +1,6 @@
-import {ExpressionAttributes} from "./ExpressionAttributes";
-import {ExpressionAttributeValueMap} from 'aws-sdk/clients/dynamodb';
-import {AttributePath} from "./AttributePath";
+import { ExpressionAttributes, ExpressionAttributeValueMap } from "./ExpressionAttributes";
+import { AttributePath } from "./AttributePath";
+import { marshall } from '@aws-sdk/util-dynamodb';
 
 describe('ExpressionAttributes', () => {
     describe('#addName', () => {
@@ -35,10 +35,10 @@ describe('ExpressionAttributes', () => {
                     ea.addName(reservedWord);
                 }
 
-                const {names} = ea;
+                const { names } = ea;
                 const reservedWords = new Set(DDB_RESERVED_WORDS);
                 for (const expressionSafeName of Object.keys(names)) {
-                    const original = names[expressionSafeName];
+                    const original = names[expressionSafeName] as string;
                     expect(reservedWords.delete(original)).toBe(true);
                 }
 
@@ -100,10 +100,10 @@ describe('ExpressionAttributes', () => {
                 const ea = new ExpressionAttributes();
                 for (const reservedWord of DDB_RESERVED_WORDS) {
                     const alias = ea.addValue(reservedWord);
-                    expected[alias] = {S: reservedWord};
+                    expected[alias] = { S: reservedWord };
                 }
 
-                expect(ea.values).toEqual(expected);
+                expect(marshall(ea.values)).toEqual(expected);
             }
         );
     });

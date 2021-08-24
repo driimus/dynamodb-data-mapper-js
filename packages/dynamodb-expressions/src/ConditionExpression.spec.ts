@@ -20,6 +20,7 @@ import {
 import {ExpressionAttributes} from "./ExpressionAttributes";
 import {AttributePath} from "./AttributePath";
 import {FunctionExpression} from "./FunctionExpression";
+import { marshall } from '@aws-sdk/util-dynamodb';
 
 describe('equals', () => {
     it('should return an equality condition predicate', () => {
@@ -307,7 +308,7 @@ describe('serializeConditionExpression', () => {
 
         expect(serialized).toBe('#attr0 = :val1');
         expect(attributes.names).toEqual({'#attr0': 'foo'});
-        expect(attributes.values).toEqual({':val1': {S: 'bar'}});
+        expect(marshall(attributes.values)).toEqual({':val1': {S: 'bar'}});
     });
 
     it('should serialize inequality expressions', () => {
@@ -319,7 +320,7 @@ describe('serializeConditionExpression', () => {
 
         expect(serialized).toBe('#attr0 <> :val1');
         expect(attributes.names).toEqual({'#attr0': 'foo'});
-        expect(attributes.values).toEqual({':val1': {S: 'bar'}});
+        expect(marshall(attributes.values)).toEqual({':val1': {S: 'bar'}});
     });
 
     it('should serialize less than expressions', () => {
@@ -331,7 +332,7 @@ describe('serializeConditionExpression', () => {
 
         expect(serialized).toBe('#attr0 < :val1');
         expect(attributes.names).toEqual({'#attr0': 'foo'});
-        expect(attributes.values).toEqual({':val1': {S: 'bar'}});
+        expect(marshall(attributes.values)).toEqual({':val1': {S: 'bar'}});
     });
 
     it('should serialize greater than expressions', () => {
@@ -350,7 +351,7 @@ describe('serializeConditionExpression', () => {
             '#attr0': 'foo',
             '#attr1': 'bar'
         });
-        expect(attributes.values).toEqual({});
+        expect(marshall(attributes.values)).toEqual({});
     });
 
     it('should serialize less than or equal to expressions', () => {
@@ -366,7 +367,7 @@ describe('serializeConditionExpression', () => {
 
         expect(serialized).toBe('#attr0 <= :val1');
         expect(attributes.names).toEqual({'#attr0': 'foo'});
-        expect(attributes.values).toEqual({':val1': {S: 'bar'}});
+        expect(marshall(attributes.values)).toEqual({':val1': {S: 'bar'}});
     });
 
     it('should serialize greater than or equal to expressions', () => {
@@ -385,7 +386,7 @@ describe('serializeConditionExpression', () => {
             '#attr0': 'foo',
             '#attr1': 'bar',
         });
-        expect(attributes.values).toEqual({});
+        expect(marshall(attributes.values)).toEqual({});
     });
 
     it('should serialize bounding expressions', () => {
@@ -402,7 +403,7 @@ describe('serializeConditionExpression', () => {
 
         expect(serialized).toBe('#attr0 BETWEEN :val1 AND :val2');
         expect(attributes.names).toEqual({'#attr0': 'foo'});
-        expect(attributes.values).toEqual({
+        expect(marshall(attributes.values)).toEqual({
             ':val1': {N: '1'},
             ':val2': {N: '10'},
         });
@@ -425,7 +426,7 @@ describe('serializeConditionExpression', () => {
 
         expect(serialized).toBe('#attr0 IN (:val1, :val2, :val3)');
         expect(attributes.names).toEqual({'#attr0': 'foo'});
-        expect(attributes.values).toEqual({
+        expect(marshall(attributes.values)).toEqual({
             ':val1': {N: '1'},
             ':val2': {N: '10'},
             ':val3': {N: '100'},
@@ -442,7 +443,7 @@ describe('serializeConditionExpression', () => {
 
             expect(serialized).toBe('attribute_exists(#attr0)');
             expect(attributes.names).toEqual({'#attr0': 'foo'});
-            expect(attributes.values).toEqual({});
+            expect(marshall(attributes.values)).toEqual({});
         });
 
         it('should serialize attribute_not_exists expressions', () => {
@@ -454,7 +455,7 @@ describe('serializeConditionExpression', () => {
 
             expect(serialized).toBe('attribute_not_exists(#attr0)');
             expect(attributes.names).toEqual({'#attr0': 'foo'});
-            expect(attributes.values).toEqual({});
+            expect(marshall(attributes.values)).toEqual({});
         });
 
         it('should serialize attribute_type expressions', () => {
@@ -471,7 +472,7 @@ describe('serializeConditionExpression', () => {
 
             expect(serialized).toBe('attribute_type(#attr0, :val1)');
             expect(attributes.names).toEqual({'#attr0': 'foo'});
-            expect(attributes.values).toEqual({':val1': {S: 'S'}});
+            expect(marshall(attributes.values)).toEqual({':val1': {S: 'S'}});
         });
 
         it('should serialize begins_with expressions', () => {
@@ -488,7 +489,7 @@ describe('serializeConditionExpression', () => {
 
             expect(serialized).toBe('begins_with(#attr0, :val1)');
             expect(attributes.names).toEqual({'#attr0': 'foo'});
-            expect(attributes.values).toEqual({':val1': {S: 'prefix'}});
+            expect(marshall(attributes.values)).toEqual({':val1': {S: 'prefix'}});
         });
 
         it('should serialize contains expressions', () => {
@@ -505,7 +506,7 @@ describe('serializeConditionExpression', () => {
 
             expect(serialized).toBe('contains(#attr0, :val1)');
             expect(attributes.names).toEqual({'#attr0': 'foo'});
-            expect(attributes.values).toEqual({':val1': {S: 'substr'}});
+            expect(marshall(attributes.values)).toEqual({':val1': {S: 'substr'}});
         });
     });
 
@@ -526,7 +527,7 @@ describe('serializeConditionExpression', () => {
 
         expect(serialized).toBe('NOT (#attr0 BETWEEN :val1 AND :val2)');
         expect(attributes.names).toEqual({'#attr0': 'foo'});
-        expect(attributes.values).toEqual({
+        expect(marshall(attributes.values)).toEqual({
             ':val1': {N: '1'},
             ':val2': {N: '10'},
         });
@@ -563,7 +564,7 @@ describe('serializeConditionExpression', () => {
             '#attr0': 'foo',
             '#attr3': 'fizz',
         });
-        expect(attributes.values).toEqual({
+        expect(marshall(attributes.values)).toEqual({
             ':val1': {N: '1'},
             ':val2': {N: '10'},
             ':val4': {S: 'buzz'},
@@ -592,7 +593,7 @@ describe('serializeConditionExpression', () => {
 
         expect(serialized).toBe('#attr0 IN (:val1, :val2, :val3)');
         expect(attributes.names).toEqual({'#attr0': 'foo'});
-        expect(attributes.values).toEqual({
+        expect(marshall(attributes.values)).toEqual({
             ':val1': {N: '1'},
             ':val2': {N: '10'},
             ':val3': {N: '100'},
@@ -624,7 +625,7 @@ describe('serializeConditionExpression', () => {
         expect(attributes.names).toEqual({
             '#attr0': 'foo',
         });
-        expect(attributes.values).toEqual({
+        expect(marshall(attributes.values)).toEqual({
             ':val1': {N: '10'},
             ':val2': {N: '1'},
         });
@@ -643,6 +644,6 @@ describe('serializeConditionExpression', () => {
 
         expect(serialized).toBe('attribute_type(#attr0, :val1)');
         expect(attributes.names).toEqual({'#attr0': 'foo'});
-        expect(attributes.values).toEqual({':val1': {S: 'S'}});
+        expect(marshall(attributes.values)).toEqual({':val1': {S: 'S'}});
     });
 });

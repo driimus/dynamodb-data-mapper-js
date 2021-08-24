@@ -1,11 +1,8 @@
 import { AttributePath } from './AttributePath';
-import { ExpressionAttributes } from './ExpressionAttributes';
+import { ExpressionAttributeNameMap, ExpressionAttributes, ExpressionAttributeValueMap } from './ExpressionAttributes';
 import { FunctionExpression } from './FunctionExpression';
 import { MathematicalExpression } from './MathematicalExpression';
-import {
-    ExpressionAttributeNameMap,
-    ExpressionAttributeValueMap
-} from 'aws-sdk/clients/dynamodb';
+import { marshall } from '@aws-sdk/util-dynamodb';
 
 describe('MathematicalExpression', () => {
     const validExpressions: Array<[
@@ -79,7 +76,7 @@ describe('MathematicalExpression', () => {
                 const attributes = new ExpressionAttributes();
                 expect(expression.serialize(attributes)).toBe(serialized);
                 expect(attributes.names).toEqual(expectedNames);
-                expect(attributes.values).toEqual(expectedValues);
+                expect(marshall(attributes.values)).toEqual(expectedValues);
             }
         });
     });

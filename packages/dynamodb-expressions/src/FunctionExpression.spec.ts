@@ -1,6 +1,7 @@
 import {FunctionExpression} from "./FunctionExpression";
 import {ExpressionAttributes} from "./ExpressionAttributes";
 import {AttributePath} from "./AttributePath";
+import { marshall } from '@aws-sdk/util-dynamodb';
 
 describe('FunctionExpression', () => {
     const basicFunctionExpression = new FunctionExpression(
@@ -48,7 +49,7 @@ describe('FunctionExpression', () => {
                 '#attr0': 'bar',
             });
 
-            expect(attributes.values).toEqual({
+            expect(marshall(attributes.values)).toEqual({
                 ':val1': {S: 'baz'},
             });
         });
@@ -70,7 +71,7 @@ describe('FunctionExpression', () => {
                 '#attr0': 'bar',
             });
 
-            expect(attributes.values).toEqual({
+            expect(marshall(attributes.values)).toEqual({
                 ':val1': {S: 'baz'},
             });
         });
