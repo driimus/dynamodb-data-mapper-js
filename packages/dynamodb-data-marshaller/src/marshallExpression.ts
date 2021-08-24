@@ -1,10 +1,6 @@
 import { Schema } from './Schema';
 import { toSchemaName } from './toSchemaName';
 import {
-    ExpressionAttributeNameMap,
-    ExpressionAttributeValueMap,
-} from 'aws-sdk/clients/dynamodb';
-import {
     AttributePath,
     ConditionExpression,
     FunctionExpression,
@@ -12,6 +8,8 @@ import {
     ProjectionExpression,
     UpdateExpression,
     ExpressionAttributes,
+    ExpressionAttributeNameMap,
+    ExpressionAttributeValueMap,
     serializeConditionExpression,
     serializeProjectionExpression,
 } from '@aws/dynamodb-expressions';

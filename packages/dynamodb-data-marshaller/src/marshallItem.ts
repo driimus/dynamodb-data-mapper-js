@@ -2,15 +2,18 @@ import { Schema } from './Schema';
 import { SchemaType } from './SchemaType';
 import { InvalidValueError } from './InvalidValueError';
 import { InvalidSchemaError } from './InvalidSchemaError';
-import { AttributeMap, AttributeValue } from 'aws-sdk/clients/dynamodb';
+import { AttributeValue } from '@aws-sdk/client-dynamodb';
 import {
     BinarySet,
     BinaryValue,
     Marshaller,
     NumberValueSet,
 } from '@aws/dynamodb-auto-marshaller';
+import {convertToAttr} from "@aws-sdk/util-dynamodb";
+
 const bytes = require('utf8-bytes');
 
+export type AttributeMap = Record<string, AttributeValue>;
 /**
  * Converts a JavaScript object into a DynamoDB Item.
  *
@@ -290,22 +293,7 @@ function marshallSet<InputType, MarshalledElementType>(
     isEmpty: (member: MarshalledElementType) => boolean,
     setTag: 'BS'|'NS'|'SS'
 ): AttributeValue {
-    const collected: Array<MarshalledElementType> = [];
-    for (const member of value) {
-        const marshalled = marshaller(member);
-        if (isEmpty(marshalled)) {
-            // DynamoDB sets cannot contain empty values
-            continue;
-        }
-
-        collected.push(marshalled);
-    }
-
-    if (collected.length === 0) {
-        return {NULL: true};
-    }
-
-    return {[setTag]: collected};
+    return convertToAttr(value as Set<any>);
 }
 
 function isArrayBuffer(arg: any): arg is ArrayBuffer {

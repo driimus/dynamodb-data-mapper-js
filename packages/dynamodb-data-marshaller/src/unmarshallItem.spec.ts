@@ -79,7 +79,7 @@ describe('unmarshallItem', () => {
                 }
             };
 
-            expect(unmarshallItem(schema, input)).toEqual({
+            expect(unmarshallItem(schema, input as any)).toEqual({
                 mixedList: [
                     'string',
                     new NumberValue(123),
@@ -113,7 +113,7 @@ describe('unmarshallItem', () => {
               }
           };
 
-          expect(unmarshallItem(schema, input)).toEqual({
+          expect(unmarshallItem(schema, input as any)).toEqual({
               mixedList: [
                   'string',
                   123,
