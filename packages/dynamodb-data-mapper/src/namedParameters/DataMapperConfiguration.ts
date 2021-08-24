@@ -1,11 +1,11 @@
-import DynamoDB = require("aws-sdk/clients/dynamodb");
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { ReadConsistency } from '../constants';
 
 export interface DataMapperConfiguration {
     /**
      * The low-level DynamoDB client to use to execute API operations.
      */
-    client: DynamoDB;
+    client: DynamoDBClient;
 
     /**
      * The default read consistency to use when loading items. If not specified,
