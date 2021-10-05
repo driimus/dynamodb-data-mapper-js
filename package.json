@@ -19,6 +19,7 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
+    "@aws-sdk/util-dynamodb": "^3.27.0",
     "@types/jest": "^27.0.1",
     "@types/node": "^16.7.1",
     "jest": "^27.0.6",

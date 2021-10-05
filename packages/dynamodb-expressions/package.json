@@ -19,8 +19,7 @@
   "scripts": {
     "docs": "typedoc src",
     "prepublishOnly": "tsc",
-    "pretest": "tsc -p tsconfig.test.json",
-    "test": "jest \"build/(.+).spec.js\""
+    "test": "jest"
   },
   "author": {
     "name": "AWS SDK for JavaScript Team",
@@ -33,6 +32,7 @@
     "@types/jest": "^27.0.1",
     "@types/node": "^16.7.1",
     "jest": "^27.0.6",
+    "ts-jest": "^27.0.5",
     "typedoc": "^0.14.0",
     "typescript": "^4.3.5"
   },
