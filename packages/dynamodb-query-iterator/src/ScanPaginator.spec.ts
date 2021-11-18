@@ -252,7 +252,6 @@ describe("ScanPaginator", () => {
 
     for await (const _ of paginator) {
       // pass
-      console.log(paginator.consumedCapacity);
     }
     expect(paginator.consumedCapacity).toMatchObject({
       TableName: "foo",
