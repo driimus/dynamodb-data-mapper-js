@@ -1,185 +1,205 @@
-import {QueryIterator, QueryPaginator} from '.';
+import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
+import { mockClient } from "aws-sdk-client-mock";
+import { QueryIterator, QueryPaginator } from ".";
 
-describe('QueryIterator', () => {
-    const promiseFunc = jest.fn();
-    const mockDynamoDbClient = {
-        config: {},
-        query: jest.fn()
-    };
+describe("QueryIterator", () => {
+  const promiseFunc = jest.fn();
+  const mockDynamoDbClient = mockClient(DynamoDBClient);
 
-    beforeEach(() => {
-        promiseFunc.mockClear();
-        promiseFunc.mockImplementation(() => Promise.resolve({Items: []}));
-        mockDynamoDbClient.query.mockClear();
-        mockDynamoDbClient.query.mockImplementation(() => {
-            return {promise: promiseFunc};
-        });
+  beforeEach(() => {
+    mockDynamoDbClient.reset();
+    mockDynamoDbClient.on(QueryCommand).callsFake(promiseFunc);
+  });
+
+  it("should paginate over results and return a promise for each item", async () => {
+    promiseFunc.mockImplementationOnce(() =>
+      Promise.resolve({
+        Items: [
+          {
+            fizz: { S: "snap" },
+            bar: { NS: ["1", "2", "3"] },
+            baz: { L: [{ BOOL: true }, { N: "4" }] },
+          },
+        ],
+        LastEvaluatedKey: { fizz: { S: "snap" } },
+      })
+    );
+    promiseFunc.mockImplementationOnce(() =>
+      Promise.resolve({
+        Items: [
+          {
+            fizz: { S: "crackle" },
+            bar: { NS: ["5", "6", "7"] },
+            baz: { L: [{ BOOL: false }, { N: "8" }] },
+          },
+        ],
+        LastEvaluatedKey: { fizz: { S: "crackle" } },
+      })
+    );
+    promiseFunc.mockImplementationOnce(() =>
+      Promise.resolve({
+        Items: [
+          {
+            fizz: { S: "pop" },
+            bar: { NS: ["9", "12", "30"] },
+            baz: { L: [{ BOOL: true }, { N: "24" }] },
+          },
+        ],
+        LastEvaluatedKey: { fizz: { S: "pop" } },
+      })
+    );
+    promiseFunc.mockImplementationOnce(() => Promise.resolve({}));
+
+    const result: any[] = [];
+    for await (const item of new QueryIterator(mockDynamoDbClient as any, {
+      TableName: "foo",
+    })) {
+      result.push(item);
+    }
+
+    expect(result).toEqual([
+      {
+        fizz: { S: "snap" },
+        bar: { NS: ["1", "2", "3"] },
+        baz: { L: [{ BOOL: true }, { N: "4" }] },
+      },
+      {
+        fizz: { S: "crackle" },
+        bar: { NS: ["5", "6", "7"] },
+        baz: { L: [{ BOOL: false }, { N: "8" }] },
+      },
+      {
+        fizz: { S: "pop" },
+        bar: { NS: ["9", "12", "30"] },
+        baz: { L: [{ BOOL: true }, { N: "24" }] },
+      },
+    ]);
+  });
+
+  it("should provide access to the underlying paginator", async () => {
+    const iterator = new QueryIterator(mockDynamoDbClient as any, {
+      TableName: "foo",
     });
 
-    it(
-        'should paginate over results and return a promise for each item',
-        async () => {
-            promiseFunc.mockImplementationOnce(() => Promise.resolve({
-                Items: [
-                    {
-                        fizz: {S: 'snap'},
-                        bar: {NS: ['1', '2', '3']},
-                        baz: {L: [{BOOL: true}, {N: '4'}]}
-                    },
-                ],
-                LastEvaluatedKey: {fizz: {S: 'snap'}},
-            }));
-            promiseFunc.mockImplementationOnce(() => Promise.resolve({
-                Items: [
-                    {
-                        fizz: {S: 'crackle'},
-                        bar: {NS: ['5', '6', '7']},
-                        baz: {L: [{BOOL: false}, {N: '8'}]}
-                    },
-                ],
-                LastEvaluatedKey: {fizz: {S: 'crackle'}},
-            }));
-            promiseFunc.mockImplementationOnce(() => Promise.resolve({
-                Items: [
-                    {
-                        fizz: {S: 'pop'},
-                        bar: {NS: ['9', '12', '30']},
-                        baz: {L: [{BOOL: true}, {N: '24'}]}
-                    },
-                ],
-                LastEvaluatedKey: {fizz: {S: 'pop'}},
-            }));
-            promiseFunc.mockImplementationOnce(() => Promise.resolve({}));
+    expect(iterator.pages()).toBeInstanceOf(QueryPaginator);
+  });
 
-            const result: any[] = [];
-            for await (const item of new QueryIterator(mockDynamoDbClient as any, {TableName: 'foo'})) {
-                result.push(item);
-            }
+  it("should not allow iteration once the paginator has been detached", async () => {
+    const iterator = new QueryIterator(mockDynamoDbClient as any, {
+      TableName: "foo",
+    });
 
-            expect(result).toEqual([
-                {
-                    fizz: {S: 'snap'},
-                    bar: {NS: ['1', '2', '3']},
-                    baz: {L: [{BOOL: true}, {N: '4'}]}
-                },
-                {
-                    fizz: {S: 'crackle'},
-                    bar: {NS: ['5', '6', '7']},
-                    baz: {L: [{BOOL: false}, {N: '8'}]}
-                },
-                {
-                    fizz: {S: 'pop'},
-                    bar: {NS: ['9', '12', '30']},
-                    baz: {L: [{BOOL: true}, {N: '24'}]}
-                },
-            ]);
-        }
+    // detach the paginator
+    iterator.pages();
+
+    await expect(iterator.next()).rejects.toMatchObject(
+      new Error(
+        "The underlying paginator has been detached from this iterator."
+      )
+    );
+  });
+
+  it("should provide access to paginator metadata", async () => {
+    promiseFunc.mockImplementationOnce(() =>
+      Promise.resolve({
+        Items: [
+          {
+            fizz: { S: "snap" },
+            bar: { NS: ["1", "2", "3"] },
+            baz: { L: [{ BOOL: true }, { N: "4" }] },
+          },
+        ],
+        LastEvaluatedKey: { fizz: { S: "snap" } },
+        Count: 1,
+        ScannedCount: 1,
+        ConsumedCapacity: {
+          TableName: "foo",
+          CapacityUnits: 2,
+        },
+      })
+    );
+    promiseFunc.mockImplementationOnce(() =>
+      Promise.resolve({
+        Items: [
+          {
+            fizz: { S: "crackle" },
+            bar: { NS: ["5", "6", "7"] },
+            baz: { L: [{ BOOL: false }, { N: "8" }] },
+          },
+        ],
+        LastEvaluatedKey: { fizz: { S: "crackle" } },
+        Count: 1,
+        ScannedCount: 2,
+        ConsumedCapacity: {
+          TableName: "foo",
+          CapacityUnits: 2,
+        },
+      })
+    );
+    promiseFunc.mockImplementationOnce(() =>
+      Promise.resolve({
+        Items: [
+          {
+            fizz: { S: "pop" },
+            bar: { NS: ["9", "12", "30"] },
+            baz: { L: [{ BOOL: true }, { N: "24" }] },
+          },
+        ],
+        Count: 1,
+        ScannedCount: 3,
+        ConsumedCapacity: {
+          TableName: "foo",
+          CapacityUnits: 2,
+        },
+      })
     );
 
-    it('should provide access to the underlying paginator', async () => {
-        const iterator = new QueryIterator(mockDynamoDbClient as any, {TableName: 'foo'});
-
-        expect(iterator.pages()).toBeInstanceOf(QueryPaginator);
+    const iterator = new QueryIterator(mockDynamoDbClient as any, {
+      TableName: "foo",
     });
 
-    it('should not allow iteration once the paginator has been detached', async () => {
-        const iterator = new QueryIterator(mockDynamoDbClient as any, {TableName: 'foo'});
+    let expectedCount = 0;
+    const expectedScanCounts = [1, 3, 6];
+    expect(iterator.count).toBe(expectedCount);
+    expect(iterator.scannedCount).toBe(expectedCount);
+    for await (const _ of iterator) {
+      expect(iterator.count).toBe(++expectedCount);
+      expect(iterator.scannedCount).toBe(expectedScanCounts.shift());
+    }
 
-        // detach the paginator
-        iterator.pages();
+    expect(iterator.count).toBe(3);
+    expect(iterator.scannedCount).toBe(6);
+    expect(iterator.consumedCapacity).toMatchObject({
+      TableName: "foo",
+      CapacityUnits: 6,
+    });
+  });
 
-        await expect(iterator.next()).rejects.toMatchObject(new Error(
-            'The underlying paginator has been detached from this iterator.'
-        ));
+  it("should not allow iteration once return has been called", async () => {
+    promiseFunc.mockImplementationOnce(() =>
+      Promise.resolve({
+        Items: [
+          {
+            fizz: { S: "snap" },
+            bar: { NS: ["1", "2", "3"] },
+            baz: { L: [{ BOOL: true }, { N: "4" }] },
+          },
+        ],
+        LastEvaluatedKey: { fizz: { S: "snap" } },
+      })
+    );
+    const iterator = new QueryIterator(mockDynamoDbClient as any, {
+      TableName: "foo",
     });
 
-    it('should provide access to paginator metadata', async () => {
-        promiseFunc.mockImplementationOnce(() => Promise.resolve({
-            Items: [
-                {
-                    fizz: {S: 'snap'},
-                    bar: {NS: ['1', '2', '3']},
-                    baz: {L: [{BOOL: true}, {N: '4'}]}
-                },
-            ],
-            LastEvaluatedKey: {fizz: {S: 'snap'}},
-            Count: 1,
-            ScannedCount:1,
-            ConsumedCapacity: {
-                TableName: 'foo',
-                CapacityUnits: 2
-            }
-        }));
-        promiseFunc.mockImplementationOnce(() => Promise.resolve({
-            Items: [
-                {
-                    fizz: {S: 'crackle'},
-                    bar: {NS: ['5', '6', '7']},
-                    baz: {L: [{BOOL: false}, {N: '8'}]}
-                },
-            ],
-            LastEvaluatedKey: {fizz: {S: 'crackle'}},
-            Count: 1,
-            ScannedCount: 2,
-            ConsumedCapacity: {
-                TableName: 'foo',
-                CapacityUnits: 2
-            }
-        }));
-        promiseFunc.mockImplementationOnce(() => Promise.resolve({
-            Items: [
-                {
-                    fizz: {S: 'pop'},
-                    bar: {NS: ['9', '12', '30']},
-                    baz: {L: [{BOOL: true}, {N: '24'}]}
-                },
-            ],
-            Count: 1,
-            ScannedCount: 3,
-            ConsumedCapacity: {
-                TableName: 'foo',
-                CapacityUnits: 2
-            }
-        }));
+    for await (const _ of iterator) {
+      break;
+    }
 
-        const iterator = new QueryIterator(mockDynamoDbClient as any, {TableName: 'foo'});
-
-        let expectedCount = 0;
-        const expectedScanCounts = [1, 3, 6];
-        expect(iterator.count).toBe(expectedCount);
-        expect(iterator.scannedCount).toBe(expectedCount);
-        for await (const _ of iterator) {
-            expect(iterator.count).toBe(++expectedCount);
-            expect(iterator.scannedCount).toBe(expectedScanCounts.shift());
-        }
-
-        expect(iterator.count).toBe(3);
-        expect(iterator.scannedCount).toBe(6);
-        expect(iterator.consumedCapacity).toEqual({
-            TableName: 'foo',
-            CapacityUnits: 6
-        });
-    });
-
-    it('should not allow iteration once return has been called', async () => {
-        promiseFunc.mockImplementationOnce(() => Promise.resolve({
-            Items: [
-                {
-                    fizz: {S: 'snap'},
-                    bar: {NS: ['1', '2', '3']},
-                    baz: {L: [{BOOL: true}, {N: '4'}]}
-                },
-            ],
-            LastEvaluatedKey: {fizz: {S: 'snap'}},
-        }));
-        const iterator = new QueryIterator(mockDynamoDbClient as any, {TableName: 'foo'});
-
-        for await (const _ of iterator) {
-            break
-        }
-
-        await expect(iterator.next()).rejects.toMatchObject(new Error(
-            'Iteration has been manually interrupted and may not be resumed'
-        ));
-    });
+    await expect(iterator.next()).rejects.toMatchObject(
+      new Error(
+        "Iteration has been manually interrupted and may not be resumed"
+      )
+    );
+  });
 });
