@@ -4,6 +4,7 @@
     "sourceMap": false,
     "inlineSourceMap": true,
     "inlineSources": true,
+    "skipLibCheck": true,
     "rootDir": "./src",
     "outDir": "./build"
   }

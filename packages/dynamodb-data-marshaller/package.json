@@ -28,7 +28,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-sdk/client-dynamodb": "^3.27.0",
+    "@aws-sdk/client-dynamodb": "^3.41.0",
     "@types/jest": "^27.0.1",
     "@types/node": "^16.7.1",
     "jest": "^27.0.6",
@@ -42,6 +42,6 @@
     "utf8-bytes": "^0.0.1"
   },
   "peerDependencies": {
-    "@aws-sdk/client-dynamodb": "^3.27.0"
+    "@aws-sdk/client-dynamodb": "^3.41.0"
   }
 }

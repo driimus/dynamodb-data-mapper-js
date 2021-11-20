@@ -1,17 +1,17 @@
-import { DynamoDbPaginatorInterface } from './DynamoDbPaginatorInterface';
-import { DynamoDbResultsPage, Key } from './DynamoDbResultsPage';
-import { mergeConsumedCapacities } from './mergeConsumedCapacities';
-import { ParallelScanInput } from './ParallelScanInput';
-import { ScanPaginator } from './ScanPaginator';
-import { ConsumedCapacity, DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDbPaginatorInterface } from "./DynamoDbPaginatorInterface";
+import { DynamoDbResultsPage, Key } from "./DynamoDbResultsPage";
+import { mergeConsumedCapacities } from "./mergeConsumedCapacities";
+import { ParallelScanInput } from "./ParallelScanInput";
+import { ScanPaginator } from "./ScanPaginator";
+import { ConsumedCapacity, DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
 /**
  * Pagination state for a scan segment for which the first page has not yet been
  * retrieved.
  */
 export interface UninitializedScanState {
-    initialized: false;
-    LastEvaluatedKey?: undefined;
+  initialized: false;
+  LastEvaluatedKey?: undefined;
 }
 
 /**
@@ -20,11 +20,11 @@ export interface UninitializedScanState {
  * otherwise, all pages for this segment have been returned.
  */
 export interface InitializedScanState {
-    initialized: true;
-    LastEvaluatedKey?: Key;
+  initialized: true;
+  LastEvaluatedKey?: Key;
 }
 
-export type ScanState = UninitializedScanState|InitializedScanState;
+export type ScanState = UninitializedScanState | InitializedScanState;
 
 /**
  * ParallelScanState is represented as an array whose length is equal to the
@@ -42,187 +42,178 @@ export type ScanState = UninitializedScanState|InitializedScanState;
 export type ParallelScanState = Array<ScanState>;
 
 if (Symbol && !Symbol.asyncIterator) {
-    (Symbol as any).asyncIterator = Symbol.for("__@@asyncIterator__");
+  (Symbol as any).asyncIterator = Symbol.for("__@@asyncIterator__");
 }
 
 export class ParallelScanPaginator implements DynamoDbPaginatorInterface {
-    private readonly _scanState: ParallelScanState;
-    private readonly iterators: Array<ScanPaginator>;
-    private readonly pending: Array<PendingResult> = [];
-    private lastResolved: Promise<
-        IteratorResult<DynamoDbResultsPage>
-    > = Promise.resolve() as any;
+  private readonly _scanState: ParallelScanState;
+  private readonly iterators: Array<ScanPaginator>;
+  private readonly pending: Array<PendingResult> = [];
+  private lastResolved: Promise<IteratorResult<DynamoDbResultsPage>> =
+    Promise.resolve() as any;
 
-    constructor(
-        client: DynamoDBClient,
-        input: ParallelScanInput,
-        scanState: ParallelScanState = nullScanState(input.TotalSegments)
-    ) {
-        const { TotalSegments } = input;
+  constructor(
+    client: DynamoDBClient,
+    input: ParallelScanInput,
+    scanState: ParallelScanState = nullScanState(input.TotalSegments)
+  ) {
+    const { TotalSegments } = input;
 
-        if (scanState.length !== TotalSegments) {
-            throw new Error(
-                `Parallel scan state must have a length equal to the number of `
-                    + `scan segments. Expected an array of ${TotalSegments} but`
-                    + `received an array with ${scanState.length} elements.`
-            );
-        }
-
-        this.iterators = new Array(TotalSegments);
-        for (let i = 0; i < TotalSegments; i++) {
-            const iterator = new ScanPaginator(
-                client,
-                {
-                    ...input,
-                    Segment: i,
-                    ExclusiveStartKey: scanState[i].LastEvaluatedKey,
-                }
-            );
-            this.iterators[i] = iterator;
-
-            // If the segment has not been initialized or a pagination token has
-            // been received, request the next page.
-            if (!scanState[i].initialized || scanState[i].LastEvaluatedKey) {
-                this.refillPending(iterator, i);
-            }
-        }
-
-        this._scanState = [...scanState];
+    if (scanState.length !== TotalSegments) {
+      throw new Error(
+        `Parallel scan state must have a length equal to the number of ` +
+          `scan segments. Expected an array of ${TotalSegments} but` +
+          `received an array with ${scanState.length} elements.`
+      );
     }
 
-    /**
-     * @inheritDoc
-     */
-    [Symbol.asyncIterator](): AsyncIterableIterator<DynamoDbResultsPage> {
-        return this;
+    this.iterators = new Array(TotalSegments);
+    for (let i = 0; i < TotalSegments; i++) {
+      const iterator = new ScanPaginator(client, {
+        ...input,
+        Segment: i,
+        ExclusiveStartKey: scanState[i].LastEvaluatedKey,
+      });
+      this.iterators[i] = iterator;
+
+      // If the segment has not been initialized or a pagination token has
+      // been received, request the next page.
+      if (!scanState[i].initialized || scanState[i].LastEvaluatedKey) {
+        this.refillPending(iterator, i);
+      }
     }
 
-    /**
-     * @inheritDoc
-     */
-    get consumedCapacity(): ConsumedCapacity|undefined {
-        return this.iterators.reduce(
-            (merged: ConsumedCapacity|undefined, paginator) => mergeConsumedCapacities(
-                merged,
-                paginator.consumedCapacity
-            ),
-            undefined
-        )
+    this._scanState = [...scanState];
+  }
+
+  /**
+   * @inheritDoc
+   */
+  [Symbol.asyncIterator](): AsyncIterableIterator<DynamoDbResultsPage> {
+    return this;
+  }
+
+  /**
+   * @inheritDoc
+   */
+  get consumedCapacity(): ConsumedCapacity | undefined {
+    return this.iterators.reduce(
+      (merged: ConsumedCapacity | undefined, paginator) =>
+        mergeConsumedCapacities(merged, paginator.consumedCapacity),
+      undefined
+    );
+  }
+
+  /**
+   * @inheritDoc
+   */
+  get count(): number {
+    return this.iterators.reduce((sum, paginator) => sum + paginator.count, 0);
+  }
+
+  /**
+   * @inheritDoc
+   */
+  next(): Promise<IteratorResult<DynamoDbResultsPage>> {
+    this.lastResolved = this.lastResolved.then(() => this.getNext());
+    return this.lastResolved;
+  }
+
+  private async getNext(): Promise<IteratorResult<DynamoDbResultsPage>> {
+    if (this.pending.length === 0) {
+      return doneSigil();
     }
 
-    /**
-     * @inheritDoc
-     */
-    get count(): number {
-        return this.iterators.reduce(
-            (sum, paginator) => sum + paginator.count,
-            0
-        );
+    // Grab the next available result from any segment.
+    const {
+      iterator,
+      result: { value, done },
+      segment,
+    } = await Promise.race(this.pending.map((pending) => pending.result));
+
+    // Update the scan state for this segment. This will either be the last
+    // evaluated key (for an unfinished segment) or undefined (for a
+    // completed segment).
+    this._scanState[segment] = {
+      initialized: true,
+      LastEvaluatedKey: value && value.LastEvaluatedKey,
+    };
+
+    // Remove the result from the pending set.
+    for (let i = this.pending.length - 1; i >= 0; i--) {
+      if (this.pending[i].iterator === iterator) {
+        this.pending.splice(i, 1);
+      }
     }
 
-    /**
-     * @inheritDoc
-     */
-    next(): Promise<IteratorResult<DynamoDbResultsPage>> {
-        this.lastResolved = this.lastResolved.then(() => this.getNext());
-        return this.lastResolved;
+    // If the iterator is not finished, add its next result to the pending
+    // set.
+    if (!done) {
+      this.refillPending(iterator, segment);
+      return { value, done };
+    } else {
+      // If a segment has finished but there are still outstanding
+      // requests, recur. A done sigil will be returned when the pending
+      // queue is empty.
+      return this.getNext();
     }
+  }
 
-    private async getNext(): Promise<IteratorResult<DynamoDbResultsPage>> {
-        if (this.pending.length === 0) {
-            return doneSigil();
-        }
+  /**
+   * @inheritDoc
+   */
+  async return(): Promise<IteratorResult<DynamoDbResultsPage>> {
+    this.pending.length = 0;
+    return Promise.all(
+      this.iterators.map((iterator) => iterator.return())
+    ).then(doneSigil);
+  }
 
-        // Grab the next available result from any segment.
-        const {
-            iterator,
-            result: {value, done},
-            segment,
-        } = await Promise.race(this.pending.map(pending => pending.result));
+  /**
+   * @inheritDoc
+   */
+  get scannedCount(): number {
+    return this.iterators.reduce(
+      (sum, paginator) => sum + paginator.scannedCount,
+      0
+    );
+  }
 
-        // Update the scan state for this segment. This will either be the last
-        // evaluated key (for an unfinished segment) or undefined (for a
-        // completed segment).
-        this._scanState[segment] = {
-            initialized: true,
-            LastEvaluatedKey: value && value.LastEvaluatedKey,
-        };
+  /**
+   * A snapshot of the current state of a parallel scan. May be used to resume
+   * a parallel scan with a separate paginator.
+   */
+  get scanState(): ParallelScanState {
+    return [...this._scanState];
+  }
 
-        // Remove the result from the pending set.
-        for (let i = this.pending.length - 1; i >= 0; i--) {
-            if (this.pending[i].iterator === iterator) {
-                this.pending.splice(i, 1);
-            }
-        }
-
-        // If the iterator is not finished, add its next result to the pending
-        // set.
-        if (!done) {
-            this.refillPending(iterator, segment);
-            return { value, done };
-        } else {
-            // If a segment has finished but there are still outstanding
-            // requests, recur. A done sigil will be returned when the pending
-            // queue is empty.
-            return this.getNext();
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    async return(): Promise<IteratorResult<DynamoDbResultsPage>> {
-        this.pending.length = 0;
-        return Promise.all(this.iterators.map(iterator => iterator.return()))
-            .then(doneSigil);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    get scannedCount(): number {
-        return this.iterators.reduce(
-            (sum, paginator) => sum + paginator.scannedCount,
-            0
-        );
-    }
-
-    /**
-     * A snapshot of the current state of a parallel scan. May be used to resume
-     * a parallel scan with a separate paginator.
-     */
-    get scanState(): ParallelScanState {
-        return [...this._scanState];
-    }
-
-    private refillPending(iterator: ScanPaginator, segment: number): void {
-        // Use .push to reorder segments within the array of pending results.
-        // Promise.race will iterate over the array of pending results until a
-        // resolved promise is found and therefore will naturally favor promises
-        // towards the head of the queue. Removing resolved segments and sending
-        // them to the back of the line will keep this implementation detail
-        // from creating hot and cold scan segments.
-        this.pending.push({
-            iterator: iterator,
-            result: iterator.next()
-                .then(result => ({iterator, result, segment})),
-        });
-    }
+  private refillPending(iterator: ScanPaginator, segment: number): void {
+    // Use .push to reorder segments within the array of pending results.
+    // Promise.race will iterate over the array of pending results until a
+    // resolved promise is found and therefore will naturally favor promises
+    // towards the head of the queue. Removing resolved segments and sending
+    // them to the back of the line will keep this implementation detail
+    // from creating hot and cold scan segments.
+    this.pending.push({
+      iterator: iterator,
+      result: iterator.next().then((result) => ({ iterator, result, segment })),
+    });
+  }
 }
 
 function doneSigil() {
-    return {done: true} as IteratorResult<any>;
+  return { done: true } as IteratorResult<any>;
 }
 
 function nullScanState(length: number): ParallelScanState {
-    return new Array(length).fill({initialized: false});
+  return new Array(length).fill({ initialized: false });
 }
 
 interface PendingResult {
+  iterator: ScanPaginator;
+  result: Promise<{
     iterator: ScanPaginator;
-    result: Promise<{
-        iterator: ScanPaginator;
-        result: IteratorResult<DynamoDbResultsPage>;
-        segment: number;
-    }>;
+    result: IteratorResult<DynamoDbResultsPage>;
+    segment: number;
+  }>;
 }

@@ -5,7 +5,8 @@
     "bootstrap": "lerna bootstrap",
     "docs": "typedoc src && lerna run docs",
     "pretest": "lerna run pretest",
-    "test": "jest"
+    "test": "jest",
+    "xo": "xo"
   },
   "author": {
     "name": "AWS SDK for JavaScript Team",
@@ -25,10 +26,11 @@
     "jest": "^27.0.6",
     "lerna": "^3.13",
     "typedoc": "^0.14.0",
-    "typescript": "^4.3.5"
+    "typescript": "^4.3.5",
+    "xo": "^0.46.4"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.27.0"
+    "@aws-sdk/client-dynamodb": "^3.41.0"
   },
   "workspaces": [
     "packages/*"
