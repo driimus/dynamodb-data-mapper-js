@@ -6,5 +6,6 @@
     "inlineSources": true,
     "sourceRoot": "./src",
     "outDir": "./build"
-  }
+  },
+  "exclude": ["src/*.spec.ts", "node_modules", "build"]
 }
