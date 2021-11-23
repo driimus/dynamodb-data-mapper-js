@@ -1,15 +1,15 @@
 import 'reflect-metadata';
 import { PropertyAnnotation } from './annotationShapes';
 import { METADATA_TYPE_KEY } from './constants';
-import { BinarySet, NumberValueSet } from "@aws/dynamodb-auto-marshaller";
+import { BinarySet } from '@aws/dynamodb-auto-marshaller';
 import { DynamoDbSchema } from '@aws/dynamodb-data-mapper';
 import {
     DocumentType,
     KeyableType,
     Schema,
     SchemaType,
-    SetType
-} from "@aws/dynamodb-data-marshaller";
+    SetType,
+} from '@aws/dynamodb-data-marshaller';
 
 /**
  * Declare a property in a TypeScript class to be part of a DynamoDB schema.
@@ -64,7 +64,7 @@ export function attribute(
             Object.defineProperty(
                 target,
                 DynamoDbSchema as any, // TypeScript complains about the use of symbols here, though it should be allowed
-                {value: deriveBaseSchema(target)}
+                { value: deriveBaseSchema(target) }
             );
         }
 
@@ -74,17 +74,11 @@ export function attribute(
         );
 
         if (
-            (
-                (schemaType as KeyableType).keyType ||
-                (schemaType as KeyableType).indexKeyConfigurations
-            ) &&
-            [
-                'Binary',
-                'Custom',
-                'Date',
-                'Number',
-                'String',
-            ].indexOf(schemaType.type) < 0
+            ((schemaType as KeyableType).keyType ||
+                (schemaType as KeyableType).indexKeyConfigurations) &&
+            ['Binary', 'Custom', 'Date', 'Number', 'String'].indexOf(
+                schemaType.type
+            ) < 0
         ) {
             throw new Error(
                 `Properties of type ${schemaType.type} may not be used as index or table keys. If you are relying on automatic type detection and have encountered this error, please ensure that the 'emitDecoratorMetadata' TypeScript compiler option is enabled. Please see https://www.typescriptlang.org/docs/handbook/decorators.html#metadata for more information on this compiler option.`
@@ -101,9 +95,12 @@ function deriveBaseSchema(target: any): Schema {
         if (prototype) {
             return {
                 ...deriveBaseSchema(prototype),
-                ...Object.prototype.hasOwnProperty.call(prototype, DynamoDbSchema)
+                ...(Object.prototype.hasOwnProperty.call(
+                    prototype,
+                    DynamoDbSchema
+                )
                     ? prototype[DynamoDbSchema]
-                    : {}
+                    : {}),
             };
         }
     }
@@ -112,10 +109,10 @@ function deriveBaseSchema(target: any): Schema {
 }
 
 function metadataToSchemaType(
-    ctor: {new (): any}|undefined,
+    ctor: { new (): any } | undefined,
     declaration: Partial<SchemaType>
 ): SchemaType {
-    let {type, ...rest} = declaration;
+    let { type, ...rest } = declaration;
     if (type === undefined) {
         if (ctor) {
             if (ctor === String) {
@@ -132,12 +129,9 @@ function metadataToSchemaType(
             ) {
                 type = 'Set';
                 (rest as SetType).memberType = 'Binary';
-            } else if (
-                ctor === NumberValueSet ||
-                ctor.prototype instanceof NumberValueSet
-            ) {
-                type = 'Set';
-                (rest as SetType).memberType = 'Number';
+                // } else if (ctor === Set || ctor.prototype instanceof Set) {
+                //     type = 'Set';
+                //     (rest as SetType).memberType = 'Number';
             } else if (ctor === Set || ctor.prototype instanceof Set) {
                 type = 'Set';
                 if (!('memberType' in rest)) {
@@ -176,7 +170,7 @@ function metadataToSchemaType(
 
     return {
         ...rest,
-        type
+        type,
     } as SchemaType;
 }
 
@@ -195,15 +189,28 @@ function metadataToSchemaType(
  * @see https://developer.mozilla.org/en-US/docs/Web/API/ArrayBufferView
  */
 function isBinaryType(arg: any): boolean {
-    return arg === Uint8Array || arg.prototype instanceof Uint8Array ||
-        arg === Uint8ClampedArray || arg.prototype instanceof Uint8ClampedArray ||
-        arg === Uint16Array || arg.prototype instanceof Uint16Array ||
-        arg === Uint32Array || arg.prototype instanceof Uint32Array ||
-        arg === Int8Array || arg.prototype instanceof Int8Array ||
-        arg === Int16Array || arg.prototype instanceof Int16Array ||
-        arg === Int32Array || arg.prototype instanceof Int32Array ||
-        arg === Float32Array || arg.prototype instanceof Float32Array ||
-        arg === Float64Array || arg.prototype instanceof Float64Array ||
-        arg === ArrayBuffer || arg.prototype instanceof ArrayBuffer ||
-        arg === DataView || arg.prototype instanceof DataView;
+    return (
+        arg === Uint8Array ||
+        arg.prototype instanceof Uint8Array ||
+        arg === Uint8ClampedArray ||
+        arg.prototype instanceof Uint8ClampedArray ||
+        arg === Uint16Array ||
+        arg.prototype instanceof Uint16Array ||
+        arg === Uint32Array ||
+        arg.prototype instanceof Uint32Array ||
+        arg === Int8Array ||
+        arg.prototype instanceof Int8Array ||
+        arg === Int16Array ||
+        arg.prototype instanceof Int16Array ||
+        arg === Int32Array ||
+        arg.prototype instanceof Int32Array ||
+        arg === Float32Array ||
+        arg.prototype instanceof Float32Array ||
+        arg === Float64Array ||
+        arg.prototype instanceof Float64Array ||
+        arg === ArrayBuffer ||
+        arg.prototype instanceof ArrayBuffer ||
+        arg === DataView ||
+        arg.prototype instanceof DataView
+    );
 }

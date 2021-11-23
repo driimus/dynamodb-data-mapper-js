@@ -1,8 +1,6 @@
-import { AttributeValue } from "@aws-sdk/client-dynamodb";
-import { convertToAttr } from "@aws-sdk/util-dynamodb";
-import { BinarySet, BinaryValue } from "./BinarySet";
-import { NumberValue } from "./NumberValue";
-import { NumberValueSet } from "./NumberValueSet";
+import { AttributeValue } from '@aws-sdk/client-dynamodb';
+import { convertToAttr } from '@aws-sdk/util-dynamodb';
+import { BinarySet, BinaryValue } from './BinarySet';
 
 export type AttributeMap = Record<string, AttributeValue>;
 export const EmptyHandlingStrategies = {
@@ -56,20 +54,21 @@ export const InvalidHandlingStrategies = {
 export type InvalidHandlingStrategy = keyof typeof InvalidHandlingStrategies;
 
 export type UnmarshalledAttributeValue =
-    string |
-    number |
-    NumberValue |
-    BinaryValue |
-    Set<string> |
-    Set<number> |
-    NumberValueSet |
-    BinarySet |
-    null |
-    boolean |
-    UnmarshalledListAttributeValue |
-    UnmarshalledMapAttributeValue;
+    | string
+    | number
+    | bigint
+    | BinaryValue
+    | Set<string>
+    | Set<number>
+    | Set<bigint>
+    | BinarySet
+    | null
+    | boolean
+    | UnmarshalledListAttributeValue
+    | UnmarshalledMapAttributeValue;
 
-export interface UnmarshalledListAttributeValue extends Array<UnmarshalledAttributeValue> {}
+export interface UnmarshalledListAttributeValue
+    extends Array<UnmarshalledAttributeValue> {}
 
 export interface UnmarshalledMapAttributeValue {
     [key: string]: UnmarshalledAttributeValue;
@@ -110,7 +109,7 @@ export class Marshaller {
     constructor({
         onEmpty = 'leave',
         onInvalid = 'throw',
-        unwrapNumbers = false
+        unwrapNumbers = false,
     }: MarshallingOptions = {}) {
         this.onEmpty = onEmpty;
         this.onInvalid = onInvalid;
@@ -121,7 +120,7 @@ export class Marshaller {
      * Convert a JavaScript object with string keys and arbitrary values into an
      * object with string keys and DynamoDB AttributeValue objects as values.
      */
-    public marshallItem(item: {[key: string]: any}): AttributeMap {
+    public marshallItem(item: { [key: string]: any }): AttributeMap {
         const value = this.marshallValue(item);
         if (!(value && value.M) && this.onInvalid === 'throw') {
             throw new Error(
@@ -138,16 +137,17 @@ export class Marshaller {
      * @throws Error if the value cannot be converted to a DynamoDB type and the
      * marshaller has been configured to throw on invalid input.
      */
-    public marshallValue(value: any): AttributeValue|undefined {
+    public marshallValue(value: any): AttributeValue | undefined {
         switch (typeof value) {
             case 'boolean':
-                return {BOOL: value};
+                return { BOOL: value };
             case 'number':
-                return {N: value.toString(10)};
+                return { N: value.toString(10) };
             case 'object':
+            case 'bigint':
                 return this.marshallComplexType(value);
             case 'string':
-                return value ? {S: value} : this.handleEmptyString(value);
+                return value ? { S: value } : this.handleEmptyString(value);
             case 'undefined':
                 return undefined;
             case 'function':
@@ -167,7 +167,9 @@ export class Marshaller {
      * JavaScript values.
      */
     public unmarshallItem(item: AttributeMap): UnmarshalledMapAttributeValue {
-        return this.unmarshallValue({M: item}) as UnmarshalledMapAttributeValue;
+        return this.unmarshallValue({
+            M: item,
+        }) as UnmarshalledMapAttributeValue;
     }
 
     /**
@@ -179,9 +181,7 @@ export class Marshaller {
         }
 
         if (item.N !== undefined) {
-            return this.unwrapNumbers
-                ? Number(item.N)
-                : new NumberValue(item.N);
+            return this.unwrapNumbers ? Number(item.N) : BigInt(item.N);
         }
 
         if (item.B !== undefined) {
@@ -213,9 +213,7 @@ export class Marshaller {
                 return set;
             }
 
-            return new NumberValueSet(
-                item.NS.map(numberString => new NumberValue(numberString))
-            );
+            return new Set(item.NS.map((numberString) => BigInt(numberString)));
         }
 
         if (item.BS !== undefined) {
@@ -226,7 +224,7 @@ export class Marshaller {
             return item.L.map(this.unmarshallValue.bind(this));
         }
 
-        const {M = {}} = item;
+        const { M = {} } = item;
         return Object.keys(M).reduce(
             (map: UnmarshalledMapAttributeValue, key: string) => {
                 map[key] = this.unmarshallValue(M[key]);
@@ -237,13 +235,14 @@ export class Marshaller {
     }
 
     private marshallComplexType(
-        value: Set<number|NumberValue|string|BinaryValue> |
-            Map<string, any> |
-            Iterable<any> |
-            {[key: string]: any} |
-            null |
-            NumberValue |
-            BinaryValue
+        value:
+            | Set<number | bigint | string | BinaryValue>
+            | Map<string, any>
+            | Iterable<any>
+            | { [key: string]: any }
+            | null
+            | bigint
+            | BinaryValue
     ): AttributeValue {
         return convertToAttr(value);
     }
@@ -361,12 +360,12 @@ export class Marshaller {
     //     }
     // }
 
-    private handleEmptyString(value: string): AttributeValue|undefined {
+    private handleEmptyString(value: string): AttributeValue | undefined {
         switch (this.onEmpty) {
             case 'leave':
-                return {S: value};
+                return { S: value };
             case 'nullify':
-                return {NULL: true};
+                return { NULL: true };
         }
     }
 }
