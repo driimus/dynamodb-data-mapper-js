@@ -1,7 +1,9 @@
 import {
     BatchGetItemCommand,
     BatchWriteItemCommand,
+    CreateTableCommand,
     DeleteItemCommand,
+    DeleteTableCommand,
     DescribeTableCommand,
     DescribeTableOutput,
     DynamoDBClient,
@@ -37,12 +39,14 @@ import { DynamoDbSchema, DynamoDbTable } from './protocols';
 type BinaryValue = ArrayBuffer | ArrayBufferView;
 
 describe('DataMapper', () => {
-    it.skip('should set the customUserAgent config property on the client', () => {
+    it('should set the customUserAgent config property on the client', () => {
         const client: any = { config: {} };
         new DataMapper({ client });
 
-        expect(client.config.customUserAgent).toMatch(
-            'dynamodb-data-mapper-js/'
+        expect(client.config.customUserAgent).toMatchObject(
+            expect.arrayContaining([
+                ['dynamodb-data-mapper-js', expect.any(String)],
+            ])
         );
     });
 
@@ -738,26 +742,29 @@ describe('DataMapper', () => {
         });
     });
 
-    describe.skip('#createGlobalSecondaryIndex', () => {
-        const waitPromiseFunc = jest.fn(async () => Promise.resolve());
+    describe('#createGlobalSecondaryIndex', () => {
+        const describeTablePromiseFunc = jest.fn(async () =>
+            Promise.resolve({
+                Table: { TableStatus: 'ACTIVE' },
+            })
+        );
         const updateTablePromiseFunc = jest.fn(async () => Promise.resolve({}));
-        // const mockDynamoDbClient = {
-        //   config: {},
-        //   updateTable: jest.fn(() => ({ promise: updateTablePromiseFunc })),
-        //   waitFor: jest.fn(() => ({ promise: waitPromiseFunc })),
-        // };
+
         const mockDynamoDbClient = mockClient(DynamoDBClient);
         mockDynamoDbClient
             .on(UpdateTableCommand)
-            .callsFake(updateTablePromiseFunc);
+            .callsFake(updateTablePromiseFunc)
+            .on(DescribeTableCommand)
+            .callsFake(describeTablePromiseFunc);
 
         // mockDynamoDbClient.on(WaitForCommand).callsFake(updateTablePromiseFunc);
 
         beforeEach(() => {
+            describeTablePromiseFunc.mockClear();
             updateTablePromiseFunc.mockClear();
             mockDynamoDbClient.resetHistory();
             // mockDynamoDbClient.updateTable.mockClear();
-            waitPromiseFunc.mockClear();
+            // waitPromiseFunc.mockClear();
             // mockDynamoDbClient.waitFor.mockClear();
         });
 
@@ -807,42 +814,44 @@ describe('DataMapper', () => {
                     .commandCalls(UpdateTableCommand)
                     .map((call) => call.args[0].input)
             ).toEqual([
-                [
-                    {
-                        TableName: 'foo',
-                        AttributeDefinitions: [
-                            {
-                                AttributeName: 'id',
-                                AttributeType: 'S',
-                            },
-                            {
-                                AttributeName: 'description',
-                                AttributeType: 'S',
-                            },
-                        ],
-                        GlobalSecondaryIndexUpdates: [
-                            {
-                                Create: {
-                                    IndexName: 'DescriptionIndex',
-                                    KeySchema: [
-                                        {
-                                            AttributeName: 'description',
-                                            KeyType: 'HASH',
-                                        },
-                                    ],
-                                    Projection: {
-                                        ProjectionType: 'ALL',
+                {
+                    TableName: 'foo',
+                    AttributeDefinitions: [
+                        {
+                            AttributeName: 'id',
+                            AttributeType: 'S',
+                        },
+                        {
+                            AttributeName: 'description',
+                            AttributeType: 'S',
+                        },
+                    ],
+                    GlobalSecondaryIndexUpdates: [
+                        {
+                            Create: {
+                                IndexName: 'DescriptionIndex',
+                                KeySchema: [
+                                    {
+                                        AttributeName: 'description',
+                                        KeyType: 'HASH',
                                     },
-                                    ProvisionedThroughput: {
-                                        ReadCapacityUnits: 1,
-                                        WriteCapacityUnits: 1,
-                                    },
+                                ],
+                                Projection: {
+                                    ProjectionType: 'ALL',
+                                },
+                                ProvisionedThroughput: {
+                                    ReadCapacityUnits: 1,
+                                    WriteCapacityUnits: 1,
                                 },
                             },
-                        ],
-                    },
-                ],
+                        },
+                    ],
+                },
             ]);
+
+            expect(
+                mockDynamoDbClient.commandCalls(DescribeTableCommand)
+            ).toHaveLength(1);
 
             // expect(mockDynamoDbClient.waitFor.mock.calls).toEqual([
             //   ["tableExists", { TableName: "foo" }],
@@ -850,22 +859,25 @@ describe('DataMapper', () => {
         });
     });
 
-    describe.skip('#createTable', () => {
-        const waitPromiseFunc = jest.fn(async () => Promise.resolve());
+    describe('#createTable', () => {
         const createTablePromiseFunc = jest.fn(async () => Promise.resolve({}));
-        const mockDynamoDbClient = {
-            config: {},
-            createTable: jest.fn(() => ({
-                promise: createTablePromiseFunc,
-            })),
-            waitFor: jest.fn(() => ({ promise: waitPromiseFunc })),
-        };
+        const describeTablePromiseFunc = jest.fn(async () =>
+            Promise.resolve({
+                Table: { TableStatus: 'ACTIVE' },
+            })
+        );
+        const mockDynamoDbClient = mockClient(DynamoDBClient);
+
+        mockDynamoDbClient
+            .on(CreateTableCommand)
+            .callsFake(createTablePromiseFunc)
+            .on(DescribeTableCommand)
+            .callsFake(describeTablePromiseFunc);
 
         beforeEach(() => {
             createTablePromiseFunc.mockClear();
-            mockDynamoDbClient.createTable.mockClear();
-            waitPromiseFunc.mockClear();
-            mockDynamoDbClient.waitFor.mockClear();
+            describeTablePromiseFunc.mockClear();
+            mockDynamoDbClient.resetHistory();
         });
 
         const mapper = new DataMapper({
@@ -888,7 +900,12 @@ describe('DataMapper', () => {
                 writeCapacityUnits: 5,
             });
 
-            expect(mockDynamoDbClient.createTable.mock.calls).toEqual([
+            expect(
+                mockDynamoDbClient
+                    .commandCalls(CreateTableCommand)
+                    .map((call) => call.args[0].input)
+            ).toEqual(
+                // [
                 [
                     {
                         TableName: 'foo',
@@ -911,12 +928,16 @@ describe('DataMapper', () => {
                         StreamSpecification: { StreamEnabled: false },
                         SSESpecification: { Enabled: false },
                     },
-                ],
-            ]);
+                ]
+                // ]
+            );
 
-            expect(mockDynamoDbClient.waitFor.mock.calls).toEqual([
-                ['tableExists', { TableName: 'foo' }],
-            ]);
+            expect(
+                mockDynamoDbClient.commandCalls(DescribeTableCommand)
+            ).toHaveLength(1);
+            // expect(mockDynamoDbClient.waitFor.mock.calls).toEqual([
+            //     ['tableExists', { TableName: 'foo' }],
+            // ]);
         });
 
         it('should forgo invoking the waiter if the table is already active', async () => {
@@ -931,9 +952,14 @@ describe('DataMapper', () => {
                 writeCapacityUnits: 5,
             });
 
-            expect(mockDynamoDbClient.createTable.mock.calls.length).toBe(1);
+            expect(
+                mockDynamoDbClient.commandCalls(CreateTableCommand).length
+            ).toBe(1);
 
-            expect(mockDynamoDbClient.waitFor.mock.calls.length).toBe(0);
+            // expect(mockDynamoDbClient.waitFor.mock.calls.length).toBe(0);
+            expect(
+                mockDynamoDbClient.commandCalls(DescribeTableCommand)
+            ).toHaveLength(0);
         });
 
         it('should allow enabling streams', async () => {
@@ -943,33 +969,35 @@ describe('DataMapper', () => {
                 writeCapacityUnits: 5,
             });
 
-            expect(mockDynamoDbClient.createTable.mock.calls).toEqual([
-                [
-                    {
-                        TableName: 'foo',
-                        AttributeDefinitions: [
-                            {
-                                AttributeName: 'id',
-                                AttributeType: 'S',
-                            },
-                        ],
-                        KeySchema: [
-                            {
-                                AttributeName: 'id',
-                                KeyType: 'HASH',
-                            },
-                        ],
-                        ProvisionedThroughput: {
-                            ReadCapacityUnits: 5,
-                            WriteCapacityUnits: 5,
+            expect(
+                mockDynamoDbClient
+                    .commandCalls(CreateTableCommand)
+                    .map((call) => call.args[0].input)
+            ).toEqual([
+                {
+                    TableName: 'foo',
+                    AttributeDefinitions: [
+                        {
+                            AttributeName: 'id',
+                            AttributeType: 'S',
                         },
-                        StreamSpecification: {
-                            StreamEnabled: true,
-                            StreamViewType: 'NEW_AND_OLD_IMAGES',
+                    ],
+                    KeySchema: [
+                        {
+                            AttributeName: 'id',
+                            KeyType: 'HASH',
                         },
-                        SSESpecification: { Enabled: false },
+                    ],
+                    ProvisionedThroughput: {
+                        ReadCapacityUnits: 5,
+                        WriteCapacityUnits: 5,
                     },
-                ],
+                    StreamSpecification: {
+                        StreamEnabled: true,
+                        StreamViewType: 'NEW_AND_OLD_IMAGES',
+                    },
+                    SSESpecification: { Enabled: false },
+                },
             ]);
         });
 
@@ -978,27 +1006,29 @@ describe('DataMapper', () => {
                 billingMode: 'PAY_PER_REQUEST',
             });
 
-            expect(mockDynamoDbClient.createTable.mock.calls).toEqual([
-                [
-                    {
-                        TableName: 'foo',
-                        AttributeDefinitions: [
-                            {
-                                AttributeName: 'id',
-                                AttributeType: 'S',
-                            },
-                        ],
-                        KeySchema: [
-                            {
-                                AttributeName: 'id',
-                                KeyType: 'HASH',
-                            },
-                        ],
-                        BillingMode: 'PAY_PER_REQUEST',
-                        StreamSpecification: { StreamEnabled: false },
-                        SSESpecification: { Enabled: false },
-                    },
-                ],
+            expect(
+                mockDynamoDbClient
+                    .commandCalls(CreateTableCommand)
+                    .map((call) => call.args[0].input)
+            ).toEqual([
+                {
+                    TableName: 'foo',
+                    AttributeDefinitions: [
+                        {
+                            AttributeName: 'id',
+                            AttributeType: 'S',
+                        },
+                    ],
+                    KeySchema: [
+                        {
+                            AttributeName: 'id',
+                            KeyType: 'HASH',
+                        },
+                    ],
+                    BillingMode: 'PAY_PER_REQUEST',
+                    StreamSpecification: { StreamEnabled: false },
+                    SSESpecification: { Enabled: false },
+                },
             ]);
         });
 
@@ -1011,33 +1041,35 @@ describe('DataMapper', () => {
                 },
             });
 
-            expect(mockDynamoDbClient.createTable.mock.calls).toEqual([
-                [
-                    {
-                        TableName: 'foo',
-                        AttributeDefinitions: [
-                            {
-                                AttributeName: 'id',
-                                AttributeType: 'S',
-                            },
-                        ],
-                        KeySchema: [
-                            {
-                                AttributeName: 'id',
-                                KeyType: 'HASH',
-                            },
-                        ],
-                        ProvisionedThroughput: {
-                            ReadCapacityUnits: 5,
-                            WriteCapacityUnits: 5,
+            expect(
+                mockDynamoDbClient
+                    .commandCalls(CreateTableCommand)
+                    .map((call) => call.args[0].input)
+            ).toEqual([
+                {
+                    TableName: 'foo',
+                    AttributeDefinitions: [
+                        {
+                            AttributeName: 'id',
+                            AttributeType: 'S',
                         },
-                        StreamSpecification: { StreamEnabled: false },
-                        SSESpecification: {
-                            Enabled: true,
-                            SSEType: 'KMS',
+                    ],
+                    KeySchema: [
+                        {
+                            AttributeName: 'id',
+                            KeyType: 'HASH',
                         },
+                    ],
+                    ProvisionedThroughput: {
+                        ReadCapacityUnits: 5,
+                        WriteCapacityUnits: 5,
                     },
-                ],
+                    StreamSpecification: { StreamEnabled: false },
+                    SSESpecification: {
+                        Enabled: true,
+                        SSEType: 'KMS',
+                    },
+                },
             ]);
         });
 
@@ -1120,122 +1152,121 @@ describe('DataMapper', () => {
                     },
                 });
 
-                expect(mockDynamoDbClient.createTable.mock.calls).toEqual([
-                    [
-                        {
-                            AttributeDefinitions: [
-                                {
-                                    AttributeName: 'partitionKey',
-                                    AttributeType: 'N',
-                                },
-                                {
-                                    AttributeName: 'timestamp',
-                                    AttributeType: 'N',
-                                },
-                                {
-                                    AttributeName: 'creator',
-                                    AttributeType: 'S',
-                                },
-                                {
-                                    AttributeName: 'binaryKey',
-                                    AttributeType: 'B',
-                                },
-                                {
-                                    AttributeName: 'customKey',
-                                    AttributeType: 'S',
-                                },
-                            ],
-                            GlobalSecondaryIndexes: [
-                                {
-                                    IndexName: 'chronological',
-                                    KeySchema: [
-                                        {
-                                            AttributeName: 'timestamp',
-                                            KeyType: 'HASH',
-                                        },
-                                    ],
-                                    Projection: { ProjectionType: 'ALL' },
-                                    ProvisionedThroughput: {
-                                        ReadCapacityUnits: 5,
-                                        WriteCapacityUnits: 5,
-                                    },
-                                },
-                                {
-                                    IndexName: 'globalIndex',
-                                    KeySchema: [
-                                        {
-                                            AttributeName: 'creator',
-                                            KeyType: 'HASH',
-                                        },
-                                        {
-                                            AttributeName: 'timestamp',
-                                            KeyType: 'RANGE',
-                                        },
-                                    ],
-                                    Projection: { ProjectionType: 'ALL' },
-                                    ProvisionedThroughput: {
-                                        ReadCapacityUnits: 6,
-                                        WriteCapacityUnits: 7,
-                                    },
-                                },
-                                {
-                                    IndexName: 'binaryIndex',
-                                    KeySchema: [
-                                        {
-                                            AttributeName: 'binaryKey',
-                                            KeyType: 'HASH',
-                                        },
-                                        {
-                                            AttributeName: 'customKey',
-                                            KeyType: 'RANGE',
-                                        },
-                                    ],
-                                    Projection: {
-                                        ProjectionType: 'INCLUDE',
-                                        NonKeyAttributes: [
-                                            'creator',
-                                            'timestamp',
-                                        ],
-                                    },
-                                    ProvisionedThroughput: {
-                                        ReadCapacityUnits: 2,
-                                        WriteCapacityUnits: 3,
-                                    },
-                                },
-                            ],
-                            KeySchema: [
-                                {
-                                    AttributeName: 'partitionKey',
-                                    KeyType: 'HASH',
-                                },
-                                {
-                                    AttributeName: 'timestamp',
-                                    KeyType: 'RANGE',
-                                },
-                            ],
-                            LocalSecondaryIndexes: [
-                                {
-                                    IndexName: 'localIndex',
-                                    KeySchema: [
-                                        {
-                                            AttributeName: 'creator',
-                                            KeyType: 'RANGE',
-                                        },
-                                    ],
-                                    Projection: {
-                                        ProjectionType: 'KEYS_ONLY',
-                                    },
-                                },
-                            ],
-                            ProvisionedThroughput: {
-                                ReadCapacityUnits: 5,
-                                WriteCapacityUnits: 5,
+                expect(
+                    mockDynamoDbClient
+                        .commandCalls(CreateTableCommand)
+                        .map((call) => call.args[0].input)
+                ).toEqual([
+                    {
+                        AttributeDefinitions: [
+                            {
+                                AttributeName: 'partitionKey',
+                                AttributeType: 'N',
                             },
-                            StreamSpecification: { StreamEnabled: false },
-                            SSESpecification: { Enabled: false },
-                            TableName: 'foo',
+                            {
+                                AttributeName: 'timestamp',
+                                AttributeType: 'N',
+                            },
+                            {
+                                AttributeName: 'creator',
+                                AttributeType: 'S',
+                            },
+                            {
+                                AttributeName: 'binaryKey',
+                                AttributeType: 'B',
+                            },
+                            {
+                                AttributeName: 'customKey',
+                                AttributeType: 'S',
+                            },
+                        ],
+                        GlobalSecondaryIndexes: [
+                            {
+                                IndexName: 'chronological',
+                                KeySchema: [
+                                    {
+                                        AttributeName: 'timestamp',
+                                        KeyType: 'HASH',
+                                    },
+                                ],
+                                Projection: { ProjectionType: 'ALL' },
+                                ProvisionedThroughput: {
+                                    ReadCapacityUnits: 5,
+                                    WriteCapacityUnits: 5,
+                                },
+                            },
+                            {
+                                IndexName: 'globalIndex',
+                                KeySchema: [
+                                    {
+                                        AttributeName: 'creator',
+                                        KeyType: 'HASH',
+                                    },
+                                    {
+                                        AttributeName: 'timestamp',
+                                        KeyType: 'RANGE',
+                                    },
+                                ],
+                                Projection: { ProjectionType: 'ALL' },
+                                ProvisionedThroughput: {
+                                    ReadCapacityUnits: 6,
+                                    WriteCapacityUnits: 7,
+                                },
+                            },
+                            {
+                                IndexName: 'binaryIndex',
+                                KeySchema: [
+                                    {
+                                        AttributeName: 'binaryKey',
+                                        KeyType: 'HASH',
+                                    },
+                                    {
+                                        AttributeName: 'customKey',
+                                        KeyType: 'RANGE',
+                                    },
+                                ],
+                                Projection: {
+                                    ProjectionType: 'INCLUDE',
+                                    NonKeyAttributes: ['creator', 'timestamp'],
+                                },
+                                ProvisionedThroughput: {
+                                    ReadCapacityUnits: 2,
+                                    WriteCapacityUnits: 3,
+                                },
+                            },
+                        ],
+                        KeySchema: [
+                            {
+                                AttributeName: 'partitionKey',
+                                KeyType: 'HASH',
+                            },
+                            {
+                                AttributeName: 'timestamp',
+                                KeyType: 'RANGE',
+                            },
+                        ],
+                        LocalSecondaryIndexes: [
+                            {
+                                IndexName: 'localIndex',
+                                KeySchema: [
+                                    {
+                                        AttributeName: 'creator',
+                                        KeyType: 'RANGE',
+                                    },
+                                ],
+                                Projection: {
+                                    ProjectionType: 'KEYS_ONLY',
+                                },
+                            },
+                        ],
+                        ProvisionedThroughput: {
+                            ReadCapacityUnits: 5,
+                            WriteCapacityUnits: 5,
                         },
-                    ],
+                        StreamSpecification: { StreamEnabled: false },
+                        SSESpecification: { Enabled: false },
+                        TableName: 'foo',
+                    },
                 ]);
             });
 
@@ -1262,107 +1293,106 @@ describe('DataMapper', () => {
                     },
                 });
 
-                expect(mockDynamoDbClient.createTable.mock.calls).toEqual([
-                    [
-                        {
-                            AttributeDefinitions: [
-                                {
-                                    AttributeName: 'partitionKey',
-                                    AttributeType: 'N',
-                                },
-                                {
-                                    AttributeName: 'timestamp',
-                                    AttributeType: 'N',
-                                },
-                                {
-                                    AttributeName: 'creator',
-                                    AttributeType: 'S',
-                                },
-                                {
-                                    AttributeName: 'binaryKey',
-                                    AttributeType: 'B',
-                                },
-                                {
-                                    AttributeName: 'customKey',
-                                    AttributeType: 'S',
-                                },
-                            ],
-                            GlobalSecondaryIndexes: [
-                                {
-                                    IndexName: 'chronological',
-                                    KeySchema: [
-                                        {
-                                            AttributeName: 'timestamp',
-                                            KeyType: 'HASH',
-                                        },
-                                    ],
-                                    Projection: { ProjectionType: 'ALL' },
-                                },
-                                {
-                                    IndexName: 'globalIndex',
-                                    KeySchema: [
-                                        {
-                                            AttributeName: 'creator',
-                                            KeyType: 'HASH',
-                                        },
-                                        {
-                                            AttributeName: 'timestamp',
-                                            KeyType: 'RANGE',
-                                        },
-                                    ],
-                                    Projection: { ProjectionType: 'ALL' },
-                                },
-                                {
-                                    IndexName: 'binaryIndex',
-                                    KeySchema: [
-                                        {
-                                            AttributeName: 'binaryKey',
-                                            KeyType: 'HASH',
-                                        },
-                                        {
-                                            AttributeName: 'customKey',
-                                            KeyType: 'RANGE',
-                                        },
-                                    ],
-                                    Projection: {
-                                        ProjectionType: 'INCLUDE',
-                                        NonKeyAttributes: [
-                                            'creator',
-                                            'timestamp',
-                                        ],
+                expect(
+                    mockDynamoDbClient
+                        .commandCalls(CreateTableCommand)
+                        .map((call) => call.args[0].input)
+                ).toEqual([
+                    {
+                        AttributeDefinitions: [
+                            {
+                                AttributeName: 'partitionKey',
+                                AttributeType: 'N',
+                            },
+                            {
+                                AttributeName: 'timestamp',
+                                AttributeType: 'N',
+                            },
+                            {
+                                AttributeName: 'creator',
+                                AttributeType: 'S',
+                            },
+                            {
+                                AttributeName: 'binaryKey',
+                                AttributeType: 'B',
+                            },
+                            {
+                                AttributeName: 'customKey',
+                                AttributeType: 'S',
+                            },
+                        ],
+                        GlobalSecondaryIndexes: [
+                            {
+                                IndexName: 'chronological',
+                                KeySchema: [
+                                    {
+                                        AttributeName: 'timestamp',
+                                        KeyType: 'HASH',
                                     },
-                                },
-                            ],
-                            KeySchema: [
-                                {
-                                    AttributeName: 'partitionKey',
-                                    KeyType: 'HASH',
-                                },
-                                {
-                                    AttributeName: 'timestamp',
-                                    KeyType: 'RANGE',
-                                },
-                            ],
-                            LocalSecondaryIndexes: [
-                                {
-                                    IndexName: 'localIndex',
-                                    KeySchema: [
-                                        {
-                                            AttributeName: 'creator',
-                                            KeyType: 'RANGE',
-                                        },
-                                    ],
-                                    Projection: {
-                                        ProjectionType: 'KEYS_ONLY',
+                                ],
+                                Projection: { ProjectionType: 'ALL' },
+                            },
+                            {
+                                IndexName: 'globalIndex',
+                                KeySchema: [
+                                    {
+                                        AttributeName: 'creator',
+                                        KeyType: 'HASH',
                                     },
+                                    {
+                                        AttributeName: 'timestamp',
+                                        KeyType: 'RANGE',
+                                    },
+                                ],
+                                Projection: { ProjectionType: 'ALL' },
+                            },
+                            {
+                                IndexName: 'binaryIndex',
+                                KeySchema: [
+                                    {
+                                        AttributeName: 'binaryKey',
+                                        KeyType: 'HASH',
+                                    },
+                                    {
+                                        AttributeName: 'customKey',
+                                        KeyType: 'RANGE',
+                                    },
+                                ],
+                                Projection: {
+                                    ProjectionType: 'INCLUDE',
+                                    NonKeyAttributes: ['creator', 'timestamp'],
                                 },
-                            ],
-                            BillingMode: 'PAY_PER_REQUEST',
-                            StreamSpecification: { StreamEnabled: false },
-                            SSESpecification: { Enabled: false },
-                            TableName: 'foo',
-                        },
-                    ],
+                            },
+                        ],
+                        KeySchema: [
+                            {
+                                AttributeName: 'partitionKey',
+                                KeyType: 'HASH',
+                            },
+                            {
+                                AttributeName: 'timestamp',
+                                KeyType: 'RANGE',
+                            },
+                        ],
+                        LocalSecondaryIndexes: [
+                            {
+                                IndexName: 'localIndex',
+                                KeySchema: [
+                                    {
+                                        AttributeName: 'creator',
+                                        KeyType: 'RANGE',
+                                    },
+                                ],
+                                Projection: {
+                                    ProjectionType: 'KEYS_ONLY',
+                                },
+                            },
+                        ],
+                        BillingMode: 'PAY_PER_REQUEST',
+                        StreamSpecification: { StreamEnabled: false },
+                        SSESpecification: { Enabled: false },
+                        TableName: 'foo',
+                    },
                 ]);
             });
 
@@ -1831,26 +1861,26 @@ describe('DataMapper', () => {
         });
     });
 
-    describe.skip('#deleteTable', () => {
-        const waitPromiseFunc = jest.fn(async () => Promise.resolve());
+    describe('#deleteTable', () => {
         const deleteTablePromiseFunc = jest.fn(async () => Promise.resolve({}));
-        const mockDynamoDbClient = {
-            config: {},
-            deleteTable: jest.fn(() => ({
-                promise: deleteTablePromiseFunc,
-            })),
-            waitFor: jest.fn(() => ({ promise: waitPromiseFunc })),
-        };
+        const describeTablePromiseFunc = jest.fn(async () =>
+            Promise.resolve({})
+        );
 
-        beforeEach(() => {
-            deleteTablePromiseFunc.mockClear();
-            mockDynamoDbClient.deleteTable.mockClear();
-            waitPromiseFunc.mockClear();
-            mockDynamoDbClient.waitFor.mockClear();
-        });
+        const mockDynamoDbClient = mockClient(DynamoDBClient)
+            .on(DeleteTableCommand)
+            .callsFake(deleteTablePromiseFunc)
+            .on(DescribeTableCommand)
+            .callsFake(describeTablePromiseFunc);
 
         const mapper = new DataMapper({
             client: mockDynamoDbClient as any,
+        });
+
+        beforeEach(() => {
+            mockDynamoDbClient.resetHistory();
+            deleteTablePromiseFunc.mockClear();
+            describeTablePromiseFunc.mockClear();
         });
 
         class Item {
@@ -1864,20 +1894,31 @@ describe('DataMapper', () => {
         }
 
         it('should make and send a DeleteTable request and wait for it to take effect', async () => {
+            // describeTablePromiseFunc.mockImplementationOnce(async () =>
+            //     Promise.resolve({
+            //         Table: { TableStatus: 'DELETING' },
+            //     })
+            // );
+            describeTablePromiseFunc.mockImplementationOnce(async () => {
+                const error = new Error('No such table!');
+                error.name = 'ResourceNotFoundException';
+                throw error;
+            });
+
             await mapper.deleteTable(Item);
 
-            expect(mockDynamoDbClient.deleteTable.mock.calls).toEqual([
-                [{ TableName: 'foo' }],
-            ]);
+            expect(
+                mockDynamoDbClient.commandCalls(DeleteTableCommand)[0].args[0]
+                    .input
+            ).toEqual({ TableName: 'foo' });
 
-            expect(mockDynamoDbClient.waitFor.mock.calls).toEqual([
-                ['tableNotExists', { TableName: 'foo' }],
-            ]);
+            // expect(mockDynamoDbClient.waitFor.mock.calls).toEqual([
+            //     ['tableNotExists', { TableName: 'foo' }],
+            // ]);
         });
     });
 
-    describe.skip('#ensureGlobalSecondaryIndexExists', () => {
-        const waitPromiseFunc = jest.fn(async () => Promise.resolve());
+    describe('#ensureGlobalSecondaryIndexExists', () => {
         const describeTablePromiseFunc = jest.fn(async () =>
             Promise.resolve({
                 Table: {
@@ -1890,13 +1931,10 @@ describe('DataMapper', () => {
                 },
             } as DescribeTableOutput)
         );
-        const mockDynamoDbClient = {
-            config: {},
-            describeTable: jest.fn(() => ({
-                promise: describeTablePromiseFunc,
-            })),
-            waitFor: jest.fn(() => ({ promise: waitPromiseFunc })),
-        };
+
+        const mockDynamoDbClient = mockClient(DynamoDBClient)
+            .on(DescribeTableCommand)
+            .callsFake(describeTablePromiseFunc);
 
         const mapper = new DataMapper({
             client: mockDynamoDbClient as any,
@@ -1907,9 +1945,7 @@ describe('DataMapper', () => {
 
         beforeEach(() => {
             (mapper.createGlobalSecondaryIndex as any).mockClear();
-            mockDynamoDbClient.describeTable.mockClear();
-            waitPromiseFunc.mockClear();
-            mockDynamoDbClient.waitFor.mockClear();
+            mockDynamoDbClient.resetHistory();
         });
 
         const tableName = 'foo';
@@ -1956,11 +1992,11 @@ describe('DataMapper', () => {
                 }
             );
 
-            expect(mockDynamoDbClient.describeTable.mock.calls).toEqual([
-                [{ TableName: tableName }],
-            ]);
+            expect(
+                mockDynamoDbClient.commandCalls(DescribeTableCommand)[0].args[0]
+                    .input
+            ).toEqual({ TableName: tableName });
 
-            expect(mockDynamoDbClient.waitFor.mock.calls.length).toBe(0);
             expect(
                 (mapper.createGlobalSecondaryIndex as any).mock.calls.length
             ).toBe(0);
@@ -1984,14 +2020,15 @@ describe('DataMapper', () => {
                 }
             );
 
-            expect(mockDynamoDbClient.describeTable.mock.calls).toEqual([
-                [{ TableName: tableName }],
-            ]);
+            expect(
+                mockDynamoDbClient.commandCalls(DescribeTableCommand)[0].args[0]
+                    .input
+            ).toEqual({ TableName: tableName });
 
             expect(
                 (mapper.createGlobalSecondaryIndex as any).mock.calls.length
             ).toBe(1);
-            expect(mockDynamoDbClient.waitFor.mock.calls.length).toBe(0);
+            // expect(mockDynamoDbClient.waitFor.mock.calls.length).toBe(0);
         });
 
         it('should rethrow if "describeTable" throws a "ResourceNotFoundException"', async () => {
@@ -2015,28 +2052,22 @@ describe('DataMapper', () => {
                 )
             ).rejects.toMatchObject(expectedError);
 
-            expect(mockDynamoDbClient.describeTable.mock.calls).toEqual([
-                [{ TableName: tableName }],
-            ]);
-
-            expect(mockDynamoDbClient.waitFor.mock.calls.length).toBe(0);
+            expect(
+                mockDynamoDbClient.commandCalls(DescribeTableCommand)[0].args[0]
+                    .input
+            ).toEqual({ TableName: tableName });
         });
     });
 
-    describe.skip('#ensureTableExists', () => {
-        const waitPromiseFunc = jest.fn(async () => Promise.resolve());
+    describe('#ensureTableExists', () => {
         const describeTablePromiseFunc = jest.fn(async () =>
             Promise.resolve({
                 Table: { TableStatus: 'ACTIVE' },
             } as DescribeTableOutput)
         );
-        const mockDynamoDbClient = {
-            config: {},
-            describeTable: jest.fn(() => ({
-                promise: describeTablePromiseFunc,
-            })),
-            waitFor: jest.fn(() => ({ promise: waitPromiseFunc })),
-        };
+        const mockDynamoDbClient = mockClient(DynamoDBClient)
+            .on(DescribeTableCommand)
+            .callsFake(describeTablePromiseFunc);
 
         const mapper = new DataMapper({
             client: mockDynamoDbClient as any,
@@ -2045,9 +2076,8 @@ describe('DataMapper', () => {
 
         beforeEach(() => {
             (mapper.createTable as any).mockClear();
-            mockDynamoDbClient.describeTable.mockClear();
-            waitPromiseFunc.mockClear();
-            mockDynamoDbClient.waitFor.mockClear();
+            mockDynamoDbClient.resetHistory();
+            describeTablePromiseFunc.mockClear();
         });
 
         const tableName = 'foo';
@@ -2071,11 +2101,12 @@ describe('DataMapper', () => {
                 writeCapacityUnits: 5,
             });
 
-            expect(mockDynamoDbClient.describeTable.mock.calls).toEqual([
-                [{ TableName: tableName }],
-            ]);
+            expect(
+                mockDynamoDbClient.commandCalls(DescribeTableCommand)[0].args[0]
+                    .input
+            ).toEqual({ TableName: tableName });
 
-            expect(mockDynamoDbClient.waitFor.mock.calls.length).toBe(0);
+            // expect(mockDynamoDbClient.waitFor.mock.calls.length).toBe(0);
             expect((mapper.createTable as any).mock.calls.length).toBe(0);
         });
 
@@ -2090,11 +2121,12 @@ describe('DataMapper', () => {
                 writeCapacityUnits: 5,
             });
 
-            expect(mockDynamoDbClient.describeTable.mock.calls).toEqual([
-                [{ TableName: tableName }],
-            ]);
+            expect(
+                mockDynamoDbClient.commandCalls(DescribeTableCommand)[0].args[0]
+                    .input
+            ).toEqual({ TableName: tableName });
 
-            expect(mockDynamoDbClient.waitFor.mock.calls.length).toBe(1);
+            // expect(mockDynamoDbClient.waitFor.mock.calls.length).toBe(1);
             expect((mapper.createTable as any).mock.calls.length).toBe(0);
         });
 
@@ -2108,15 +2140,16 @@ describe('DataMapper', () => {
             const options = { readCapacityUnits: 5, writeCapacityUnits: 5 };
             await mapper.ensureTableExists(Item, options);
 
-            expect(mockDynamoDbClient.describeTable.mock.calls).toEqual([
-                [{ TableName: tableName }],
-            ]);
+            expect(
+                mockDynamoDbClient.commandCalls(DescribeTableCommand)[0].args[0]
+                    .input
+            ).toEqual({ TableName: tableName });
 
             expect((mapper.createTable as any).mock.calls).toEqual([
                 [Item, options],
             ]);
 
-            expect(mockDynamoDbClient.waitFor.mock.calls.length).toBe(0);
+            // expect(mockDynamoDbClient.waitFor.mock.calls.length).toBe(0);
         });
 
         it('should rethrow any service exception other than "ResourceNotFoundException"', async () => {
@@ -2130,12 +2163,13 @@ describe('DataMapper', () => {
                 mapper.ensureTableExists(Item, options)
             ).rejects.toMatchObject(new Error('PANIC'));
 
-            expect(mockDynamoDbClient.describeTable.mock.calls).toEqual([
-                [{ TableName: tableName }],
-            ]);
+            expect(
+                mockDynamoDbClient.commandCalls(DescribeTableCommand)[0].args[0]
+                    .input
+            ).toEqual({ TableName: tableName });
 
             expect((mapper.createTable as any).mock.calls.length).toBe(0);
-            expect(mockDynamoDbClient.waitFor.mock.calls.length).toBe(0);
+            // expect(mockDynamoDbClient.waitFor.mock.calls.length).toBe(0);
         });
     });
 
