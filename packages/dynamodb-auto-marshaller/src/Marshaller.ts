@@ -244,7 +244,7 @@ export class Marshaller {
             | bigint
             | BinaryValue
     ): AttributeValue {
-        return convertToAttr(value);
+        return convertToAttr(value, { removeUndefinedValues: true });
     }
 
     // private marshallBinaryValue(binary: NativeAttributeBinary):  { NULL: true } | { B: NativeAttributeBinary } {
