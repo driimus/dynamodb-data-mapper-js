@@ -1,4 +1,4 @@
-import {AttributeValue} from "./AttributeValue";
+import { AttributeValue } from './AttributeValue';
 
 describe('AttributeValue', () => {
     describe('::isAttributeValue', () => {
@@ -7,9 +7,7 @@ describe('AttributeValue', () => {
                 S: 'string',
             });
 
-            expect(
-                AttributeValue.isAttributeValue(value)
-            ).toBe(true);
+            expect(AttributeValue.isAttributeValue(value)).toBe(true);
         });
 
         it('should reject non-matching values', () => {
@@ -23,13 +21,13 @@ describe('AttributeValue', () => {
                 [],
                 {},
                 new Uint8Array(12),
-                {foo: 'bar'},
-                {name: 'foo', arguments: 'bar'},
-                {S: 'string'}
+                { foo: 'bar' },
+                { name: 'foo', arguments: 'bar' },
+                { S: 'string' },
             ]) {
-                expect(
-                    AttributeValue.isAttributeValue(notAttributeValue)
-                ).toBe(false);
+                expect(AttributeValue.isAttributeValue(notAttributeValue)).toBe(
+                    false
+                );
             }
         });
     });

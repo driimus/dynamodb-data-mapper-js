@@ -3,17 +3,17 @@ import { Schema } from './Schema';
 import { SchemaType } from './SchemaType';
 
 export function toSchemaName(
-    path: AttributePath|string,
+    path: AttributePath | string,
     schema: Schema
 ): AttributePath {
     if (typeof path === 'string') {
         path = new AttributePath(path);
     }
-    const elements = path.elements.map(el => ({...el}));
+    const elements = path.elements.map((el) => ({ ...el }));
 
     let cursor: SchemaType = {
         type: 'Document',
-        members: schema
+        members: schema,
     };
     for (const element of elements) {
         if (
@@ -21,7 +21,7 @@ export function toSchemaName(
             cursor &&
             cursor.type === 'Document'
         ) {
-            const {name} = element;
+            const { name } = element;
             element.name = getSchemaName(name, cursor.members);
             cursor = cursor.members[name];
         } else if (
@@ -41,7 +41,7 @@ export function toSchemaName(
 export function getSchemaName(propertyName: string, schema: Schema): string {
     const fieldSchema = schema[propertyName];
     if (fieldSchema) {
-        const {attributeName = propertyName} = fieldSchema;
+        const { attributeName = propertyName } = fieldSchema;
         return attributeName;
     }
 

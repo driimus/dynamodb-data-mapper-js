@@ -1,21 +1,27 @@
 import { AttributePath } from './AttributePath';
-import { ExpressionAttributeNameMap, ExpressionAttributes, ExpressionAttributeValueMap } from './ExpressionAttributes';
+import {
+    ExpressionAttributeNameMap,
+    ExpressionAttributes,
+    ExpressionAttributeValueMap,
+} from './ExpressionAttributes';
 import { FunctionExpression } from './FunctionExpression';
 import { MathematicalExpression } from './MathematicalExpression';
 import { marshall } from '@aws-sdk/util-dynamodb';
 
 describe('MathematicalExpression', () => {
-    const validExpressions: Array<[
-        MathematicalExpression,
-        string,
-        ExpressionAttributeNameMap,
-        ExpressionAttributeValueMap
-    ]> = [
+    const validExpressions: Array<
+        [
+            MathematicalExpression,
+            string,
+            ExpressionAttributeNameMap,
+            ExpressionAttributeValueMap
+        ]
+    > = [
         [
             new MathematicalExpression(new AttributePath('foo'), '+', 1),
             '#attr0 + :val1',
             { '#attr0': 'foo' },
-            { ':val1': {N: '1'} },
+            { ':val1': { N: '1' } },
         ],
         [
             new MathematicalExpression(
@@ -30,17 +36,18 @@ describe('MathematicalExpression', () => {
             'if_not_exists(#attr0, :val1) + :val2',
             { '#attr0': 'current_id' },
             {
-                ':val1': {N: '0'},
-                ':val2': {N: '1'},
+                ':val1': { N: '0' },
+                ':val2': { N: '1' },
             },
-        ]
+        ],
     ];
 
     describe('::isMathematicalExpression', () => {
         it('should accept valid mathematical expressions', () => {
             for (const [expr, _1, _2, _3] of validExpressions) {
-                expect(MathematicalExpression.isMathematicalExpression(expr))
-                    .toBe(true);
+                expect(
+                    MathematicalExpression.isMathematicalExpression(expr)
+                ).toBe(true);
             }
         });
 
@@ -55,11 +62,12 @@ describe('MathematicalExpression', () => {
                 [],
                 {},
                 new Uint8Array(12),
-                {foo: 'bar'},
+                { foo: 'bar' },
             ]) {
                 expect(
-                    MathematicalExpression
-                        .isMathematicalExpression(notMathematicalExpression)
+                    MathematicalExpression.isMathematicalExpression(
+                        notMathematicalExpression
+                    )
                 ).toBe(false);
             }
         });

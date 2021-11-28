@@ -1,7 +1,11 @@
 import { BatchGetOptions, PerTableOptions } from './BatchGetOptions';
 import { BatchOperation } from './BatchOperation';
 import { AttributeMap, SyncOrAsyncIterable, TableState } from './types';
-import { BatchGetItemCommand, KeysAndAttributes, DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import {
+    BatchGetItemCommand,
+    KeysAndAttributes,
+    DynamoDBClient,
+} from '@aws-sdk/client-dynamodb';
 
 export const MAX_READ_BATCH_SIZE = 100;
 
@@ -31,10 +35,7 @@ export class BatchGet extends BatchOperation<AttributeMap> {
     constructor(
         client: DynamoDBClient,
         items: SyncOrAsyncIterable<[string, AttributeMap]>,
-        {
-            ConsistentRead,
-            PerTableOptions = {},
-        }: BatchGetOptions = {}
+        { ConsistentRead, PerTableOptions = {} }: BatchGetOptions = {}
     ) {
         super(client, items);
         this.consistentRead = ConsistentRead;
@@ -42,17 +43,19 @@ export class BatchGet extends BatchOperation<AttributeMap> {
     }
 
     protected async doBatchRequest() {
-        const operationInput: {RequestItems: Record<string, KeysAndAttributes>} = {RequestItems: {}};
+        const operationInput: {
+            RequestItems: Record<string, KeysAndAttributes>;
+        } = { RequestItems: {} };
         let batchSize = 0;
-        
+
         while (this.toSend.length > 0) {
-            const [tableName, item] = this.toSend.shift() as [string, AttributeMap];
+            const [tableName, item] = this.toSend.shift() as [
+                string,
+                AttributeMap
+            ];
             if (operationInput.RequestItems[tableName] === undefined) {
-                const {
-                    projection,
-                    consistentRead,
-                    attributeNames,
-                } = this.state[tableName];
+                const { projection, consistentRead, attributeNames } =
+                    this.state[tableName];
 
                 operationInput.RequestItems[tableName] = {
                     Keys: [],
@@ -68,10 +71,9 @@ export class BatchGet extends BatchOperation<AttributeMap> {
             }
         }
 
-        const {
-            Responses = {},
-            UnprocessedKeys = {},
-        } = await this.client.send(new BatchGetItemCommand(operationInput));
+        const { Responses = {}, UnprocessedKeys = {} } = await this.client.send(
+            new BatchGetItemCommand(operationInput)
+        );
 
         const unprocessedTables = new Set<string>();
         for (const table of Object.keys(UnprocessedKeys)) {
@@ -90,18 +92,20 @@ export class BatchGet extends BatchOperation<AttributeMap> {
         }
     }
 
-    protected getInitialTableState(tableName: string): TableState<AttributeMap> {
+    protected getInitialTableState(
+        tableName: string
+    ): TableState<AttributeMap> {
         const {
             ExpressionAttributeNames,
             ProjectionExpression,
             ConsistentRead = this.consistentRead,
-        } = this.options[tableName] || {} as PerTableOptions;
+        } = this.options[tableName] || ({} as PerTableOptions);
 
         return {
             ...super.getInitialTableState(tableName),
             attributeNames: ExpressionAttributeNames,
             projection: ProjectionExpression,
-            consistentRead: ConsistentRead
+            consistentRead: ConsistentRead,
         };
     }
 }

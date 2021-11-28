@@ -1,5 +1,8 @@
-import { ExpressionAttributes, ExpressionAttributeValueMap } from "./ExpressionAttributes";
-import { AttributePath } from "./AttributePath";
+import {
+    ExpressionAttributes,
+    ExpressionAttributeValueMap,
+} from './ExpressionAttributes';
+import { AttributePath } from './AttributePath';
 import { marshall } from '@aws-sdk/util-dynamodb';
 
 describe('ExpressionAttributes', () => {
@@ -14,37 +17,31 @@ describe('ExpressionAttributes', () => {
             }
         });
 
-        it(
-            'should return the same alias for a name submitted multiple times',
-            () => {
-                const ea = new ExpressionAttributes();
-                for (const reservedWord of DDB_RESERVED_WORDS) {
-                    const alias = ea.addName(reservedWord);
-                    for (let i = 0; i < 10; i++) {
-                        expect(ea.addName(reservedWord)).toBe(alias);
-                    }
+        it('should return the same alias for a name submitted multiple times', () => {
+            const ea = new ExpressionAttributes();
+            for (const reservedWord of DDB_RESERVED_WORDS) {
+                const alias = ea.addName(reservedWord);
+                for (let i = 0; i < 10; i++) {
+                    expect(ea.addName(reservedWord)).toBe(alias);
                 }
             }
-        );
+        });
 
-        it(
-            'should provide an ExpressionAttributeNameMap of all aliased names',
-            () => {
-                const ea = new ExpressionAttributes();
-                for (const reservedWord of DDB_RESERVED_WORDS) {
-                    ea.addName(reservedWord);
-                }
-
-                const { names } = ea;
-                const reservedWords = new Set(DDB_RESERVED_WORDS);
-                for (const expressionSafeName of Object.keys(names)) {
-                    const original = names[expressionSafeName] as string;
-                    expect(reservedWords.delete(original)).toBe(true);
-                }
-
-                expect(reservedWords.size).toBe(0);
+        it('should provide an ExpressionAttributeNameMap of all aliased names', () => {
+            const ea = new ExpressionAttributes();
+            for (const reservedWord of DDB_RESERVED_WORDS) {
+                ea.addName(reservedWord);
             }
-        );
+
+            const { names } = ea;
+            const reservedWords = new Set(DDB_RESERVED_WORDS);
+            for (const expressionSafeName of Object.keys(names)) {
+                const original = names[expressionSafeName] as string;
+                expect(reservedWords.delete(original)).toBe(true);
+            }
+
+            expect(reservedWords.size).toBe(0);
+        });
 
         it('should allow the addition of list index dereferences', () => {
             const attributes = new ExpressionAttributes();
@@ -65,23 +62,24 @@ describe('ExpressionAttributes', () => {
             });
         });
 
-        it(
-            'should allow the nesting of complex attributes to an arbitrary depth',
-            () => {
-                const attributes = new ExpressionAttributes();
-                attributes.addName(new AttributePath('foo.bar[3].baz[4].quux.snap.crackle.pop[2][1][0]'));
+        it('should allow the nesting of complex attributes to an arbitrary depth', () => {
+            const attributes = new ExpressionAttributes();
+            attributes.addName(
+                new AttributePath(
+                    'foo.bar[3].baz[4].quux.snap.crackle.pop[2][1][0]'
+                )
+            );
 
-                expect(attributes.names).toEqual({
-                    '#attr0': 'foo',
-                    '#attr1': 'bar',
-                    '#attr2': 'baz',
-                    '#attr3': 'quux',
-                    '#attr4': 'snap',
-                    '#attr5': 'crackle',
-                    '#attr6': 'pop',
-                });
-            }
-        );
+            expect(attributes.names).toEqual({
+                '#attr0': 'foo',
+                '#attr1': 'bar',
+                '#attr2': 'baz',
+                '#attr3': 'quux',
+                '#attr4': 'snap',
+                '#attr5': 'crackle',
+                '#attr6': 'pop',
+            });
+        });
     });
 
     describe('#addValue', () => {
@@ -93,19 +91,16 @@ describe('ExpressionAttributes', () => {
             }
         });
 
-        it(
-            'should provide an ExpressionAttributeValueMap of all aliased values',
-            () => {
-                const expected: ExpressionAttributeValueMap = {};
-                const ea = new ExpressionAttributes();
-                for (const reservedWord of DDB_RESERVED_WORDS) {
-                    const alias = ea.addValue(reservedWord);
-                    expected[alias] = { S: reservedWord };
-                }
-
-                expect(marshall(ea.values)).toEqual(expected);
+        it('should provide an ExpressionAttributeValueMap of all aliased values', () => {
+            const expected: ExpressionAttributeValueMap = {};
+            const ea = new ExpressionAttributes();
+            for (const reservedWord of DDB_RESERVED_WORDS) {
+                const alias = ea.addValue(reservedWord);
+                expected[alias] = { S: reservedWord };
             }
-        );
+
+            expect(marshall(ea.values)).toEqual(expected);
+        });
     });
 });
 

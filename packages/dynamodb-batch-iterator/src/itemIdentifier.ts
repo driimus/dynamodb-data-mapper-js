@@ -6,19 +6,19 @@ const bytes = require('utf8-bytes');
  * @internal
  */
 export function itemIdentifier(
-    tableName: string, 
-    {DeleteRequest, PutRequest}: WriteRequest
+    tableName: string,
+    { DeleteRequest, PutRequest }: WriteRequest
 ): string {
     if (DeleteRequest?.Key) {
-        return `${tableName}::delete::${
-            serializeKeyTypeAttributes(DeleteRequest.Key)
-        }`;
+        return `${tableName}::delete::${serializeKeyTypeAttributes(
+            DeleteRequest.Key
+        )}`;
     } else if (PutRequest?.Item) {
-        return `${tableName}::put::${
-            serializeKeyTypeAttributes(PutRequest.Item)
-        }`;
+        return `${tableName}::put::${serializeKeyTypeAttributes(
+            PutRequest.Item
+        )}`;
     }
-    
+
     throw new Error(`Invalid write request provided`);
 }
 
@@ -38,13 +38,9 @@ function serializeKeyTypeAttributes(attributes: AttributeMap): string {
     return keyTypeProperties.join('&');
 }
 
-function toByteArray({B: value}: AttributeValue.BMember): Uint8Array {
+function toByteArray({ B: value }: AttributeValue.BMember): Uint8Array {
     if (ArrayBuffer.isView(value)) {
-        return new Uint8Array(
-            value.buffer,
-            value.byteOffset,
-            value.byteLength
-        );
+        return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
     }
 
     if (typeof value === 'string') {
@@ -59,6 +55,8 @@ function toByteArray({B: value}: AttributeValue.BMember): Uint8Array {
 }
 
 function isArrayBuffer(arg: any): arg is ArrayBuffer {
-    return (typeof ArrayBuffer === 'function' && arg instanceof ArrayBuffer) ||
-        Object.prototype.toString.call(arg) === '[object ArrayBuffer]';
+    return (
+        (typeof ArrayBuffer === 'function' && arg instanceof ArrayBuffer) ||
+        Object.prototype.toString.call(arg) === '[object ArrayBuffer]'
+    );
 }

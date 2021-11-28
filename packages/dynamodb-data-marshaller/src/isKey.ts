@@ -1,4 +1,4 @@
-import {SchemaType} from './SchemaType';
+import { SchemaType } from './SchemaType';
 
 export function isKey(fieldSchema: SchemaType, indexName?: string): boolean {
     if (
@@ -10,9 +10,10 @@ export function isKey(fieldSchema: SchemaType, indexName?: string): boolean {
     ) {
         return indexName !== undefined
             ? Boolean(
-                fieldSchema.indexKeyConfigurations &&
-                fieldSchema.indexKeyConfigurations[indexName]
-            ) : Boolean(fieldSchema.keyType);
+                  fieldSchema.indexKeyConfigurations &&
+                      fieldSchema.indexKeyConfigurations[indexName]
+              )
+            : Boolean(fieldSchema.keyType);
     }
 
     return false;

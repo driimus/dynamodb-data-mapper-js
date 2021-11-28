@@ -1,4 +1,4 @@
-import {ExpressionAttributes} from "./ExpressionAttributes";
+import { ExpressionAttributes } from './ExpressionAttributes';
 
 export interface AttributeBearingExpression {
     /**

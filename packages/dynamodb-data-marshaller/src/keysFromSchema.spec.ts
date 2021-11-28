@@ -12,29 +12,29 @@ describe('keysFromSchema', () => {
             keyType: 'RANGE',
             indexKeyConfigurations: {
                 chronological: 'HASH',
-                globalIndex: 'RANGE'
+                globalIndex: 'RANGE',
             },
-            attributeName: 'timestamp'
+            attributeName: 'timestamp',
         },
         createdBy: {
             type: 'String',
             indexKeyConfigurations: {
                 globalIndex: 'HASH',
-                localIndex: 'RANGE'
+                localIndex: 'RANGE',
             },
             attributeName: 'creator',
         },
         binaryKey: {
             type: 'Binary',
             indexKeyConfigurations: {
-                binaryIndex: 'HASH'
-            }
+                binaryIndex: 'HASH',
+            },
         },
         customKey: {
             type: 'Custom',
             attributeType: 'S',
-            marshall: str => str,
-            unmarshall: av => av.S,
+            marshall: (str) => str,
+            unmarshall: (av) => av.S,
             indexKeyConfigurations: {
                 binaryIndex: 'RANGE',
             },
@@ -53,7 +53,7 @@ describe('keysFromSchema', () => {
         expect(keysFromSchema(schema).indexKeys).toEqual({
             binaryIndex: {
                 binaryKey: 'HASH',
-                customKey: 'RANGE'
+                customKey: 'RANGE',
             },
             chronological: {
                 timestamp: 'HASH',
@@ -78,18 +78,15 @@ describe('keysFromSchema', () => {
         });
     });
 
-    it(
-        'should throw if a custom property does not define an attribute type',
-        () => {
-            const schema: Schema = {
-                customKey: {
-                    type: 'Custom',
-                    keyType: 'HASH',
-                    marshall: str => str,
-                    unmarshall: av => av.S,
-                },
-            };
-            expect(() => keysFromSchema(schema)).toThrow();
-        }
-    );
+    it('should throw if a custom property does not define an attribute type', () => {
+        const schema: Schema = {
+            customKey: {
+                type: 'Custom',
+                keyType: 'HASH',
+                marshall: (str) => str,
+                unmarshall: (av) => av.S,
+            },
+        };
+        expect(() => keysFromSchema(schema)).toThrow();
+    });
 });

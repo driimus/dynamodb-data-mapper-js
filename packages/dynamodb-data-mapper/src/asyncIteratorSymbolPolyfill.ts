@@ -4,5 +4,5 @@
  */
 
 if (Symbol && !Symbol.asyncIterator) {
-    (Symbol as any).asyncIterator = Symbol.for("__@@asyncIterator__");
+    (Symbol as any).asyncIterator = Symbol.for('__@@asyncIterator__');
 }

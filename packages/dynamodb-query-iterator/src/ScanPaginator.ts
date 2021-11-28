@@ -1,6 +1,10 @@
 import { DynamoDbPaginator } from './DynamoDbPaginator';
 import { DynamoDbResultsPage } from './DynamoDbResultsPage';
-import { DynamoDBClient, ScanInput, ScanCommand } from '@aws-sdk/client-dynamodb';
+import {
+    DynamoDBClient,
+    ScanInput,
+    ScanCommand,
+} from '@aws-sdk/client-dynamodb';
 
 export class ScanPaginator extends DynamoDbPaginator {
     private nextRequest?: ScanInput;
@@ -19,15 +23,17 @@ export class ScanPaginator extends DynamoDbPaginator {
 
     protected async getNext(): Promise<IteratorResult<DynamoDbResultsPage>> {
         if (this.nextRequest) {
-            const output = await this.client.send(new ScanCommand({
-                ...this.nextRequest,
-                Limit: this.getNextPageSize(this.nextRequest.Limit)
-            }));
-            
+            const output = await this.client.send(
+                new ScanCommand({
+                    ...this.nextRequest,
+                    Limit: this.getNextPageSize(this.nextRequest.Limit),
+                })
+            );
+
             if (this.nextRequest && output.LastEvaluatedKey) {
                 this.nextRequest = {
                     ...this.nextRequest,
-                    ExclusiveStartKey: output.LastEvaluatedKey
+                    ExclusiveStartKey: output.LastEvaluatedKey,
                 };
             } else {
                 this.nextRequest = undefined;
@@ -35,12 +41,12 @@ export class ScanPaginator extends DynamoDbPaginator {
 
             return await Promise.resolve({
                 value: output,
-                done: false
+                done: false,
             });
         }
 
-        return Promise.resolve(
-            {done: true} as IteratorResult<DynamoDbResultsPage>
-        );
+        return Promise.resolve({
+            done: true,
+        } as IteratorResult<DynamoDbResultsPage>);
     }
 }

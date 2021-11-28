@@ -1,22 +1,23 @@
-import {Schema} from "./Schema";
+import { Schema } from './Schema';
 import {
     ListType,
     MapType,
     SchemaType,
     TupleType,
     ZeroArgumentsConstructor,
-} from "./SchemaType";
-import {InvalidSchemaError} from "./InvalidSchemaError";
-import {AttributeMap, BinarySet, Marshaller} from "@aws/dynamodb-auto-marshaller";
+} from './SchemaType';
+import { InvalidSchemaError } from './InvalidSchemaError';
 import {
-    AttributeValue,
-} from "@aws-sdk/client-dynamodb";
+    AttributeMap,
+    BinarySet,
+    Marshaller,
+} from '@aws/dynamodb-auto-marshaller';
+import { AttributeValue } from '@aws-sdk/client-dynamodb';
 
 export type AttributeValueList = AttributeValue[];
 
 export type StringAttributeValue = string;
 export type StringSetAttributeValue = StringAttributeValue[];
-
 
 export type NumberAttributeValue = string;
 export type NumberSetAttributeValue = NumberAttributeValue[];
@@ -30,7 +31,7 @@ export type NumberSetAttributeValue = NumberAttributeValue[];
  * @param valueConstructor  A zero-argument constructor used to create the
  *                          object onto which the input should be unmarshalled
  */
-export function unmarshallItem<T = {[key: string]: any}>(
+export function unmarshallItem<T = { [key: string]: any }>(
     schema: Schema,
     input: AttributeMap,
     valueConstructor?: ZeroArgumentsConstructor<T>
@@ -40,9 +41,9 @@ export function unmarshallItem<T = {[key: string]: any}>(
         : Object.create(null);
 
     for (const key of Object.keys(schema)) {
-        const {attributeName = key} = schema[key];
+        const { attributeName = key } = schema[key];
         if (attributeName in input) {
-            (unmarshalled as {[key: string]: any})[key] = unmarshallValue(
+            (unmarshalled as { [key: string]: any })[key] = unmarshallValue(
                 schema[key],
                 input[attributeName]
             );
@@ -62,7 +63,11 @@ function unmarshallValue(schemaType: SchemaType, input: AttributeValue): any {
                 onInvalid = 'throw',
                 unwrapNumbers = false,
             } = schemaType;
-            const autoMarshaller = new Marshaller({onEmpty, onInvalid, unwrapNumbers});
+            const autoMarshaller = new Marshaller({
+                onEmpty,
+                onInvalid,
+                unwrapNumbers,
+            });
             return autoMarshaller.unmarshallValue(input);
         case 'Binary':
             if (input.NULL) {
@@ -79,10 +84,11 @@ function unmarshallValue(schemaType: SchemaType, input: AttributeValue): any {
         case 'Document':
             return input.M
                 ? unmarshallItem(
-                    schemaType.members,
-                    input.M,
-                    schemaType.valueConstructor
-                ) : undefined;
+                      schemaType.members,
+                      input.M,
+                      schemaType.valueConstructor
+                  )
+                : undefined;
         case 'List':
             return input.L ? unmarshallList(schemaType, input.L) : undefined;
         case 'Map':
@@ -116,7 +122,9 @@ function unmarshallValue(schemaType: SchemaType, input: AttributeValue): any {
                 default:
                     throw new InvalidSchemaError(
                         schemaType,
-                        `Unrecognized set member type: ${(schemaType as any).memberType}`
+                        `Unrecognized set member type: ${
+                            (schemaType as any).memberType
+                        }`
                     );
             }
         case 'String':
@@ -174,7 +182,7 @@ function unmarshallTuple(
     schemaType: TupleType,
     input: AttributeValueList
 ): Array<any> {
-    const {members} = schemaType;
+    const { members } = schemaType;
     const tuple: Array<any> = [];
     for (let i = 0; i < members.length; i++) {
         tuple.push(unmarshallValue(members[i], input[i]));

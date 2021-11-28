@@ -1,4 +1,4 @@
-import {isSchema} from "./Schema";
+import { isSchema } from './Schema';
 
 describe('isSchema', () => {
     it('should reject scalar values', () => {
@@ -12,38 +12,45 @@ describe('isSchema', () => {
     });
 
     it('should accept objects whose members are all schema types', () => {
-        expect(isSchema({
-            foo: {type: 'Binary'},
-            bar: {type: 'Boolean'},
-            baz: {type: 'String'},
-            quux: {
-                type: 'Document',
-                members: {
-                    fizz: {type: 'Set', memberType: 'String'},
-                    buzz: {
-                        type: 'Tuple',
-                        members: [
-                            {
-                                type: 'List',
-                                memberType: {type: 'Set', memberType: 'Number'},
-                            },
-                            {
-                                type: 'Map',
-                                memberType: {type: 'Date'},
-                            }
-                        ]
+        expect(
+            isSchema({
+                foo: { type: 'Binary' },
+                bar: { type: 'Boolean' },
+                baz: { type: 'String' },
+                quux: {
+                    type: 'Document',
+                    members: {
+                        fizz: { type: 'Set', memberType: 'String' },
+                        buzz: {
+                            type: 'Tuple',
+                            members: [
+                                {
+                                    type: 'List',
+                                    memberType: {
+                                        type: 'Set',
+                                        memberType: 'Number',
+                                    },
+                                },
+                                {
+                                    type: 'Map',
+                                    memberType: { type: 'Date' },
+                                },
+                            ],
+                        },
                     },
                 },
-            },
-        })).toBe(true);
+            })
+        ).toBe(true);
     });
 
     it('should reject objects whose members are not all schema types', () => {
-        expect(isSchema({
-            foo: {type: 'Binary'},
-            bar: {type: 'Boolean'},
-            baz: {type: 'String'},
-            quux: 'string',
-        })).toBe(false);
+        expect(
+            isSchema({
+                foo: { type: 'Binary' },
+                bar: { type: 'Boolean' },
+                baz: { type: 'String' },
+                quux: 'string',
+            })
+        ).toBe(false);
     });
 });

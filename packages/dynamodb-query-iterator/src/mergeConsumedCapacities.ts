@@ -1,7 +1,4 @@
-import {
-    Capacity,
-    ConsumedCapacity,
-} from '@aws-sdk/client-dynamodb';
+import { Capacity, ConsumedCapacity } from '@aws-sdk/client-dynamodb';
 
 export type SecondaryIndexesCapacityMap = Record<string, Capacity>;
 
@@ -11,12 +8,12 @@ export type SecondaryIndexesCapacityMap = Record<string, Capacity>;
 export function mergeConsumedCapacities(
     a?: ConsumedCapacity,
     b?: ConsumedCapacity
-): ConsumedCapacity|undefined {
+): ConsumedCapacity | undefined {
     if (a || b) {
         a = a || {};
         b = b || {};
 
-        if ((a.TableName && b.TableName) && a.TableName !== b.TableName) {
+        if (a.TableName && b.TableName && a.TableName !== b.TableName) {
             throw new Error(
                 'Consumed capacity reports may only be merged if they describe the same table'
             );
@@ -34,20 +31,20 @@ export function mergeConsumedCapacities(
                 a.GlobalSecondaryIndexes,
                 b.GlobalSecondaryIndexes
             ),
-        }
+        };
     }
 }
 
 function mergeCapacities(a?: Capacity, b?: Capacity): Capacity {
     return {
-        CapacityUnits: (a?.CapacityUnits ?? 0) + (b?.CapacityUnits ?? 0)
+        CapacityUnits: (a?.CapacityUnits ?? 0) + (b?.CapacityUnits ?? 0),
     };
 }
 
 function mergeCapacityMaps(
     a?: SecondaryIndexesCapacityMap,
     b?: SecondaryIndexesCapacityMap
-): SecondaryIndexesCapacityMap|undefined {
+): SecondaryIndexesCapacityMap | undefined {
     if (a || b) {
         const out: SecondaryIndexesCapacityMap = {};
 

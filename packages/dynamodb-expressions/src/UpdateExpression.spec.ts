@@ -1,9 +1,9 @@
-import {UpdateExpression} from "./UpdateExpression";
-import {ExpressionAttributes} from "./ExpressionAttributes";
-import {AttributePath} from "./AttributePath";
-import {FunctionExpression} from "./FunctionExpression";
-import {MathematicalExpression} from "./MathematicalExpression";
-import {AttributeValue} from "./AttributeValue";
+import { UpdateExpression } from './UpdateExpression';
+import { ExpressionAttributes } from './ExpressionAttributes';
+import { AttributePath } from './AttributePath';
+import { FunctionExpression } from './FunctionExpression';
+import { MathematicalExpression } from './MathematicalExpression';
+import { AttributeValue } from './AttributeValue';
 import { marshall } from '@aws-sdk/util-dynamodb';
 
 describe('UpdateExpression', () => {
@@ -13,15 +13,16 @@ describe('UpdateExpression', () => {
         expr.add('foo', new Set(['bar', 'baz']));
         expr.add('fizz', 1);
 
-        expect(expr.serialize(attributes))
-            .toBe('ADD #attr0 :val1, #attr2 :val3');
+        expect(expr.serialize(attributes)).toBe(
+            'ADD #attr0 :val1, #attr2 :val3'
+        );
         expect(attributes.names).toEqual({
             '#attr0': 'foo',
             '#attr2': 'fizz',
         });
         expect(marshall(attributes.values)).toEqual({
-            ':val1': {SS: ['bar', 'baz']},
-            ':val3': {N: '1'},
+            ':val1': { SS: ['bar', 'baz'] },
+            ':val3': { N: '1' },
         });
     });
 
@@ -31,15 +32,16 @@ describe('UpdateExpression', () => {
         expr.delete('foo', new Set(['bar', 'baz']));
         expr.delete('fizz', 1);
 
-        expect(expr.serialize(attributes))
-            .toBe('DELETE #attr0 :val1, #attr2 :val3');
+        expect(expr.serialize(attributes)).toBe(
+            'DELETE #attr0 :val1, #attr2 :val3'
+        );
         expect(attributes.names).toEqual({
             '#attr0': 'foo',
             '#attr2': 'fizz',
         });
         expect(marshall(attributes.values)).toEqual({
-            ':val1': {SS: ['bar', 'baz']},
-            ':val3': {N: '1'},
+            ':val1': { SS: ['bar', 'baz'] },
+            ':val3': { N: '1' },
         });
     });
 
@@ -63,52 +65,58 @@ describe('UpdateExpression', () => {
         expr.set('foo', new Set(['bar', 'baz']));
         expr.set('fizz', 1);
 
-        expect(expr.serialize(attributes))
-            .toBe('SET #attr0 = :val1, #attr2 = :val3');
+        expect(expr.serialize(attributes)).toBe(
+            'SET #attr0 = :val1, #attr2 = :val3'
+        );
         expect(attributes.names).toEqual({
             '#attr0': 'foo',
             '#attr2': 'fizz',
         });
-        expect(marshall(attributes.values, {convertClassInstanceToMap: true})).toEqual({
-            ':val1': {SS: ['bar', 'baz']},
-            ':val3': {N: '1'},
+        expect(
+            marshall(attributes.values, { convertClassInstanceToMap: true })
+        ).toEqual({
+            ':val1': { SS: ['bar', 'baz'] },
+            ':val3': { N: '1' },
         });
     });
 
     it('should serialize SET clauses with function expressions', () => {
         const attributes = new ExpressionAttributes();
         const expr = new UpdateExpression();
-        expr.set('foo', new FunctionExpression(
-            'list_append',
-            new AttributePath('foo'),
-            'bar'
-        ));
+        expr.set(
+            'foo',
+            new FunctionExpression(
+                'list_append',
+                new AttributePath('foo'),
+                'bar'
+            )
+        );
 
-        expect(expr.serialize(attributes))
-            .toBe('SET #attr0 = list_append(#attr0, :val1)');
+        expect(expr.serialize(attributes)).toBe(
+            'SET #attr0 = list_append(#attr0, :val1)'
+        );
         expect(attributes.names).toEqual({
             '#attr0': 'foo',
         });
         expect(marshall(attributes.values)).toEqual({
-            ':val1': {S: 'bar'},
+            ':val1': { S: 'bar' },
         });
     });
 
     it('should serialize SET clauses with mathematical expressions', () => {
         const attributes = new ExpressionAttributes();
         const expr = new UpdateExpression();
-        expr.set('foo', new MathematicalExpression(
-            new AttributePath('foo'),
-            '+',
-            1
-        ));
+        expr.set(
+            'foo',
+            new MathematicalExpression(new AttributePath('foo'), '+', 1)
+        );
 
         expect(expr.serialize(attributes)).toBe('SET #attr0 = #attr0 + :val1');
         expect(attributes.names).toEqual({
             '#attr0': 'foo',
         });
         expect(marshall(attributes.values)).toEqual({
-            ':val1': {N: '1'},
+            ':val1': { N: '1' },
         });
     });
 
@@ -147,9 +155,9 @@ describe('UpdateExpression', () => {
             '#attr5': 'fizz',
         });
         expect(marshall(attributes.values)).toEqual({
-            ':val1': {SS: ['baz']},
-            ':val2': {SS: ['quux']},
-            ':val4': {SS: ['pop']},
+            ':val1': { SS: ['baz'] },
+            ':val2': { SS: ['quux'] },
+            ':val4': { SS: ['pop'] },
         });
     });
 

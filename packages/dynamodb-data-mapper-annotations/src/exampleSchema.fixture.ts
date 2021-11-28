@@ -4,14 +4,14 @@ import {
     rangeKey,
     table,
     versionAttribute,
-} from "./";
+} from './';
 import { embed } from '@aws/dynamodb-data-mapper';
 
 export class Author {
     @attribute()
     name?: string;
 
-    @attribute({memberType: {type: 'String'}})
+    @attribute({ memberType: { type: 'String' } })
     socialMediaHandles?: Map<string, string>;
 
     @attribute()
@@ -94,7 +94,7 @@ export class Post {
     @attribute()
     imageLink?: string;
 
-    @attribute({ memberType: { type: 'String' }})
+    @attribute({ memberType: { type: 'String' } })
     corrections?: Array<string>;
 
     /**

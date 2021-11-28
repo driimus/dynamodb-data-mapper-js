@@ -1,6 +1,6 @@
 import { ScalarAttributeType } from './KeySchema';
 import { Schema } from './Schema';
-import { BinaryValue, MarshallingOptions } from "@aws/dynamodb-auto-marshaller";
+import { BinaryValue, MarshallingOptions } from '@aws/dynamodb-auto-marshaller';
 import { AttributeValue } from '@aws-sdk/client-dynamodb';
 
 /**
@@ -54,10 +54,13 @@ export interface BaseType<T = any> {
 }
 
 function isBaseType(arg: any): arg is BaseType {
-    return Boolean(arg) && typeof arg === 'object'
-        && typeof arg.type === 'string'
-        && arg.type in TypeTags
-        && ['string', 'undefined'].indexOf(typeof arg.attributeName) > -1;
+    return (
+        Boolean(arg) &&
+        typeof arg === 'object' &&
+        typeof arg.type === 'string' &&
+        arg.type in TypeTags &&
+        ['string', 'undefined'].indexOf(typeof arg.attributeName) > -1
+    );
 }
 
 /**
@@ -86,11 +89,11 @@ export interface KeyableType {
      * An array of key configurations as they apply to global and local
      * secondary indices.
      */
-    indexKeyConfigurations?: {[key: string]: KeyType},
+    indexKeyConfigurations?: { [key: string]: KeyType };
 }
 
 function isKeyableType(arg: object): boolean {
-    const {keyType, indexKeyConfigurations} = arg as any;
+    const { keyType, indexKeyConfigurations } = arg as any;
 
     if (!(keyType === undefined || keyType in KeyTypes)) {
         return false;
@@ -142,10 +145,9 @@ export interface BooleanType extends BaseType<boolean> {
  * node will be marshalled using run-time type detection and may not be exactly
  * the same when unmarshalled.
  */
-export interface CollectionType extends
-    BaseType<Array<any>>,
-    MarshallingOptions
-{
+export interface CollectionType
+    extends BaseType<Array<any>>,
+        MarshallingOptions {
     type: 'Collection';
 }
 
@@ -172,7 +174,7 @@ export interface CustomType<JsType> extends BaseType<JsType>, KeyableType {
      *
      * @param input The value to be converted.
      */
-    marshall: (input: JsType)=> AttributeValue;
+    marshall: (input: JsType) => AttributeValue;
 
     /**
      * A function that converts a DynamoDB AttributeValue into a JavaScript
@@ -191,7 +193,9 @@ export interface CustomType<JsType> extends BaseType<JsType>, KeyableType {
  *
  * Timezone information is not persisted.
  */
-export interface DateType extends BaseType<string|number|Date>, KeyableType {
+export interface DateType
+    extends BaseType<string | number | Date>,
+        KeyableType {
     type: 'Date';
 }
 
@@ -205,7 +209,7 @@ export interface ZeroArgumentsConstructor<T> {
 /**
  * A node represented by its own full Schema. Marshalled as an embedded map.
  */
-export interface DocumentType<T = {[key: string]: any}>extends BaseType<T> {
+export interface DocumentType<T = { [key: string]: any }> extends BaseType<T> {
     type: 'Document';
 
     /**
@@ -227,10 +231,9 @@ export interface DocumentType<T = {[key: string]: any}>extends BaseType<T> {
  * Values provided for this node will be marshalled using run-time type
  * detection and may not be exactly the same when unmarshalled.
  */
-export interface HashType extends
-    BaseType<{[key: string]: any}>,
-    MarshallingOptions
-{
+export interface HashType
+    extends BaseType<{ [key: string]: any }>,
+        MarshallingOptions {
     type: 'Hash';
 }
 
@@ -282,7 +285,7 @@ export interface NumberType extends BaseType<number>, KeyableType {
 
 export interface SetType extends BaseType<Set<any>> {
     type: 'Set';
-    memberType: 'String'|'Number'|'Binary';
+    memberType: 'String' | 'Number' | 'Binary';
 }
 
 /**
@@ -296,9 +299,8 @@ export interface StringType extends BaseType<string>, KeyableType {
  * A node used to store a fixed-length list of items, each of which may be of
  * a different type, e.g., `[boolean, string]`.
  */
-export interface TupleType<T extends Array<any> = Array<any>> extends
-    BaseType<T>
-{
+export interface TupleType<T extends Array<any> = Array<any>>
+    extends BaseType<T> {
     type: 'Tuple';
     members: Array<SchemaType>;
 }
@@ -307,21 +309,21 @@ export interface TupleType<T extends Array<any> = Array<any>> extends
  * A node in a Schema used by this marshaller package.
  */
 export type SchemaType =
-    AnyType |
-    BinaryType |
-    BooleanType |
-    CustomType<any> |
-    CollectionType |
-    DateType |
-    DocumentType<any> |
-    HashType |
-    ListType |
-    MapType |
-    NullType |
-    NumberType |
-    SetType |
-    StringType |
-    TupleType;
+    | AnyType
+    | BinaryType
+    | BooleanType
+    | CustomType<any>
+    | CollectionType
+    | DateType
+    | DocumentType<any>
+    | HashType
+    | ListType
+    | MapType
+    | NullType
+    | NumberType
+    | SetType
+    | StringType
+    | TupleType;
 
 export function isSchemaType(
     arg: any,
@@ -339,15 +341,14 @@ export function isSchemaType(
             case 'String':
                 return isKeyableType(arg);
             case 'Custom':
-                return isKeyableType(arg)
-                    && typeof (arg as CustomType<any>).marshall === 'function'
-                    && typeof (arg as CustomType<any>).unmarshall === 'function'
-                    && [
-                        void 0,
-                        'S',
-                        'N',
-                        'B',
-                    ].indexOf((arg as CustomType<any>).attributeType) > -1;
+                return (
+                    isKeyableType(arg) &&
+                    typeof (arg as CustomType<any>).marshall === 'function' &&
+                    typeof (arg as CustomType<any>).unmarshall === 'function' &&
+                    [void 0, 'S', 'N', 'B'].indexOf(
+                        (arg as CustomType<any>).attributeType
+                    ) > -1
+                );
             case 'Document':
                 return isDocumentType(arg, alreadyVisited);
             case 'List':
@@ -357,8 +358,12 @@ export function isSchemaType(
                     alreadyVisited
                 );
             case 'Number':
-                return isKeyableType(arg) && ['boolean', 'undefined']
-                    .indexOf(typeof (arg as NumberType).versionAttribute) > -1;
+                return (
+                    isKeyableType(arg) &&
+                    ['boolean', 'undefined'].indexOf(
+                        typeof (arg as NumberType).versionAttribute
+                    ) > -1
+                );
             case 'Tuple':
                 return isTupleType(arg, alreadyVisited);
             default:
@@ -373,7 +378,7 @@ function isDocumentType(
     arg: BaseType,
     alreadyVisited: Set<any>
 ): arg is DocumentType {
-    const {valueConstructor, members} = arg as DocumentType;
+    const { valueConstructor, members } = arg as DocumentType;
     if (!members || typeof members !== 'object') {
         return false;
     }
@@ -384,14 +389,14 @@ function isDocumentType(
         }
     }
 
-    return ['function', 'undefined',].indexOf(typeof valueConstructor) > -1;
+    return ['function', 'undefined'].indexOf(typeof valueConstructor) > -1;
 }
 
 function isTupleType(
     arg: BaseType,
     alreadyVisited: Set<any>
 ): arg is TupleType {
-    const {members} = arg as TupleType;
+    const { members } = arg as TupleType;
     if (!Array.isArray(members)) {
         return false;
     }

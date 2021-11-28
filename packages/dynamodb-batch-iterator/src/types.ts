@@ -2,8 +2,8 @@ import {
     AttributeValue,
     DeleteRequest,
     PutRequest,
-    WriteRequest as DynamoDbWriteRequest
-} from "@aws-sdk/client-dynamodb";
+    WriteRequest as DynamoDbWriteRequest,
+} from '@aws-sdk/client-dynamodb';
 
 export type AttributeMap = Record<string, AttributeValue>;
 export type ProjectionExpression = string;
@@ -14,7 +14,7 @@ export type ConsistentRead = boolean;
 /**
  * A synchronous or asynchronous iterable.
  */
-export type SyncOrAsyncIterable<T> = Iterable<T>|AsyncIterable<T>;
+export type SyncOrAsyncIterable<T> = Iterable<T> | AsyncIterable<T>;
 
 /**
  * @internal
@@ -38,7 +38,7 @@ export interface TableState<Element extends TableStateElement> {
 /**
  * @internal
  */
-export type TableStateElement = AttributeMap|WriteRequest;
+export type TableStateElement = AttributeMap | WriteRequest;
 
 /**
  * @internal
@@ -51,9 +51,8 @@ export interface TableThrottlingTracker<Element extends TableStateElement> {
 /**
  * @internal
  */
-export interface ThrottledTableConfiguration<
-    Element extends TableStateElement
-> extends TableState<Element> {
+export interface ThrottledTableConfiguration<Element extends TableStateElement>
+    extends TableState<Element> {
     tableThrottling?: TableThrottlingTracker<Element>;
 }
 
@@ -62,5 +61,11 @@ export interface ThrottledTableConfiguration<
  * properties has been defined.
  */
 export type WriteRequest =
-    DynamoDbWriteRequest & { PutRequest: PutRequest, DeleteRequest?: undefined } |
-    DynamoDbWriteRequest & { DeleteRequest: DeleteRequest, PutRequest?: undefined };
+    | (DynamoDbWriteRequest & {
+          PutRequest: PutRequest;
+          DeleteRequest?: undefined;
+      })
+    | (DynamoDbWriteRequest & {
+          DeleteRequest: DeleteRequest;
+          PutRequest?: undefined;
+      });

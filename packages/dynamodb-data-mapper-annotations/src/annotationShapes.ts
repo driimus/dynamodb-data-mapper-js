@@ -1,8 +1,7 @@
-
 /**
  * A constructor that takes no arguments.
  */
- export interface ZeroArgumentsConstructor<T> {
+export interface ZeroArgumentsConstructor<T> {
     new (): T;
 }
 
@@ -11,5 +10,5 @@ export interface ClassAnnotation {
 }
 
 export interface PropertyAnnotation {
-    (target: Object, propertyKey: string|symbol): void;
+    (target: Object, propertyKey: string | symbol): void;
 }

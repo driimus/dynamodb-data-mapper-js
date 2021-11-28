@@ -1,4 +1,4 @@
-import {Schema} from '@aws/dynamodb-data-marshaller';
+import { Schema } from '@aws/dynamodb-data-marshaller';
 
 /**
  * Table metadata is reported by items submitted to the data mapper via methods
@@ -42,7 +42,7 @@ export function getSchema(item: any): Schema {
 
     throw new Error(
         'The provided item did not adhere to the DynamoDbDocument protocol.' +
-        ' No object property was found at the `DynamoDbSchema` symbol'
+            ' No object property was found at the `DynamoDbSchema` symbol'
     );
 }
 
@@ -77,7 +77,7 @@ export function getTableName(item: any, tableNamePrefix: string = ''): string {
 
     throw new Error(
         'The provided item did not adhere to the DynamoDbTable protocol. No' +
-        ' string property was found at the `DynamoDbTable` symbol'
+            ' string property was found at the `DynamoDbTable` symbol'
     );
 }
 

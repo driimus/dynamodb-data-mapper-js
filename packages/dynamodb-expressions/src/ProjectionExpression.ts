@@ -1,11 +1,11 @@
-import {AttributePath} from "./AttributePath";
-import {ExpressionAttributes} from './ExpressionAttributes';
+import { AttributePath } from './AttributePath';
+import { ExpressionAttributes } from './ExpressionAttributes';
 
 /**
  * An array of attributes to project. Each may be represented as
  * either an AttributePath object or as a string.
  */
-export type ProjectionExpression = Array<AttributePath|string>;
+export type ProjectionExpression = Array<AttributePath | string>;
 
 /**
  * Convert the supplied projection expression to the string format

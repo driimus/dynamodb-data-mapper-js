@@ -1,10 +1,10 @@
-import {Schema} from './Schema';
-import {toSchemaName} from './toSchemaName';
-import {AttributePath} from '@aws/dynamodb-expressions';
+import { Schema } from './Schema';
+import { toSchemaName } from './toSchemaName';
+import { AttributePath } from '@aws/dynamodb-expressions';
 
 const testCases = new Map<string, string>();
 const schema: Schema = {
-    unchanged: {type: 'String'},
+    unchanged: { type: 'String' },
     property: {
         type: 'String',
         attributeName: 'attributeName',
@@ -24,8 +24,8 @@ const schema: Schema = {
             baz: {
                 type: 'String',
                 attributeName: 'pop',
-            }
-        }
+            },
+        },
     },
     bar: {
         type: 'List',
@@ -35,11 +35,11 @@ const schema: Schema = {
             members: {
                 tom: {
                     type: 'String',
-                    attributeName: 'jerry'
+                    attributeName: 'jerry',
                 },
                 bugs: {
                     type: 'String',
-                    attributeName: 'daffy'
+                    attributeName: 'daffy',
                 },
                 itchy: {
                     type: 'List',
@@ -51,19 +51,19 @@ const schema: Schema = {
                             members: {
                                 nameToReplace: {
                                     type: 'String',
-                                    attributeName: 'replacementName'
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+                                    attributeName: 'replacementName',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
     },
     untypedHash: {
         type: 'Hash',
-        attributeName: 'terminalType'
-    }
+        attributeName: 'terminalType',
+    },
 };
 
 testCases.set('unchanged', 'unchanged');
@@ -86,8 +86,9 @@ testCases.set(
 describe('toSchemaName', () => {
     for (const [input, output] of testCases) {
         it(`should convert a path of ${input} to ${output}`, () => {
-            expect(toSchemaName(input, schema).elements)
-                .toEqual(new AttributePath(output).elements);
+            expect(toSchemaName(input, schema).elements).toEqual(
+                new AttributePath(output).elements
+            );
         });
     }
 });

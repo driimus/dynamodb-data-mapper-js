@@ -1,16 +1,15 @@
 import { DynamoDbResultsPage } from './DynamoDbResultsPage';
 import { ConsumedCapacity } from '@aws-sdk/client-dynamodb';
 
-export interface DynamoDbPaginatorInterface extends
-    AsyncIterableIterator<DynamoDbResultsPage>
-{
+export interface DynamoDbPaginatorInterface
+    extends AsyncIterableIterator<DynamoDbResultsPage> {
     /**
      * The capacity units consumed by the Scan operation. The data returned
      * includes the total provisioned throughput consumed, along with statistics
      * for the table and any indexes involved in the operation. ConsumedCapacity
      * is only returned if the ReturnConsumedCapacity parameter was specified.
      */
-    readonly consumedCapacity: ConsumedCapacity|undefined;
+    readonly consumedCapacity: ConsumedCapacity | undefined;
 
     /**
      * The number of items in the results yielded.

@@ -13,7 +13,7 @@ export class AttributePath {
     readonly elements: Array<PathElement>;
     readonly [Symbol.toStringTag] = ATTRIBUTE_PATH_TAG;
 
-    constructor(path: string|Iterable<PathElement>) {
+    constructor(path: string | Iterable<PathElement>) {
         if (typeof path === 'string') {
             this.elements = parsePath(path);
         } else {
@@ -27,8 +27,10 @@ export class AttributePath {
      * or Node VMs.
      */
     static isAttributePath(arg: any): arg is AttributePath {
-        return arg instanceof AttributePath
-            || Object.prototype.toString.call(arg) === EXPECTED_TAG;
+        return (
+            arg instanceof AttributePath ||
+            Object.prototype.toString.call(arg) === EXPECTED_TAG
+        );
     }
 }
 
@@ -49,7 +51,7 @@ export interface ListIndex {
     index: number;
 }
 
-export type PathElement = AttributeName|ListIndex;
+export type PathElement = AttributeName | ListIndex;
 
 const enum ParseState {
     controlCharacter = 1000,
@@ -77,14 +79,14 @@ function parsePath(path: string): Array<PathElement> {
             switch (curr.value) {
                 case LEFT_BRACKET:
                     state = ParseState.listIndex;
-                    // fallthrough
+                // fallthrough
                 case PATH_DELIMITER:
                     if (collected === '') {
                         throw new Error(
                             `Invalid control character encountered in path: ${path}`
                         );
                     }
-                    elements.push({type: 'AttributeName', name: collected});
+                    elements.push({ type: 'AttributeName', name: collected });
                     collected = '';
                     break;
                 case ESCAPE_CHARACTER:
@@ -96,7 +98,7 @@ function parsePath(path: string): Array<PathElement> {
                         curr = peek;
                         peek = iter.next();
                     }
-                    // fallthrough
+                // fallthrough
                 default:
                     collected += curr.value;
             }
@@ -109,7 +111,7 @@ function parsePath(path: string): Array<PathElement> {
                             `Invalid array index (${collected}) encountered in path: ${path}`
                         );
                     }
-                    elements.push({type: 'ListIndex', index: intVal});
+                    elements.push({ type: 'ListIndex', index: intVal });
                     collected = '';
                     state = ParseState.controlCharacter;
                     break;
@@ -147,7 +149,7 @@ function parsePath(path: string): Array<PathElement> {
     }
 
     if (collected.length > 0) {
-        elements.push({type: 'AttributeName', name: collected});
+        elements.push({ type: 'AttributeName', name: collected });
     }
 
     return elements;

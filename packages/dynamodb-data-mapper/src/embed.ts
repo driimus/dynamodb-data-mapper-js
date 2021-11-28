@@ -1,4 +1,4 @@
-import {DynamoDbSchema} from "./protocols";
+import { DynamoDbSchema } from './protocols';
 import {
     DocumentType,
     ZeroArgumentsConstructor,
@@ -11,13 +11,13 @@ export interface DocumentTypeOptions<T> {
 
 export function embed<T>(
     documentConstructor: ZeroArgumentsConstructor<T>,
-    {attributeName, defaultProvider}: DocumentTypeOptions<T> = {}
+    { attributeName, defaultProvider }: DocumentTypeOptions<T> = {}
 ): DocumentType {
     return {
         type: 'Document',
         members: (documentConstructor.prototype as any)[DynamoDbSchema] || {},
         attributeName,
         defaultProvider,
-        valueConstructor: documentConstructor
+        valueConstructor: documentConstructor,
     };
 }

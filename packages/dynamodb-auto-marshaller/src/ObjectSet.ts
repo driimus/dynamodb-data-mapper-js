@@ -58,9 +58,9 @@ export abstract class ObjectSet<T> implements Set<T> {
      * Part of the ES2015 Set specification for compatibility with Map objects.
      */
     entries(): IterableIterator<[T, T]> {
-        return this._values.map<[T, T]>(
-            value => [value, value]
-        )[Symbol.iterator]();
+        return this._values
+            .map<[T, T]>((value) => [value, value])
+            [Symbol.iterator]();
     }
 
     /**
@@ -70,11 +70,7 @@ export abstract class ObjectSet<T> implements Set<T> {
      * @param thisArg The `this` context on which to invoke the callback
      */
     forEach(
-        callback: (
-            value: T,
-            value2: T,
-            set: Set<T>
-        ) => void,
+        callback: (value: T, value2: T, set: Set<T>) => void,
         thisArg?: any
     ): void {
         this._values.forEach((value, index, array) => {

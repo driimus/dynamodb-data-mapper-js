@@ -8,12 +8,12 @@ import {
 } from './types';
 
 if (Symbol && !Symbol.asyncIterator) {
-    (Symbol as any).asyncIterator = Symbol.for("__@@asyncIterator__");
+    (Symbol as any).asyncIterator = Symbol.for('__@@asyncIterator__');
 }
 
-export abstract class BatchOperation<
-    Element extends TableStateElement
-> implements AsyncIterableIterator<[string, Element]> {
+export abstract class BatchOperation<Element extends TableStateElement>
+    implements AsyncIterableIterator<[string, Element]>
+{
     /**
      * The maximum number of elements that may be included in a single batch.
      */
@@ -35,10 +35,16 @@ export abstract class BatchOperation<
      */
     protected readonly toSend: Array<[string, Element]> = [];
 
-    private readonly throttled = new Set<Promise<ThrottledTableConfiguration<Element>>>();
-    private readonly iterator: Iterator<[string, Element]>|AsyncIterator<[string, Element]>;
+    private readonly throttled = new Set<
+        Promise<ThrottledTableConfiguration<Element>>
+    >();
+    private readonly iterator:
+        | Iterator<[string, Element]>
+        | AsyncIterator<[string, Element]>;
     private sourceDone: boolean = false;
-    private sourceNext: IteratorResult<[string, Element]>|Promise<IteratorResult<[string, Element]>>;
+    private sourceNext:
+        | IteratorResult<[string, Element]>
+        | Promise<IteratorResult<[string, Element]>>;
     private lastResolved?: Promise<IteratorResult<[string, Element]>>;
 
     /**
@@ -118,13 +124,13 @@ export abstract class BatchOperation<
 
         tableState.tableThrottling = {
             unprocessed,
-            backoffWaiter: new Promise(resolve => {
+            backoffWaiter: new Promise((resolve) => {
                 setTimeout(
                     resolve,
                     exponentialBackoff(tableState.backoffFactor),
                     tableState
                 );
-            })
+            }),
         };
 
         this.throttled.add(tableState.tableThrottling.backoffWaiter);
@@ -141,8 +147,9 @@ export abstract class BatchOperation<
         for (let i = this.toSend.length - 1; i > -1; i--) {
             const [table, attributes] = this.toSend[i];
             if (unprocessedTables.has(table)) {
-                (this.state[table] as ThrottledTableConfiguration<Element>)
-                    .tableThrottling?.unprocessed.push(attributes);
+                (
+                    this.state[table] as ThrottledTableConfiguration<Element>
+                ).tableThrottling?.unprocessed.push(attributes);
                 this.toSend.splice(i, 1);
             }
         }
@@ -164,12 +171,13 @@ export abstract class BatchOperation<
     private enqueueThrottled(
         table: ThrottledTableConfiguration<Element>
     ): void {
-        const  {backoffWaiter, unprocessed}
-         = table.tableThrottling ?? {};
+        const { backoffWaiter, unprocessed } = table.tableThrottling ?? {};
         if (unprocessed?.length) {
-            this.toSend.push(...unprocessed.map(
-                attr => [table.name, attr] as [string, Element]
-            ));
+            this.toSend.push(
+                ...unprocessed.map(
+                    (attr) => [table.name, attr] as [string, Element]
+                )
+            );
         }
 
         if (backoffWaiter) this.throttled.delete(backoffWaiter);
@@ -183,13 +191,13 @@ export abstract class BatchOperation<
             this.toSend.length === 0 &&
             this.throttled.size === 0
         ) {
-            return {done: true} as IteratorResult<[string, Element]>;
+            return { done: true } as IteratorResult<[string, Element]>;
         }
 
         if (this.pending.length > 0) {
             return {
                 done: false,
-                value: this.pending.shift() as [string, Element]
+                value: this.pending.shift() as [string, Element],
             };
         }
 
@@ -198,16 +206,13 @@ export abstract class BatchOperation<
     }
 
     private async refillPending() {
-        while (
-            !this.sourceDone &&
-            this.toSend.length < this.batchSize
-        ) {
+        while (!this.sourceDone && this.toSend.length < this.batchSize) {
             const toProcess = isIteratorResult(this.sourceNext)
                 ? this.sourceNext
                 : await Promise.race([
-                    this.sourceNext,
-                    Promise.race(this.throttled)
-                ]);
+                      this.sourceNext,
+                      Promise.race(this.throttled),
+                  ]);
 
             if (isIteratorResult(toProcess)) {
                 this.sourceDone = Boolean(toProcess.done);

@@ -4,7 +4,7 @@ import {
     KeyTypeMap,
     ScalarAttributeType,
 } from './KeySchema';
-import {Schema} from './Schema';
+import { Schema } from './Schema';
 import {
     BinaryType,
     CustomType,
@@ -16,7 +16,7 @@ import {
 export function keysFromSchema(schema: Schema): KeySchema {
     const attributes: AttributeTypeMap = {};
     const tableKeys: KeyTypeMap = {};
-    const indexKeys: {[key: string]: KeyTypeMap} = {};
+    const indexKeys: { [key: string]: KeyTypeMap } = {};
 
     for (const propertyName of Object.keys(schema)) {
         const fieldSchema = schema[propertyName];
@@ -27,9 +27,7 @@ export function keysFromSchema(schema: Schema): KeySchema {
             fieldSchema.type === 'Number' ||
             fieldSchema.type === 'String'
         ) {
-            const {
-                attributeName = propertyName
-            } = fieldSchema;
+            const { attributeName = propertyName } = fieldSchema;
 
             if (fieldSchema.keyType) {
                 attributes[attributeName] = attributeType(fieldSchema);
@@ -48,18 +46,23 @@ export function keysFromSchema(schema: Schema): KeySchema {
                     if (!(indexName in indexKeys)) {
                         indexKeys[indexName] = {};
                     }
-                    indexKeys[indexName][attributeName]
-                        = fieldSchema.indexKeyConfigurations[indexName];
+                    indexKeys[indexName][attributeName] =
+                        fieldSchema.indexKeyConfigurations[indexName];
                 }
             }
         }
     }
 
-    return {attributes, tableKeys, indexKeys};
+    return { attributes, tableKeys, indexKeys };
 }
 
 function attributeType(
-    fieldSchema: BinaryType|CustomType<any>|DateType|NumberType|StringType
+    fieldSchema:
+        | BinaryType
+        | CustomType<any>
+        | DateType
+        | NumberType
+        | StringType
 ): ScalarAttributeType {
     switch (fieldSchema.type) {
         case 'Binary':

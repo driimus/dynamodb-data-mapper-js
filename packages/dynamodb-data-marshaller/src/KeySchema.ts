@@ -20,4 +20,4 @@ export interface PerIndexKeys {
     [indexName: string]: KeyTypeMap;
 }
 
-export type ScalarAttributeType = 'S'|'N'|'B';
+export type ScalarAttributeType = 'S' | 'N' | 'B';

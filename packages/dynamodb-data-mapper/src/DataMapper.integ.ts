@@ -1,18 +1,18 @@
-import {DataMapper} from './DataMapper';
-import {ItemNotFoundException} from './ItemNotFoundException';
-import {DynamoDbSchema, DynamoDbTable} from './protocols';
-import {hostname} from 'os';
-import {hrtime} from 'process';
-import {DocumentType} from "@aws/dynamodb-data-marshaller";
-import {Schema} from "@aws/dynamodb-data-marshaller";
-import {equals} from "@aws/dynamodb-expressions";
+import { DataMapper } from './DataMapper';
+import { ItemNotFoundException } from './ItemNotFoundException';
+import { DynamoDbSchema, DynamoDbTable } from './protocols';
+import { hostname } from 'os';
+import { hrtime } from 'process';
+import { DocumentType } from '@aws/dynamodb-data-marshaller';
+import { Schema } from '@aws/dynamodb-data-marshaller';
+import { equals } from '@aws/dynamodb-expressions';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 const nestedDocumentDef: DocumentType = {
     type: 'Document',
     members: {
-        foo: {type: 'String'}
-    }
+        foo: { type: 'String' },
+    },
 };
 nestedDocumentDef.members.recursive = nestedDocumentDef;
 
@@ -29,16 +29,13 @@ const schema: Schema = {
         attributeName: 'testIndex',
         keyType: 'HASH',
     },
-    timestamp: {type: 'Date'},
+    timestamp: { type: 'Date' },
     data: nestedDocumentDef,
     tuple: {
         type: 'Tuple',
-        members: [
-            {type: 'Boolean'},
-            {type: 'String'},
-        ]
+        members: [{ type: 'Boolean' }, { type: 'String' }],
     },
-    scanIdentifier: {type: 'Number'}
+    scanIdentifier: { type: 'Number' },
 };
 
 class TestRecord {
@@ -50,14 +47,14 @@ class TestRecord {
 }
 
 Object.defineProperties(TestRecord.prototype, {
-    [DynamoDbSchema]: {value: schema},
-    [DynamoDbTable]: {value: TableName},
+    [DynamoDbSchema]: { value: schema },
+    [DynamoDbTable]: { value: TableName },
 });
 
 describe('DataMapper', () => {
     let idx = 0;
     const ddbClient = new DynamoDBClient({});
-    const mapper = new DataMapper({client: ddbClient});
+    const mapper = new DataMapper({ client: ddbClient });
     jest.setTimeout(60000);
 
     beforeAll(() => {
@@ -73,7 +70,7 @@ describe('DataMapper', () => {
 
     it('should save and load objects', async () => {
         const key = idx++;
-        const mapper = new DataMapper({client: ddbClient});
+        const mapper = new DataMapper({ client: ddbClient });
         const timestamp = new Date();
         // subsecond precision will not survive the trip through the serializer,
         // as DynamoDB's ttl fields use unix epoch (second precision) timestamps
@@ -93,13 +90,14 @@ describe('DataMapper', () => {
 
         expect(await mapper.put(item)).toEqual(item);
 
-        expect(await mapper.get(item, {readConsistency: 'strong'}))
-            .toEqual(item);
+        expect(await mapper.get(item, { readConsistency: 'strong' })).toEqual(
+            item
+        );
     });
 
     it('should delete objects', async () => {
         const key = idx++;
-        const mapper = new DataMapper({client: ddbClient});
+        const mapper = new DataMapper({ client: ddbClient });
         const timestamp = new Date();
         // subsecond precision will not survive the trip through the serializer,
         // as DynamoDB's ttl fields use unix epoch (second precision) timestamps
@@ -119,22 +117,24 @@ describe('DataMapper', () => {
 
         await mapper.put(item);
 
-        await expect(mapper.get(item, {readConsistency: 'strong'})).resolves;
+        await expect(mapper.get(item, { readConsistency: 'strong' })).resolves;
 
         await mapper.delete(item);
 
-        await expect(mapper.get(item, {readConsistency: 'strong'}))
-            .rejects
-            .toMatchObject(new ItemNotFoundException({
+        await expect(
+            mapper.get(item, { readConsistency: 'strong' })
+        ).rejects.toMatchObject(
+            new ItemNotFoundException({
                 TableName,
                 ConsistentRead: true,
-                Key: {testIndex: {N: key.toString(10)}}
-            }));
+                Key: { testIndex: { N: key.toString(10) } },
+            })
+        );
     });
 
     it('should scan objects', async () => {
         const keys: Array<number> = [];
-        const mapper = new DataMapper({client: ddbClient});
+        const mapper = new DataMapper({ client: ddbClient });
         const scanIdentifier = Date.now();
 
         const items: Array<TestRecord> = [];
@@ -147,31 +147,34 @@ describe('DataMapper', () => {
             items.push(item);
         }
 
-        for await (const _ of mapper.batchPut(items)) {}
+        for await (const _ of mapper.batchPut(items)) {
+        }
 
         const results: Array<TestRecord> = [];
         for await (const element of mapper.scan(TestRecord, {
             readConsistency: 'strong',
             filter: {
                 ...equals(scanIdentifier),
-                subject: 'scanIdentifier'
+                subject: 'scanIdentifier',
             },
         })) {
             results.push(element);
         }
 
-        expect(results.sort((a, b) => a.key - b.key)).toEqual(keys.map(key => {
-            const record = new TestRecord();
-            record.key = key;
-            record.scanIdentifier = scanIdentifier;
-            record.tuple = [key % 2 === 0, 'string'];
-            return record;
-        }));
+        expect(results.sort((a, b) => a.key - b.key)).toEqual(
+            keys.map((key) => {
+                const record = new TestRecord();
+                record.key = key;
+                record.scanIdentifier = scanIdentifier;
+                record.tuple = [key % 2 === 0, 'string'];
+                return record;
+            })
+        );
     });
 
     it('should scan objects in parallel', async () => {
         const keys: Array<number> = [];
-        const mapper = new DataMapper({client: ddbClient});
+        const mapper = new DataMapper({ client: ddbClient });
         const scanIdentifier = Date.now();
 
         const items: Array<TestRecord> = [];
@@ -184,41 +187,44 @@ describe('DataMapper', () => {
             items.push(item);
         }
 
-        for await (const _ of mapper.batchPut(items)) {}
+        for await (const _ of mapper.batchPut(items)) {
+        }
 
         const results: Array<TestRecord> = [];
         for await (const element of mapper.parallelScan(TestRecord, 4, {
             readConsistency: 'strong',
             filter: {
                 ...equals(scanIdentifier),
-                subject: 'scanIdentifier'
+                subject: 'scanIdentifier',
             },
         })) {
             results.push(element);
         }
 
-        expect(results.sort((a, b) => a.key - b.key)).toEqual(keys.map(key => {
-            const record = new TestRecord();
-            record.key = key;
-            record.scanIdentifier = scanIdentifier;
-            record.tuple = [key % 2 === 0, 'string'];
-            return record;
-        }));
+        expect(results.sort((a, b) => a.key - b.key)).toEqual(
+            keys.map((key) => {
+                const record = new TestRecord();
+                record.key = key;
+                record.scanIdentifier = scanIdentifier;
+                record.tuple = [key % 2 === 0, 'string'];
+                return record;
+            })
+        );
     });
 
     it('should query objects', async () => {
-        const mapper = new DataMapper({client: ddbClient});
+        const mapper = new DataMapper({ client: ddbClient });
 
         const item = new TestRecord();
         item.key = idx++;
         item.tuple = [item.key % 2 === 0, 'string'];
 
-        await mapper.put({item});
+        await mapper.put({ item });
 
         for await (const element of mapper.query(
             TestRecord,
-            {key: item.key},
-            {readConsistency: 'strong'}
+            { key: item.key },
+            { readConsistency: 'strong' }
         )) {
             expect(element).toEqual(item);
         }

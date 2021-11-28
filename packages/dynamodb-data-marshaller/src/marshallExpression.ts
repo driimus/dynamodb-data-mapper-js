@@ -49,7 +49,7 @@ export interface MarshalledExpression {
 export function marshallConditionExpression(
     expression: ConditionExpression,
     schema: Schema,
-    attributes: ExpressionAttributes = new ExpressionAttributes
+    attributes: ExpressionAttributes = new ExpressionAttributes()
 ): MarshalledExpression {
     const serialized = serializeConditionExpression(
         normalizeConditionExpression(expression, schema),
@@ -75,10 +75,12 @@ export function marshallConditionExpression(
 export function marshallFunctionExpression(
     expression: FunctionExpression,
     schema: Schema,
-    attributes: ExpressionAttributes = new ExpressionAttributes
+    attributes: ExpressionAttributes = new ExpressionAttributes()
 ): MarshalledExpression {
-    const serialized = normalizeFunctionExpression(expression, schema)
-        .serialize(attributes);
+    const serialized = normalizeFunctionExpression(
+        expression,
+        schema
+    ).serialize(attributes);
 
     return {
         expression: serialized,
@@ -99,10 +101,12 @@ export function marshallFunctionExpression(
 export function marshallMathematicalExpression(
     expression: MathematicalExpression,
     schema: Schema,
-    attributes: ExpressionAttributes = new ExpressionAttributes
+    attributes: ExpressionAttributes = new ExpressionAttributes()
 ): MarshalledExpression {
-    const serialized = normalizeMathematicalExpression(expression, schema)
-        .serialize(attributes);
+    const serialized = normalizeMathematicalExpression(
+        expression,
+        schema
+    ).serialize(attributes);
 
     return {
         expression: serialized,
@@ -123,10 +127,10 @@ export function marshallMathematicalExpression(
 export function marshallProjectionExpression(
     expression: ProjectionExpression,
     schema: Schema,
-    attributes: ExpressionAttributes = new ExpressionAttributes
+    attributes: ExpressionAttributes = new ExpressionAttributes()
 ): MarshalledExpression {
     const serialized = serializeProjectionExpression(
-        expression.map(el => toSchemaName(el, schema)),
+        expression.map((el) => toSchemaName(el, schema)),
         attributes
     );
 
@@ -149,10 +153,11 @@ export function marshallProjectionExpression(
 export function marshallUpdateExpression(
     expression: UpdateExpression,
     schema: Schema,
-    attributes: ExpressionAttributes = new ExpressionAttributes
+    attributes: ExpressionAttributes = new ExpressionAttributes()
 ): MarshalledExpression {
-    const serialized = normalizeUpdateExpression(expression, schema)
-        .serialize(attributes);
+    const serialized = normalizeUpdateExpression(expression, schema).serialize(
+        attributes
+    );
 
     return {
         expression: serialized,
@@ -188,14 +193,14 @@ function normalizeConditionExpression(
                 case 'attribute_not_exists':
                     return {
                         ...expression,
-                        subject: toSchemaName(expression.subject, schema)
+                        subject: toSchemaName(expression.subject, schema),
                     };
                 case 'attribute_type':
                 case 'begins_with':
                 case 'contains':
                     return {
                         ...expression,
-                        subject: toSchemaName(expression.subject, schema)
+                        subject: toSchemaName(expression.subject, schema),
                     };
             }
 
@@ -210,7 +215,9 @@ function normalizeConditionExpression(
             return {
                 ...expression,
                 subject: toSchemaName(expression.subject, schema),
-                values: expression.values.map(arg => normalizeIfPath(arg, schema)),
+                values: expression.values.map((arg) =>
+                    normalizeIfPath(arg, schema)
+                ),
             };
         case 'Not':
             return {
@@ -224,7 +231,7 @@ function normalizeConditionExpression(
         case 'Or':
             return {
                 ...expression,
-                conditions: expression.conditions.map(condition =>
+                conditions: expression.conditions.map((condition) =>
                     normalizeConditionExpression(condition, schema)
                 ),
             };
@@ -237,7 +244,7 @@ function normalizeFunctionExpression(
 ): FunctionExpression {
     return new FunctionExpression(
         expression.name,
-        ...expression.args.map(arg => normalizeIfPath(arg, schema))
+        ...expression.args.map((arg) => normalizeIfPath(arg, schema))
     );
 }
 
@@ -246,20 +253,21 @@ function normalizeMathematicalExpression(
     schema: Schema
 ): MathematicalExpression {
     return new MathematicalExpression(
-        AttributePath.isAttributePath(expression.lhs) || typeof expression.lhs === 'string'
+        AttributePath.isAttributePath(expression.lhs) ||
+        typeof expression.lhs === 'string'
             ? toSchemaName(expression.lhs, schema)
             : expression.lhs,
         expression.operator,
-        AttributePath.isAttributePath(expression.rhs) || typeof expression.rhs === 'string'
+        AttributePath.isAttributePath(expression.rhs) ||
+        typeof expression.rhs === 'string'
             ? toSchemaName(expression.rhs, schema)
-            : expression.rhs,
-    )
+            : expression.rhs
+    );
 }
 
-const mapsToTransform: Array<[
-    'toAdd'|'toDelete'|'toSet',
-    'add'|'delete'|'set'
-]> = [
+const mapsToTransform: Array<
+    ['toAdd' | 'toDelete' | 'toSet', 'add' | 'delete' | 'set']
+> = [
     ['toAdd', 'add'],
     ['toDelete', 'delete'],
     ['toSet', 'set'],
@@ -269,14 +277,14 @@ function normalizeUpdateExpression(
     expression: UpdateExpression,
     schema: Schema
 ): UpdateExpression {
-    const normalized = new UpdateExpression;
+    const normalized = new UpdateExpression();
     for (const [dataSet, exprMethod] of mapsToTransform) {
         for (const [path, value] of expression[dataSet]) {
             normalized[exprMethod](toSchemaName(path, schema), value);
         }
     }
-    expression.toRemove.forEach(
-        el => normalized.remove(toSchemaName(el, schema))
+    expression.toRemove.forEach((el) =>
+        normalized.remove(toSchemaName(el, schema))
     );
 
     return normalized;

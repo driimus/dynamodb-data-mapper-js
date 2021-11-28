@@ -1,5 +1,5 @@
-import {PropertyAnnotation} from './annotationShapes';
-import {attribute} from './attribute';
+import { PropertyAnnotation } from './annotationShapes';
+import { attribute } from './attribute';
 import {
     BinaryType,
     CustomType,
@@ -9,7 +9,9 @@ import {
 } from '@aws/dynamodb-data-marshaller';
 
 export function hashKey(
-    parameters: Partial<BinaryType|CustomType<any>|DateType|NumberType|StringType> = {}
+    parameters: Partial<
+        BinaryType | CustomType<any> | DateType | NumberType | StringType
+    > = {}
 ): PropertyAnnotation {
     return attribute({
         ...parameters,

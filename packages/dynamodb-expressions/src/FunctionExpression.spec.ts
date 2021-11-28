@@ -1,6 +1,6 @@
-import {FunctionExpression} from "./FunctionExpression";
-import {ExpressionAttributes} from "./ExpressionAttributes";
-import {AttributePath} from "./AttributePath";
+import { FunctionExpression } from './FunctionExpression';
+import { ExpressionAttributes } from './ExpressionAttributes';
+import { AttributePath } from './AttributePath';
 import { marshall } from '@aws-sdk/util-dynamodb';
 
 describe('FunctionExpression', () => {
@@ -28,11 +28,13 @@ describe('FunctionExpression', () => {
                 [],
                 {},
                 new Uint8Array(12),
-                {foo: 'bar'},
-                {name: 'foo', arguments: 'bar'},
+                { foo: 'bar' },
+                { name: 'foo', arguments: 'bar' },
             ]) {
                 expect(
-                    FunctionExpression.isFunctionExpression(notFunctionExpression)
+                    FunctionExpression.isFunctionExpression(
+                        notFunctionExpression
+                    )
                 ).toBe(false);
             }
         });
@@ -41,16 +43,16 @@ describe('FunctionExpression', () => {
     describe('#serialize', () => {
         it('should serialize basic function expressions', () => {
             const attributes = new ExpressionAttributes();
-            expect(
-                basicFunctionExpression.serialize(attributes)
-            ).toBe('foo(#attr0, :val1)');
+            expect(basicFunctionExpression.serialize(attributes)).toBe(
+                'foo(#attr0, :val1)'
+            );
 
             expect(attributes.names).toEqual({
                 '#attr0': 'bar',
             });
 
             expect(marshall(attributes.values)).toEqual({
-                ':val1': {S: 'baz'},
+                ':val1': { S: 'baz' },
             });
         });
 
@@ -59,20 +61,23 @@ describe('FunctionExpression', () => {
                 'foo',
                 new AttributePath('bar'),
                 'baz',
-                new FunctionExpression('fizz', new FunctionExpression('buzz', new AttributePath('bar')))
-            )
+                new FunctionExpression(
+                    'fizz',
+                    new FunctionExpression('buzz', new AttributePath('bar'))
+                )
+            );
             const attributes = new ExpressionAttributes();
 
-            expect(
-                nestedFunction.serialize(attributes)
-            ).toBe('foo(#attr0, :val1, fizz(buzz(#attr0)))');
+            expect(nestedFunction.serialize(attributes)).toBe(
+                'foo(#attr0, :val1, fizz(buzz(#attr0)))'
+            );
 
             expect(attributes.names).toEqual({
                 '#attr0': 'bar',
             });
 
             expect(marshall(attributes.values)).toEqual({
-                ':val1': {S: 'baz'},
+                ':val1': { S: 'baz' },
             });
         });
     });

@@ -1,6 +1,6 @@
-import {ObjectSet} from "./ObjectSet";
+import { ObjectSet } from './ObjectSet';
 
-export type BinaryValue = ArrayBuffer|ArrayBufferView;
+export type BinaryValue = ArrayBuffer | ArrayBufferView;
 
 /**
  * A set of binary values represented as either ArrayBuffer objects or
@@ -10,7 +10,7 @@ export type BinaryValue = ArrayBuffer|ArrayBufferView;
 export class BinarySet extends ObjectSet<BinaryValue> {
     delete(value: BinaryValue): boolean {
         const valueView = getBinaryView(value);
-        const scrubbedValues = this._values.filter(item => {
+        const scrubbedValues = this._values.filter((item) => {
             return !binaryEquals(getBinaryView(item), valueView);
         });
 

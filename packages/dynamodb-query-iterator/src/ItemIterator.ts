@@ -3,15 +3,16 @@ import { ConsumedCapacity } from '@aws-sdk/client-dynamodb';
 import { AttributeMap } from './DynamoDbResultsPage';
 
 if (Symbol && !Symbol.asyncIterator) {
-    (Symbol as any).asyncIterator = Symbol.for("__@@asyncIterator__");
+    (Symbol as any).asyncIterator = Symbol.for('__@@asyncIterator__');
 }
 
-export abstract class ItemIterator<
-    Paginator extends DynamoDbPaginatorInterface
-> implements AsyncIterableIterator<AttributeMap> {
-
+export abstract class ItemIterator<Paginator extends DynamoDbPaginatorInterface>
+    implements AsyncIterableIterator<AttributeMap>
+{
     private _iteratedCount = 0;
-    private lastResolved: Promise<IteratorResult<AttributeMap>> = <any>Promise.resolve();
+    private lastResolved: Promise<IteratorResult<AttributeMap>> = <any>(
+        Promise.resolve()
+    );
     private readonly pending: Array<AttributeMap> = [];
 
     protected constructor(private readonly paginator: Paginator) {}
@@ -29,7 +30,7 @@ export abstract class ItemIterator<
      * for the table and any indexes involved in the operation. ConsumedCapacity
      * is only returned if the ReturnConsumedCapacity parameter was specified.
      */
-    get consumedCapacity(): ConsumedCapacity|undefined {
+    get consumedCapacity(): ConsumedCapacity | undefined {
         return this.paginator.consumedCapacity;
     }
 
@@ -60,9 +61,11 @@ export abstract class ItemIterator<
     pages(): Paginator {
         // Prevent the iterator from being used further and squelch any uncaught
         // promise rejection warnings
-        this.lastResolved = Promise.reject(new Error(
-            'The underlying paginator has been detached from this iterator.'
-        ));
+        this.lastResolved = Promise.reject(
+            new Error(
+                'The underlying paginator has been detached from this iterator.'
+            )
+        );
         this.lastResolved.catch(() => {});
 
         return this.paginator;
@@ -73,9 +76,11 @@ export abstract class ItemIterator<
      */
     async return(): Promise<IteratorResult<AttributeMap>> {
         // Prevent any further use of this iterator
-        this.lastResolved = Promise.reject(new Error(
-            'Iteration has been manually interrupted and may not be resumed'
-        ));
+        this.lastResolved = Promise.reject(
+            new Error(
+                'Iteration has been manually interrupted and may not be resumed'
+            )
+        );
         this.lastResolved.catch(() => {});
 
         // Clear the pending queue to free up memory
@@ -100,7 +105,7 @@ export abstract class ItemIterator<
             this._iteratedCount++;
             return Promise.resolve({
                 value: this.pending.shift()!,
-                done: false
+                done: false,
             });
         }
 
@@ -108,11 +113,11 @@ export abstract class ItemIterator<
         if (done) {
             return { done } as IteratorResult<AttributeMap>;
         }
-        this.pending.push(...value_1.Items || []);
+        this.pending.push(...(value_1.Items || []));
         return this.getNext();
     }
 }
 
 function doneSigil() {
-    return {done: true} as IteratorResult<any>;
+    return { done: true } as IteratorResult<any>;
 }

@@ -1,12 +1,12 @@
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "sourceMap": false,
-    "inlineSourceMap": true,
-    "inlineSources": true,
-    "skipLibCheck": true,
-    "rootDir": "./src",
-    "outDir": "./build"
-  },
-  "exclude": ["src/*.spec.ts", "node_modules", "build"]
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "sourceMap": false,
+        "inlineSourceMap": true,
+        "inlineSources": true,
+        "skipLibCheck": true,
+        "rootDir": "./src",
+        "outDir": "./build"
+    },
+    "exclude": ["src/*.spec.ts", "node_modules", "build"]
 }

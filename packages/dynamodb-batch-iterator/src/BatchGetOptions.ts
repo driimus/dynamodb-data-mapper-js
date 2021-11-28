@@ -1,4 +1,8 @@
-import { ConsistentRead, ExpressionAttributeNameMap, ProjectionExpression } from "./types";
+import {
+    ConsistentRead,
+    ExpressionAttributeNameMap,
+    ProjectionExpression,
+} from './types';
 
 export interface BatchGetOptions {
     /**

@@ -1,19 +1,19 @@
 {
-  "compilerOptions": {
-    "target": "ES2020",
-    "downlevelIteration": true,
-    "importHelpers": true,
-    "module": "commonjs",
-    "strict": true,
-    "declaration": true,
-    "rootDir": "./src",
-    "outDir": "./build"
-  },
-  "typedocOptions": {
-    "mode": "file",
-    "out": "../../docs/packages/dynamodb-auto-marshaller",
-    "excludeNotExported": true,
-    "excludePrivate": true,
-    "hideGenerator": true
-  }
+    "compilerOptions": {
+        "target": "ES2020",
+        "downlevelIteration": true,
+        "importHelpers": true,
+        "module": "commonjs",
+        "strict": true,
+        "declaration": true,
+        "rootDir": "./src",
+        "outDir": "./build"
+    },
+    "typedocOptions": {
+        "mode": "file",
+        "out": "../../docs/packages/dynamodb-auto-marshaller",
+        "excludeNotExported": true,
+        "excludePrivate": true,
+        "hideGenerator": true
+    }
 }

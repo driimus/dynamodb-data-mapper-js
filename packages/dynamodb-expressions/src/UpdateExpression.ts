@@ -1,9 +1,9 @@
-import {AttributeBearingExpression} from "./AttributeBearingExpression";
-import {AttributePath} from "./AttributePath";
-import {AttributeValue} from './AttributeValue';
-import {ExpressionAttributes} from "./ExpressionAttributes";
-import {FunctionExpression} from "./FunctionExpression";
-import {MathematicalExpression} from "./MathematicalExpression";
+import { AttributeBearingExpression } from './AttributeBearingExpression';
+import { AttributePath } from './AttributePath';
+import { AttributeValue } from './AttributeValue';
+import { ExpressionAttributes } from './ExpressionAttributes';
+import { FunctionExpression } from './FunctionExpression';
+import { MathematicalExpression } from './MathematicalExpression';
 
 /**
  * An object representing a DynamoDB update expression.
@@ -17,9 +17,11 @@ export class UpdateExpression implements AttributeBearingExpression {
     /**
      * Add a directive to the expression's `add` clause.
      */
-    add(path: AttributePath|string, value: any): void {
+    add(path: AttributePath | string, value: any): void {
         this.toAdd.set(
-            AttributePath.isAttributePath(path) ? path : new AttributePath(path),
+            AttributePath.isAttributePath(path)
+                ? path
+                : new AttributePath(path),
             value
         );
     }
@@ -27,9 +29,11 @@ export class UpdateExpression implements AttributeBearingExpression {
     /**
      * Add a directive to the expression's `delete` clause.
      */
-    delete(path: AttributePath|string, value: any): void {
+    delete(path: AttributePath | string, value: any): void {
         this.toDelete.set(
-            AttributePath.isAttributePath(path) ? path : new AttributePath(path),
+            AttributePath.isAttributePath(path)
+                ? path
+                : new AttributePath(path),
             value
         );
     }
@@ -37,7 +41,7 @@ export class UpdateExpression implements AttributeBearingExpression {
     /**
      * Add a directive to the expression's `remove` clause.
      */
-    remove(path: AttributePath|string): void {
+    remove(path: AttributePath | string): void {
         this.toRemove.add(
             AttributePath.isAttributePath(path) ? path : new AttributePath(path)
         );
@@ -47,11 +51,17 @@ export class UpdateExpression implements AttributeBearingExpression {
      * Add a directive to the expression's `set` clause.
      */
     set(
-        path: AttributePath|string,
-        value: AttributeValue|FunctionExpression|MathematicalExpression|any
+        path: AttributePath | string,
+        value:
+            | AttributeValue
+            | FunctionExpression
+            | MathematicalExpression
+            | any
     ): void {
         this.toSet.set(
-            AttributePath.isAttributePath(path) ? path : new AttributePath(path),
+            AttributePath.isAttributePath(path)
+                ? path
+                : new AttributePath(path),
             value
         );
     }
@@ -76,10 +86,14 @@ export class UpdateExpression implements AttributeBearingExpression {
         }
 
         for (const [key, value] of this.toSet.entries()) {
-            phrases.push(`${attributes.addName(key)} = ${
-                FunctionExpression.isFunctionExpression(value) || MathematicalExpression.isMathematicalExpression(value)
-                    ? value.serialize(attributes) : attributes.addValue(value)
-            }`);
+            phrases.push(
+                `${attributes.addName(key)} = ${
+                    FunctionExpression.isFunctionExpression(value) ||
+                    MathematicalExpression.isMathematicalExpression(value)
+                        ? value.serialize(attributes)
+                        : attributes.addValue(value)
+                }`
+            );
         }
         if (phrases.length > 0) {
             clauses.push(`SET ${phrases.join(', ')}`);
