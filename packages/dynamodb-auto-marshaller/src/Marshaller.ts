@@ -244,7 +244,13 @@ export class Marshaller {
             | bigint
             | BinaryValue
     ): AttributeValue {
-        return convertToAttr(value, { removeUndefinedValues: true });
+        // if (isIterable(value)) {
+        //     return this.marshallList(value);
+        // }
+        return convertToAttr(value, {
+            removeUndefinedValues: true,
+            convertClassInstanceToMap: true,
+        });
     }
 
     // private marshallBinaryValue(binary: NativeAttributeBinary):  { NULL: true } | { B: NativeAttributeBinary } {
@@ -254,17 +260,17 @@ export class Marshaller {
     //     return {NULL: true};
     // }
 
-    // private marshallList(list: Iterable<any>): AttributeValue {
-    //     const values: Array<AttributeValue> = [];
-    //     for (let value of list) {
-    //         const marshalled = this.marshallValue(value);
-    //         if (marshalled) {
-    //             values.push(marshalled);
-    //         }
-    //     }
+    private marshallList(list: Iterable<any>): AttributeValue {
+        const values: Array<AttributeValue> = [];
+        for (let value of list) {
+            const marshalled = this.marshallValue(value);
+            if (marshalled) {
+                values.push(marshalled);
+            }
+        }
 
-    //     return {L: values};
-    // }
+        return { L: values };
+    }
 
     // private marshallMap(map: Map<any, any>): AttributeValue {
     //     const members: {[key: string]: AttributeValue} = {};
