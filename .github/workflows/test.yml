@@ -1,0 +1,7 @@
+name: Test
+on:
+    push:
+
+jobs:
+    test:
+        uses: driimus/shared-workflows/.github/workflows/test.yml@c559a157c6997ba5a97560a1bb9b0ca22a23b1bb
