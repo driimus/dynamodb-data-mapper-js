@@ -40,6 +40,8 @@
     },
     "dependencies": {
         "@aws/dynamodb-data-mapper": "workspace:*",
+        "@aws/dynamodb-data-marshaller": "workspace:*",
+        "@aws/dynamodb-auto-marshaller": "workspace:*",
         "reflect-metadata": "^0.1.13",
         "tslib": "^2.3.1"
     }

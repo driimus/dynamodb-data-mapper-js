@@ -69,7 +69,7 @@ describe('ParallelScanIterator', () => {
 
 		const result: any[] = [];
 		for await (const scanResult of new ParallelScanIterator(
-			mockDynamoDbClient as any,
+			mockDynamoDbClient as unknown as DynamoDBClient,
 			{
 				TableName: 'foo',
 				TotalSegments: segments,
@@ -174,7 +174,7 @@ describe('ParallelScanIterator', () => {
 
 		promiseFunc.mockImplementationOnce(async () => Promise.resolve({}));
 
-		const iterator = new ParallelScanIterator(mockDynamoDbClient as any, {
+		const iterator = new ParallelScanIterator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 			TotalSegments: 2,
 		});

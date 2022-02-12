@@ -8,9 +8,7 @@ export type OnMissingStrategy = 'remove' | 'skip';
 
 export type ReadConsistency = 'eventual' | 'strong';
 
-export interface StringToAnyObjectMap {
-    [key: string]: any;
-}
+export type StringToAnyObjectMap = Record<string, unknown>;
 
 export type SyncOrAsyncIterable<T> = Iterable<T> | AsyncIterable<T>;
 

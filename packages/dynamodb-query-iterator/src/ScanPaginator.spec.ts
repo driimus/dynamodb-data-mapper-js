@@ -57,7 +57,7 @@ describe('ScanPaginator', () => {
 		promiseFunc.mockImplementationOnce(async () => Promise.resolve({}));
 
 		const result: any[] = [];
-		for await (const scanResult of new ScanPaginator(mockDynamoDbClient as any, {
+		for await (const scanResult of new ScanPaginator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		})) {
 			result.push(...(scanResult.Items ?? []));
@@ -121,7 +121,7 @@ describe('ScanPaginator', () => {
 		);
 		promiseFunc.mockImplementationOnce(async () => Promise.resolve({}));
 
-		const paginator = new ScanPaginator(mockDynamoDbClient as any, {
+		const paginator = new ScanPaginator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		});
 		const expectedLastKeys = [
@@ -183,7 +183,7 @@ describe('ScanPaginator', () => {
 			}),
 		);
 
-		const paginator = new ScanPaginator(mockDynamoDbClient as any, {
+		const paginator = new ScanPaginator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		});
 
@@ -250,7 +250,7 @@ describe('ScanPaginator', () => {
 			}),
 		);
 
-		const paginator = new ScanPaginator(mockDynamoDbClient as any, {
+		const paginator = new ScanPaginator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		});
 
@@ -305,7 +305,7 @@ describe('ScanPaginator', () => {
 		promiseFunc.mockImplementationOnce(async () => Promise.resolve({}));
 
 		let i = 0;
-		const paginator = new ScanPaginator(mockDynamoDbClient as any, {
+		const paginator = new ScanPaginator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		});
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars

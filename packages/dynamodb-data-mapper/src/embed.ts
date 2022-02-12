@@ -1,23 +1,27 @@
-import { DynamoDbSchema } from './protocols';
 import {
-    DocumentType,
-    ZeroArgumentsConstructor,
+	DocumentType,
+	Schema,
 } from '@aws/dynamodb-data-marshaller';
+import {DynamoDbSchema} from './protocols';
 
 export interface DocumentTypeOptions<T> {
-    defaultProvider?: () => T;
-    attributeName?: string;
+	defaultProvider?: () => T;
+	attributeName?: string;
 }
 
-export function embed<T>(
-    documentConstructor: ZeroArgumentsConstructor<T>,
-    { attributeName, defaultProvider }: DocumentTypeOptions<T> = {}
+declare class DocumentClass {
+	[DynamoDbSchema]?: Schema;
+}
+
+export function embed<T extends DocumentClass>(
+	documentConstructor: {prototype: T; new(): T},
+	{attributeName, defaultProvider}: DocumentTypeOptions<T> = {},
 ): DocumentType {
-    return {
-        type: 'Document',
-        members: (documentConstructor.prototype as any)[DynamoDbSchema] || {},
-        attributeName,
-        defaultProvider,
-        valueConstructor: documentConstructor,
-    };
+	return {
+		type: 'Document',
+		members: documentConstructor.prototype[DynamoDbSchema] ?? {},
+		attributeName,
+		defaultProvider,
+		valueConstructor: documentConstructor,
+	};
 }

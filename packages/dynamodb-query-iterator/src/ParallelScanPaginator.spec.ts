@@ -72,7 +72,7 @@ describe('ParallelScanPaginator', () => {
 
 		const result: any[] = [];
 		for await (const scanResult of new ParallelScanPaginator(
-			mockDynamoDbClient as any,
+			mockDynamoDbClient as unknown as DynamoDBClient,
 			{
 				TableName: 'foo',
 				TotalSegments: segments,
@@ -200,7 +200,7 @@ describe('ParallelScanPaginator', () => {
 			}),
 		);
 
-		const paginator = new ParallelScanPaginator(mockDynamoDbClient as any, {
+		const paginator = new ParallelScanPaginator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 			TotalSegments: 2,
 		});
@@ -263,7 +263,7 @@ describe('ParallelScanPaginator', () => {
 			}),
 		);
 
-		const paginator = new ParallelScanPaginator(mockDynamoDbClient as any, {
+		const paginator = new ParallelScanPaginator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 			TotalSegments: 2,
 		});
@@ -293,7 +293,7 @@ describe('ParallelScanPaginator', () => {
 			}),
 		);
 
-		const paginator = new ParallelScanPaginator(mockDynamoDbClient as any, {
+		const paginator = new ParallelScanPaginator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 			TotalSegments: 1,
 		});
@@ -322,7 +322,7 @@ describe('ParallelScanPaginator', () => {
 		);
 
 		const paginator = new ParallelScanPaginator(
-			mockDynamoDbClient as any,
+			mockDynamoDbClient as unknown as DynamoDBClient,
 			{
 				TableName: 'foo',
 				TotalSegments: 1,
@@ -362,7 +362,7 @@ describe('ParallelScanPaginator', () => {
 		);
 
 		const paginator = new ParallelScanPaginator(
-			mockDynamoDbClient as any,
+			mockDynamoDbClient as unknown as DynamoDBClient,
 			{
 				TableName: 'foo',
 				TotalSegments: 1,
@@ -380,7 +380,7 @@ describe('ParallelScanPaginator', () => {
 		expect(
 			() =>
 				new ParallelScanPaginator(
-					mockDynamoDbClient as any,
+					mockDynamoDbClient as unknown as DynamoDBClient,
 					{
 						TableName: 'foo',
 						TotalSegments: 1,

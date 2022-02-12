@@ -10,8 +10,11 @@
         "sourceMap": true,
         "skipLibCheck": true,
         "rootDir": "./src",
-        "outDir": "./build"
+        "outDir": "./build",
+        "resolveJsonModule": true,
+        "esModuleInterop": true
     },
+    "exclude": ["src/*.spec.ts", "node_modules", "build", "src/*.integ.ts"],
     "typedocOptions": {
         "mode": "file",
         "out": "../../docs/packages/dynamodb-data-mapper",

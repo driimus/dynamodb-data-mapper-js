@@ -1,14 +1,8 @@
 /**
  * A constructor that takes no arguments.
  */
-export interface ZeroArgumentsConstructor<T> {
-    new (): T;
-}
+export type ZeroArgumentsConstructor<T> = new () => T;
 
-export interface ClassAnnotation {
-    (target: ZeroArgumentsConstructor<any>): void;
-}
+export type ClassAnnotation = (target: ZeroArgumentsConstructor<any>) => void;
 
-export interface PropertyAnnotation {
-    (target: Object, propertyKey: string | symbol): void;
-}
+export type PropertyAnnotation = (target: Record<string, unknown>, propertyKey: string | symbol) => void;

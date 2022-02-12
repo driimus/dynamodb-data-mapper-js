@@ -6,9 +6,8 @@
     "pnpm": ">=6.23.1"
   },
   "scripts": {
-    "bootstrap": "lerna bootstrap",
-    "test": "jest",
-    "xo": "xo"
+    "test": "pnpm run --recursive test",
+    "lint": "xo"
   },
   "author": {
     "name": "AWS SDK for JavaScript Team",
@@ -42,10 +41,14 @@
   "xo": {
     "rules": {
       "import/extensions": "off",
+      "import/no-unassigned-import": ["error", {
+        "allow": ["reflect-metadata"]
+      }],
       "unicorn/filename-case": "off",
       "unicorn/no-array-reduce": "off",
       "@typescript-eslint/no-confusing-void-expression": "off",
       "@typescript-eslint/naming-convention": "off",
+      "@typescript-eslint/no-implicit-any-catch": "off",
       "@typescript-eslint/no-empty-function": [
         "error",
         {

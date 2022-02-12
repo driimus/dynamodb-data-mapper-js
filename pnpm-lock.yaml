@@ -45,6 +45,7 @@ importers:
       '@aws-sdk/client-dynamodb': ^3.41.0
       '@types/jest': ^27.0.1
       '@types/node': ^16.7.1
+      aws-sdk-client-mock: ^0.5.6
       jest: ^27.0.6
       tslib: ^2.3.1
       typedoc: ^0.14.0
@@ -57,6 +58,7 @@ importers:
       '@aws-sdk/client-dynamodb': 3.43.0
       '@types/jest': 27.0.3
       '@types/node': 16.11.11
+      aws-sdk-client-mock: 0.5.6
       jest: 27.4.3
       typedoc: 0.14.2
       typescript: 4.5.2
@@ -97,7 +99,9 @@ importers:
   packages/dynamodb-data-mapper-annotations:
     specifiers:
       '@aws-sdk/client-dynamodb': ^3.41.0
+      '@aws/dynamodb-auto-marshaller': workspace:*
       '@aws/dynamodb-data-mapper': workspace:*
+      '@aws/dynamodb-data-marshaller': workspace:*
       '@types/jest': ^27.0.1
       '@types/node': ^16.7.1
       aws-sdk-client-mock: ^0.5.6
@@ -107,7 +111,9 @@ importers:
       typedoc: ^0.14.0
       typescript: ^4.3.5
     dependencies:
+      '@aws/dynamodb-auto-marshaller': link:../dynamodb-auto-marshaller
       '@aws/dynamodb-data-mapper': link:../dynamodb-data-mapper
+      '@aws/dynamodb-data-marshaller': link:../dynamodb-data-marshaller
       reflect-metadata: 0.1.13
       tslib: 2.3.1
     devDependencies:

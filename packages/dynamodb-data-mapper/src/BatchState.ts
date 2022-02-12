@@ -1,16 +1,12 @@
 import {
-    Schema,
-    ZeroArgumentsConstructor,
+	Schema,
+	ZeroArgumentsConstructor,
 } from '@aws/dynamodb-data-marshaller';
 
-export interface BatchState<T> {
-    [tableName: string]: {
-        keyProperties: Array<string>;
-        itemSchemata: {
-            [identifier: string]: {
-                schema: Schema;
-                constructor: ZeroArgumentsConstructor<T>;
-            };
-        };
-    };
-}
+export type BatchState<T> = Record<string, {
+	keyProperties: string[];
+	itemSchemata: Record<string, {
+		schema: Schema;
+		constructor: ZeroArgumentsConstructor<T>;
+	}>;
+}>;

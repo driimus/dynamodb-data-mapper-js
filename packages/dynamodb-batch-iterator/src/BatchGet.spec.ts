@@ -1,424 +1,426 @@
-import { BatchGet, MAX_READ_BATCH_SIZE } from './BatchGet';
 import {
-    BatchGetItemCommand,
-    BatchGetItemOutput,
-    DynamoDBClient,
+	BatchGetItemCommand,
+	BatchGetItemOutput,
+	DynamoDBClient,
 } from '@aws-sdk/client-dynamodb';
-import { AttributeMap } from './types';
-import { mockClient } from 'aws-sdk-client-mock';
+import {mockClient} from 'aws-sdk-client-mock';
+import {BatchGet, MAX_READ_BATCH_SIZE} from './BatchGet';
+import {AttributeMap} from './types';
 
 describe('BatchGet', () => {
-    const promiseFunc = jest.fn(() =>
-        Promise.resolve({
-            UnprocessedKeys: {},
-        } as BatchGetItemOutput)
-    );
-    // const mockDynamoDbClient = {
-    //     config: {},
-    //     batchGetItem: jest.fn(() => ({promise: promiseFunc})),
-    // } as any;
-    const mockDynamoDbClient = mockClient(DynamoDBClient);
-    mockDynamoDbClient.on(BatchGetItemCommand).callsFake(promiseFunc);
+	const promiseFunc = jest.fn(async () =>
+		Promise.resolve({
+			UnprocessedKeys: {},
+		} as BatchGetItemOutput),
+	);
+	// Const mockDynamoDbClient = {
+	//     config: {},
+	//     batchGetItem: jest.fn(() => ({promise: promiseFunc})),
+	// } as any;
+	const mockDynamoDbClient = mockClient(DynamoDBClient);
+	mockDynamoDbClient.on(BatchGetItemCommand).callsFake(promiseFunc);
 
-    beforeEach(() => {
-        promiseFunc.mockClear();
-        mockDynamoDbClient.resetHistory();
-        // mockDynamoDbClient.batchGetItem.mockClear();
-    });
+	beforeEach(() => {
+		promiseFunc.mockClear();
+		mockDynamoDbClient.resetHistory();
+		// MockDynamoDbClient.batchGetItem.mockClear();
+	});
 
-    it('should return itself when its Symbol.asyncIterator method is called', () => {
-        const batchGet = new BatchGet({} as any, []);
-        expect(batchGet[Symbol.asyncIterator]()).toBe(batchGet);
-    });
+	it('should return itself when its Symbol.asyncIterator method is called', () => {
+		const batchGet = new BatchGet({} as any, []);
+		expect(batchGet[Symbol.asyncIterator]()).toBe(batchGet);
+	});
 
-    it('should allow setting an overall read consistency', async () => {
-        const batchGet = new BatchGet(
-            mockDynamoDbClient as any,
-            [['foo', { fizz: { N: '0' } }]],
-            { ConsistentRead: true }
-        );
-        for await (const _ of batchGet) {
-            console.log(_ === undefined);
-            // pass
-        }
-        // const [call] = mockDynamoDbClient.commandCalls(BatchGetItemCommand);
-        // call.args[0].input;
-        expect(
-            mockDynamoDbClient
-                .commandCalls(BatchGetItemCommand)
-                .map(({ args: [{ input }] }) => input)
-        ).toEqual([
-            // [
-            {
-                RequestItems: {
-                    foo: {
-                        Keys: [{ fizz: { N: '0' } }],
-                        ConsistentRead: true,
-                    },
-                },
-            },
-            // ],
-        ]);
-    });
+	it('should allow setting an overall read consistency', async () => {
+		const batchGet = new BatchGet(
+			mockDynamoDbClient as unknown as DynamoDBClient,
+			[['foo', {fizz: {N: '0'}}]],
+			{ConsistentRead: true},
+		);
+		for await (const _ of batchGet) {
+			console.log(_ === undefined);
+			// Pass
+		}
 
-    it('should allow setting per-table read consistency', async () => {
-        const batchGet = new BatchGet(
-            mockDynamoDbClient as any,
-            [
-                ['foo', { fizz: { N: '0' } }],
-                ['bar', { quux: { N: '1' } }],
-            ],
-            {
-                ConsistentRead: true,
-                PerTableOptions: {
-                    bar: { ConsistentRead: false },
-                },
-            }
-        );
+		// Const [call] = mockDynamoDbClient.commandCalls(BatchGetItemCommand);
+		// call.args[0].input;
+		expect(
+			mockDynamoDbClient
+				.commandCalls(BatchGetItemCommand)
+				.map(({args: [{input}]}) => input),
+		).toEqual([
+			// [
+			{
+				RequestItems: {
+					foo: {
+						Keys: [{fizz: {N: '0'}}],
+						ConsistentRead: true,
+					},
+				},
+			},
+			// ],
+		]);
+	});
 
-        for await (const _ of batchGet) {
-            // pass
-        }
+	it('should allow setting per-table read consistency', async () => {
+		const batchGet = new BatchGet(
+			mockDynamoDbClient as unknown as DynamoDBClient,
+			[
+				['foo', {fizz: {N: '0'}}],
+				['bar', {quux: {N: '1'}}],
+			],
+			{
+				ConsistentRead: true,
+				PerTableOptions: {
+					bar: {ConsistentRead: false},
+				},
+			},
+		);
 
-        expect(
-            //mockDynamoDbClient.batchGetItem.mock.calls
+		for await (const _ of batchGet) {
+			// Pass
+		}
 
-            mockDynamoDbClient
-                .commandCalls(BatchGetItemCommand)
-                .map(({ args: [{ input }] }) => input)
-        ).toEqual([
-            // [
-            {
-                RequestItems: {
-                    foo: {
-                        Keys: [{ fizz: { N: '0' } }],
-                        ConsistentRead: true,
-                    },
-                    bar: {
-                        Keys: [{ quux: { N: '1' } }],
-                        ConsistentRead: false,
-                    },
-                },
-            },
-            // ],
-        ]);
-    });
+		expect(
+			// MockDynamoDbClient.batchGetItem.mock.calls
 
-    it('should allow specifying per-table projection expressions', async () => {
-        const batchGet = new BatchGet(
-            mockDynamoDbClient as any,
-            [
-                ['foo', { fizz: { N: '0' } }],
-                ['bar', { quux: { N: '1' } }],
-            ],
-            {
-                PerTableOptions: {
-                    bar: {
-                        ProjectionExpression: 'snap[1].crackle.pop[2]',
-                    },
-                },
-            }
-        );
+			mockDynamoDbClient
+				.commandCalls(BatchGetItemCommand)
+				.map(({args: [{input}]}) => input),
+		).toEqual([
+			// [
+			{
+				RequestItems: {
+					foo: {
+						Keys: [{fizz: {N: '0'}}],
+						ConsistentRead: true,
+					},
+					bar: {
+						Keys: [{quux: {N: '1'}}],
+						ConsistentRead: false,
+					},
+				},
+			},
+			// ],
+		]);
+	});
 
-        for await (const _ of batchGet) {
-            // pass
-        }
+	it('should allow specifying per-table projection expressions', async () => {
+		const batchGet = new BatchGet(
+			mockDynamoDbClient as unknown as DynamoDBClient,
+			[
+				['foo', {fizz: {N: '0'}}],
+				['bar', {quux: {N: '1'}}],
+			],
+			{
+				PerTableOptions: {
+					bar: {
+						ProjectionExpression: 'snap[1].crackle.pop[2]',
+					},
+				},
+			},
+		);
 
-        expect(
-            //mockDynamoDbClient.batchGetItem.mock.calls
+		for await (const _ of batchGet) {
+			// Pass
+		}
 
-            mockDynamoDbClient
-                .commandCalls(BatchGetItemCommand)
-                .map(({ args: [{ input }] }) => input)
-        ).toEqual([
-            // [
-            {
-                RequestItems: {
-                    foo: {
-                        Keys: [{ fizz: { N: '0' } }],
-                    },
-                    bar: {
-                        Keys: [{ quux: { N: '1' } }],
-                        ProjectionExpression: 'snap[1].crackle.pop[2]',
-                    },
-                },
-            },
-            // ],
-        ]);
-    });
+		expect(
+			// MockDynamoDbClient.batchGetItem.mock.calls
 
-    describe.each([true, false])('should', (asyncInput) => {
-        // for (const asyncInput of [true, false]) {
-        it(`partition get batches into requests with ${MAX_READ_BATCH_SIZE} or fewer items`, async () => {
-            const gets: Array<[string, AttributeMap]> = [];
-            const expected: any = [
-                [
-                    {
-                        RequestItems: {
-                            snap: { Keys: [] },
-                            crackle: { Keys: [] },
-                            pop: { Keys: [] },
-                        },
-                    },
-                ],
-                [
-                    {
-                        RequestItems: {
-                            snap: { Keys: [] },
-                            crackle: { Keys: [] },
-                            pop: { Keys: [] },
-                        },
-                    },
-                ],
-                [
-                    {
-                        RequestItems: {
-                            snap: { Keys: [] },
-                            crackle: { Keys: [] },
-                            pop: { Keys: [] },
-                        },
-                    },
-                ],
-                [
-                    {
-                        RequestItems: {
-                            snap: { Keys: [] },
-                            crackle: { Keys: [] },
-                            pop: { Keys: [] },
-                        },
-                    },
-                ],
-            ];
-            const responses: any = [
-                {
-                    Responses: {
-                        snap: [],
-                        crackle: [],
-                        pop: [],
-                    },
-                },
-                {
-                    Responses: {
-                        snap: [],
-                        crackle: [],
-                        pop: [],
-                    },
-                },
-                {
-                    Responses: {
-                        snap: [],
-                        crackle: [],
-                        pop: [],
-                    },
-                },
-                {
-                    Responses: {
-                        snap: [],
-                        crackle: [],
-                        pop: [],
-                    },
-                },
-            ];
+			mockDynamoDbClient
+				.commandCalls(BatchGetItemCommand)
+				.map(({args: [{input}]}) => input),
+		).toEqual([
+			// [
+			{
+				RequestItems: {
+					foo: {
+						Keys: [{fizz: {N: '0'}}],
+					},
+					bar: {
+						Keys: [{quux: {N: '1'}}],
+						ProjectionExpression: 'snap[1].crackle.pop[2]',
+					},
+				},
+			},
+			// ],
+		]);
+	});
 
-            for (let i = 0; i < 325; i++) {
-                const table =
-                    i % 3 === 0 ? 'snap' : i % 3 === 1 ? 'crackle' : 'pop';
-                const fizz = { N: String(i) };
-                const buzz = { S: 'Static string' };
-                gets.push([table, { fizz: { N: String(i) } }]);
+	describe.each([true, false])('should', asyncInput => {
+		// For (const asyncInput of [true, false]) {
+		it(`partition get batches into requests with ${MAX_READ_BATCH_SIZE} or fewer items`, async () => {
+			const gets: Array<[string, AttributeMap]> = [];
+			const expected: any = [
+				[
+					{
+						RequestItems: {
+							snap: {Keys: []},
+							crackle: {Keys: []},
+							pop: {Keys: []},
+						},
+					},
+				],
+				[
+					{
+						RequestItems: {
+							snap: {Keys: []},
+							crackle: {Keys: []},
+							pop: {Keys: []},
+						},
+					},
+				],
+				[
+					{
+						RequestItems: {
+							snap: {Keys: []},
+							crackle: {Keys: []},
+							pop: {Keys: []},
+						},
+					},
+				],
+				[
+					{
+						RequestItems: {
+							snap: {Keys: []},
+							crackle: {Keys: []},
+							pop: {Keys: []},
+						},
+					},
+				],
+			];
+			const responses: any = [
+				{
+					Responses: {
+						snap: [],
+						crackle: [],
+						pop: [],
+					},
+				},
+				{
+					Responses: {
+						snap: [],
+						crackle: [],
+						pop: [],
+					},
+				},
+				{
+					Responses: {
+						snap: [],
+						crackle: [],
+						pop: [],
+					},
+				},
+				{
+					Responses: {
+						snap: [],
+						crackle: [],
+						pop: [],
+					},
+				},
+			];
 
-                responses[Math.floor(i / MAX_READ_BATCH_SIZE)].Responses[
-                    table
-                ].push({ fizz, buzz });
-                expected[Math.floor(i / MAX_READ_BATCH_SIZE)][0].RequestItems[
-                    table
-                ].Keys.push({ fizz });
-            }
+			for (let i = 0; i < 325; i++) {
+				const table
+                    = i % 3 === 0 ? 'snap' : (i % 3 === 1 ? 'crackle' : 'pop');
+				const fizz = {N: String(i)};
+				const buzz = {S: 'Static string'};
+				gets.push([table, {fizz: {N: String(i)}}]);
 
-            for (const response of responses) {
-                promiseFunc.mockImplementationOnce(() =>
-                    Promise.resolve(response)
-                );
-            }
+				responses[Math.floor(i / MAX_READ_BATCH_SIZE)].Responses[
+					table
+				].push({fizz, buzz});
+				expected[Math.floor(i / MAX_READ_BATCH_SIZE)][0].RequestItems[
+					table
+				].Keys.push({fizz});
+			}
 
-            const input = asyncInput
-                ? (async function* () {
-                      for (const item of gets) {
-                          await new Promise((resolve) =>
-                              setTimeout(resolve, Math.round(Math.random()))
-                          );
-                          yield item;
-                      }
-                  })()
-                : gets;
+			for (const response of responses) {
+				promiseFunc.mockImplementationOnce(async () =>
+					Promise.resolve(response),
+				);
+			}
 
-            const seen = new Set<number>();
-            for await (const [table, item] of new BatchGet(
-                mockDynamoDbClient as any,
-                input
-            )) {
-                const id = parseInt(item.fizz.N as string);
-                expect(seen.has(id)).toBe(false);
-                seen.add(id);
+			const input = asyncInput
+				? (async function * () {
+					for (const item of gets) {
+						await new Promise(resolve =>
+							setTimeout(resolve, Math.round(Math.random())),
+						);
+						yield item;
+					}
+				})()
+				: gets;
 
-                if (id % 3 === 0) {
-                    expect(table).toBe('snap');
-                } else if (id % 3 === 1) {
-                    expect(table).toBe('crackle');
-                } else {
-                    expect(table).toBe('pop');
-                }
+			const seen = new Set<number>();
+			for await (const [table, item] of new BatchGet(
+				mockDynamoDbClient as unknown as DynamoDBClient,
+				input,
+			)) {
+				const id = Number.parseInt(item.fizz.N!);
+				expect(seen.has(id)).toBe(false);
+				seen.add(id);
 
-                expect(item.buzz).toEqual({ S: 'Static string' });
-            }
+				if (id % 3 === 0) {
+					expect(table).toBe('snap');
+				} else if (id % 3 === 1) {
+					expect(table).toBe('crackle');
+				} else {
+					expect(table).toBe('pop');
+				}
 
-            expect(seen.size).toBe(gets.length);
+				expect(item.buzz).toEqual({S: 'Static string'});
+			}
 
-            const calls = mockDynamoDbClient.commandCalls(BatchGetItemCommand);
-            expect(calls.length).toBe(
-                Math.ceil(gets.length / MAX_READ_BATCH_SIZE)
-            );
-            expect(calls.map(({ args: [{ input }] }) => [input])).toEqual(
-                expected
-            );
-        });
+			expect(seen.size).toBe(gets.length);
 
-        it('retry unprocessed items', async () => {
-            const failures = new Set([
-                '24',
-                '66',
-                '99',
-                '103',
-                '142',
-                '178',
-                '204',
-                '260',
-                '288',
-            ]);
-            const gets: Array<[string, AttributeMap]> = [];
+			const calls = mockDynamoDbClient.commandCalls(BatchGetItemCommand);
+			expect(calls.length).toBe(
+				Math.ceil(gets.length / MAX_READ_BATCH_SIZE),
+			);
+			expect(calls.map(({args: [{input}]}) => [input])).toEqual(
+				expected,
+			);
+		});
 
-            for (let i = 0; i < 325; i++) {
-                const table =
-                    i % 3 === 0 ? 'snap' : i % 3 === 1 ? 'crackle' : 'pop';
-                gets.push([table, { fizz: { N: String(i) } }]);
-            }
+		it('retry unprocessed items', async () => {
+			const failures = new Set([
+				'24',
+				'66',
+				'99',
+				'103',
+				'142',
+				'178',
+				'204',
+				'260',
+				'288',
+			]);
+			const gets: Array<[string, AttributeMap]> = [];
 
-            const toBeFailed = new Set(failures);
-            promiseFunc.mockImplementation(() => {
-                const buzz = { S: 'Static string' };
-                const response: BatchGetItemOutput = {};
+			for (let i = 0; i < 325; i++) {
+				const table
+                    = i % 3 === 0 ? 'snap' : (i % 3 === 1 ? 'crackle' : 'pop');
+				gets.push([table, {fizz: {N: String(i)}}]);
+			}
 
-                const { RequestItems = {} } = mockDynamoDbClient
-                    .commandCalls(BatchGetItemCommand)
-                    .slice(-1)[0].args[0].input;
-                for (const tableName of Object.keys(RequestItems)) {
-                    for (const item of RequestItems[tableName]?.Keys ?? []) {
-                        if (toBeFailed.has((item as any).fizz.N)) {
-                            if (!response.UnprocessedKeys) {
-                                response.UnprocessedKeys = {};
-                            }
+			const toBeFailed = new Set(failures);
+			promiseFunc.mockImplementation(async () => {
+				const buzz = {S: 'Static string'};
+				const response: BatchGetItemOutput = {};
 
-                            if (!(tableName in response.UnprocessedKeys)) {
-                                response.UnprocessedKeys[tableName] = {
-                                    Keys: [],
-                                };
-                            }
+				const {RequestItems = {}} = mockDynamoDbClient
+					.commandCalls(BatchGetItemCommand)
+					.slice(-1)[0].args[0].input;
+				for (const tableName of Object.keys(RequestItems)) {
+					for (const item of RequestItems[tableName]?.Keys ?? []) {
+						if (toBeFailed.has((item).fizz.N)) {
+							if (!response.UnprocessedKeys) {
+								response.UnprocessedKeys = {};
+							}
 
-                            response.UnprocessedKeys[tableName].Keys?.push(
-                                item
-                            );
-                            toBeFailed.delete((item as any).fizz.N);
-                        } else {
-                            if (!response.Responses) {
-                                response.Responses = {};
-                            }
+							if (!(tableName in response.UnprocessedKeys)) {
+								response.UnprocessedKeys[tableName] = {
+									Keys: [],
+								};
+							}
 
-                            if (!(tableName in response.Responses)) {
-                                response.Responses[tableName] = [];
-                            }
+							response.UnprocessedKeys[tableName].Keys?.push(
+								item,
+							);
+							toBeFailed.delete((item).fizz.N);
+						} else {
+							if (!response.Responses) {
+								response.Responses = {};
+							}
 
-                            response.Responses[tableName].push({
-                                ...item,
-                                buzz,
-                            });
-                        }
-                    }
-                }
+							if (!(tableName in response.Responses)) {
+								response.Responses[tableName] = [];
+							}
 
-                return Promise.resolve(response);
-            });
+							response.Responses[tableName].push({
+								...item,
+								buzz,
+							});
+						}
+					}
+				}
 
-            const input = asyncInput
-                ? (async function* () {
-                      for (const item of gets) {
-                          await new Promise((resolve) =>
-                              setTimeout(resolve, Math.round(Math.random()))
-                          );
-                          yield item;
-                      }
-                  })()
-                : gets;
+				return Promise.resolve(response);
+			});
 
-            let idsReturned = new Set<number>();
-            for await (const [table, item] of new BatchGet(
-                mockDynamoDbClient as any,
-                input
-            )) {
-                const id = parseInt(item.fizz.N as string);
-                expect(idsReturned.has(id)).toBe(false);
-                idsReturned.add(id);
+			const input = asyncInput
+				? (async function * () {
+					for (const item of gets) {
+						await new Promise(resolve =>
+							setTimeout(resolve, Math.round(Math.random())),
+						);
+						yield item;
+					}
+				})()
+				: gets;
 
-                if (id % 3 === 0) {
-                    expect(table).toBe('snap');
-                } else if (id % 3 === 1) {
-                    expect(table).toBe('crackle');
-                } else {
-                    expect(table).toBe('pop');
-                }
+			const idsReturned = new Set<number>();
+			for await (const [table, item] of new BatchGet(
+				mockDynamoDbClient as unknown as DynamoDBClient,
+				input,
+			)) {
+				const id = Number.parseInt(item.fizz.N!);
+				expect(idsReturned.has(id)).toBe(false);
+				idsReturned.add(id);
 
-                expect(item.buzz).toEqual({ S: 'Static string' });
-            }
+				if (id % 3 === 0) {
+					expect(table).toBe('snap');
+				} else if (id % 3 === 1) {
+					expect(table).toBe('crackle');
+				} else {
+					expect(table).toBe('pop');
+				}
 
-            expect(idsReturned.size).toBe(gets.length);
-            expect(toBeFailed.size).toBe(0);
+				expect(item.buzz).toEqual({S: 'Static string'});
+			}
 
-            const calls = mockDynamoDbClient.commandCalls(BatchGetItemCommand);
-            expect(calls.length).toBe(
-                Math.ceil(gets.length / MAX_READ_BATCH_SIZE)
-            );
+			expect(idsReturned.size).toBe(gets.length);
+			expect(toBeFailed.size).toBe(0);
 
-            const callCount: { [key: string]: number } = calls
-                .map(({ args: [{ input }] }) => input)
-                .reduce(
-                    (
-                        keyUseCount: { [key: string]: number },
-                        { RequestItems }
-                    ) => {
-                        const keys = [];
-                        for (const table of Object.keys(RequestItems!)) {
-                            keys.push(...RequestItems![table].Keys!);
-                        }
-                        for (const {
-                            fizz: { N: key },
-                        } of keys) {
-                            if (key) {
-                                if (key in keyUseCount) {
-                                    keyUseCount[key]++;
-                                } else {
-                                    keyUseCount[key] = 1;
-                                }
-                            }
-                        }
+			const calls = mockDynamoDbClient.commandCalls(BatchGetItemCommand);
+			expect(calls.length).toBe(
+				Math.ceil(gets.length / MAX_READ_BATCH_SIZE),
+			);
 
-                        return keyUseCount;
-                    },
-                    {}
-                );
+			const callCount: Record<string, number> = calls
+				.map(({args: [{input}]}) => input)
+				.reduce(
+					(
+						keyUseCount: Record<string, number>,
+						{RequestItems},
+					) => {
+						const keys = [];
+						for (const table of Object.keys(RequestItems)) {
+							keys.push(...RequestItems[table].Keys!);
+						}
 
-            for (let i = 0; i < gets.length; i++) {
-                expect(callCount[i]).toBe(failures.has(String(i)) ? 2 : 1);
-            }
-        });
-        // }
-    });
+						for (const {
+							fizz: {N: key},
+						} of keys) {
+							if (key) {
+								if (key in keyUseCount) {
+									keyUseCount[key]++;
+								} else {
+									keyUseCount[key] = 1;
+								}
+							}
+						}
+
+						return keyUseCount;
+					},
+					{},
+				);
+
+			for (let i = 0; i < gets.length; i++) {
+				expect(callCount[i]).toBe(failures.has(String(i)) ? 2 : 1);
+			}
+		});
+		// }
+	});
 });

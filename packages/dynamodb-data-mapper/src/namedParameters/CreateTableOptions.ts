@@ -1,24 +1,24 @@
-import { ProvisionedThroughput } from './ProvisionedThroughput';
-import { PerIndexOptions } from './SecondaryIndexOptions';
+import {ProvisionedThroughput} from './ProvisionedThroughput';
+import {PerIndexOptions} from './SecondaryIndexOptions';
 
 interface BaseCreateTableOptions {
-    streamViewType?: StreamViewType;
-    indexOptions?: PerIndexOptions;
-    billingMode?: BillingMode;
-    sseSpecification?: SseSpecification;
+	streamViewType?: StreamViewType;
+	indexOptions?: PerIndexOptions;
+	billingMode?: BillingMode;
+	sseSpecification?: SseSpecification;
 }
 
 export interface SseSpecification {
-    sseType: SseType;
-    kmsMasterKeyId?: string;
+	sseType: SseType;
+	kmsMasterKeyId?: string;
 }
 
 export interface ProvisionedCreateTableOptions extends ProvisionedThroughput, BaseCreateTableOptions {
-    billingMode?: 'PROVISIONED';
+	billingMode?: 'PROVISIONED';
 }
 
 export interface OnDemandCreateTableOptions extends BaseCreateTableOptions {
-    billingMode: 'PAY_PER_REQUEST';
+	billingMode: 'PAY_PER_REQUEST';
 }
 
 export type CreateTableOptions = ProvisionedCreateTableOptions | OnDemandCreateTableOptions;

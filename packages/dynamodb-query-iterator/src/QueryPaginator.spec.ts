@@ -51,7 +51,7 @@ describe('QueryPaginator', () => {
 		promiseFunc.mockImplementationOnce(async () => Promise.resolve({}));
 
 		const result: any[] = [];
-		for await (const queryResult of new QueryPaginator(mockDynamoDbClient as any, {
+		for await (const queryResult of new QueryPaginator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		})) {
 			result.push(...(queryResult.Items ?? []));
@@ -96,7 +96,7 @@ describe('QueryPaginator', () => {
 		);
 
 		const paginator = new QueryPaginator(
-			mockDynamoDbClient as any,
+			mockDynamoDbClient as unknown as DynamoDBClient,
 			{TableName: 'foo'},
 			2,
 		);
@@ -142,7 +142,7 @@ describe('QueryPaginator', () => {
 		promiseFunc.mockImplementationOnce(async () => Promise.resolve({}));
 
 		const paginator = new QueryPaginator(
-			mockDynamoDbClient as any,
+			mockDynamoDbClient as unknown as DynamoDBClient,
 			{TableName: 'foo'},
 			3,
 		);
@@ -206,7 +206,7 @@ describe('QueryPaginator', () => {
 		);
 		promiseFunc.mockImplementationOnce(async () => Promise.resolve({}));
 
-		const paginator = new QueryPaginator(mockDynamoDbClient as any, {
+		const paginator = new QueryPaginator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		});
 		const expectedLastKeys = [
@@ -268,7 +268,7 @@ describe('QueryPaginator', () => {
 			}),
 		);
 
-		const paginator = new QueryPaginator(mockDynamoDbClient as any, {
+		const paginator = new QueryPaginator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		});
 
@@ -335,7 +335,7 @@ describe('QueryPaginator', () => {
 			}),
 		);
 
-		const paginator = new QueryPaginator(mockDynamoDbClient as any, {
+		const paginator = new QueryPaginator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		});
 
@@ -390,7 +390,7 @@ describe('QueryPaginator', () => {
 		promiseFunc.mockImplementationOnce(async () => Promise.resolve({}));
 
 		let i = 0;
-		const paginator = new QueryPaginator(mockDynamoDbClient as any, {
+		const paginator = new QueryPaginator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		});
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars

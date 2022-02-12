@@ -1,27 +1,23 @@
-import { ProvisionedThroughput } from './ProvisionedThroughput';
+import {ProvisionedThroughput} from './ProvisionedThroughput';
 
-export type SecondaryIndexProjection = 'all'|'keys'|Array<string>;
+export type SecondaryIndexProjection = 'all' | 'keys' | string[];
 
 export interface SharedSecondaryIndexOptions {
-    projection: SecondaryIndexProjection;
+	projection: SecondaryIndexProjection;
 }
 
 export interface GlobalSecondaryIndexOptions extends
-    SharedSecondaryIndexOptions,
-    ProvisionedThroughput
-{
-    type: 'global';
+	SharedSecondaryIndexOptions,
+	ProvisionedThroughput {
+	type: 'global';
 }
 
 export interface LocalSecondaryIndexOptions extends
-    SharedSecondaryIndexOptions
-{
-    type: 'local';
+	SharedSecondaryIndexOptions {
+	type: 'local';
 }
 
 export type SecondaryIndexOptions
     = GlobalSecondaryIndexOptions | LocalSecondaryIndexOptions;
 
-export interface PerIndexOptions {
-    [indexName: string]: SecondaryIndexOptions;
-}
+export type PerIndexOptions = Record<string, SecondaryIndexOptions>;

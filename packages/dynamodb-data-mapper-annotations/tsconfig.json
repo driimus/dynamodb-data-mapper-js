@@ -13,6 +13,7 @@
         "rootDir": "./src",
         "outDir": "./build"
     },
+    "exclude": ["src/*.spec.ts", "node_modules", "build", "src/*.fixture.ts"],
     "typedocOptions": {
         "mode": "file",
         "out": "../../docs/packages/dynamodb-data-mapper-annotations",

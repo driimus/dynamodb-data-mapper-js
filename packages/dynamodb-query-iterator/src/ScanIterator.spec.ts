@@ -51,7 +51,7 @@ describe('ScanIterator', () => {
 		promiseFunc.mockImplementationOnce(async () => Promise.resolve({}));
 
 		const result: any[] = [];
-		for await (const item of new ScanIterator(mockDynamoDbClient as any, {
+		for await (const item of new ScanIterator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		})) {
 			result.push(item);
@@ -131,7 +131,7 @@ describe('ScanIterator', () => {
 			}),
 		);
 
-		const iterator = new ScanIterator(mockDynamoDbClient as any, {
+		const iterator = new ScanIterator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		});
 

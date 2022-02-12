@@ -1,76 +1,76 @@
-import { marshallStartKey } from './marshallStartKey';
-import { SequentialScanOptions } from './namedParameters';
-import { getSchema, getTableName } from './protocols';
 import {
-    marshallConditionExpression,
-    marshallProjectionExpression,
-    ZeroArgumentsConstructor,
+	marshallConditionExpression,
+	marshallProjectionExpression,
+	ZeroArgumentsConstructor,
 } from '@aws/dynamodb-data-marshaller';
-import { ExpressionAttributes } from '@aws/dynamodb-expressions';
-import { ScanInput } from '@aws-sdk/client-dynamodb';
+import {ExpressionAttributes} from '@aws/dynamodb-expressions';
+import {ScanInput} from '@aws-sdk/client-dynamodb';
+import {marshallStartKey} from './marshallStartKey';
+import {SequentialScanOptions} from './namedParameters';
+import {getSchema, getTableName} from './protocols';
 
 /**
  * @internal
  */
 export function buildScanInput<T>(
-    valueConstructor: ZeroArgumentsConstructor<T>,
-    options: SequentialScanOptions = {}
+	valueConstructor: ZeroArgumentsConstructor<T>,
+	options: SequentialScanOptions = {},
 ): ScanInput {
-    const {
-        filter,
-        indexName,
-        pageSize,
-        projection,
-        readConsistency,
-        segment,
-        startKey,
-        tableNamePrefix: prefix,
-        totalSegments,
-    } = options;
+	const {
+		filter,
+		indexName,
+		pageSize,
+		projection,
+		readConsistency,
+		segment,
+		startKey,
+		tableNamePrefix: prefix,
+		totalSegments,
+	} = options;
 
-    const req: ScanInput = {
-        TableName: getTableName(valueConstructor.prototype, prefix),
-        Limit: pageSize,
-        IndexName: indexName,
-        Segment: segment,
-        TotalSegments: totalSegments,
-    };
+	const request: ScanInput = {
+		TableName: getTableName(valueConstructor.prototype, prefix),
+		Limit: pageSize,
+		IndexName: indexName,
+		Segment: segment,
+		TotalSegments: totalSegments,
+	};
 
-    if (readConsistency === 'strong') {
-        req.ConsistentRead = true;
-    }
+	if (readConsistency === 'strong') {
+		request.ConsistentRead = true;
+	}
 
-    const schema = getSchema(valueConstructor.prototype);
+	const schema = getSchema(valueConstructor.prototype);
 
-    const attributes = new ExpressionAttributes();
+	const attributes = new ExpressionAttributes();
 
-    if (filter) {
-        req.FilterExpression = marshallConditionExpression(
-            filter,
-            schema,
-            attributes
-        ).expression;
-    }
+	if (filter) {
+		request.FilterExpression = marshallConditionExpression(
+			filter,
+			schema,
+			attributes,
+		).expression;
+	}
 
-    if (projection) {
-        req.ProjectionExpression = marshallProjectionExpression(
-            projection,
-            schema,
-            attributes
-        ).expression;
-    }
+	if (projection) {
+		request.ProjectionExpression = marshallProjectionExpression(
+			projection,
+			schema,
+			attributes,
+		).expression;
+	}
 
-    if (Object.keys(attributes.names).length > 0) {
-        req.ExpressionAttributeNames = attributes.names;
-    }
+	if (Object.keys(attributes.names).length > 0) {
+		request.ExpressionAttributeNames = attributes.names;
+	}
 
-    if (Object.keys(attributes.values).length > 0) {
-        req.ExpressionAttributeValues = attributes.values;
-    }
+	if (Object.keys(attributes.values).length > 0) {
+		request.ExpressionAttributeValues = attributes.values;
+	}
 
-    if (startKey) {
-        req.ExclusiveStartKey = marshallStartKey(schema, startKey);
-    }
+	if (startKey) {
+		request.ExclusiveStartKey = marshallStartKey(schema, startKey);
+	}
 
-    return req;
+	return request;
 }

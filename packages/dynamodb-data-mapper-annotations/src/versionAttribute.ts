@@ -1,13 +1,13 @@
-import { PropertyAnnotation } from './annotationShapes';
-import { attribute } from './attribute';
-import { NumberType } from '@aws/dynamodb-data-marshaller';
+import {NumberType} from '@aws/dynamodb-data-marshaller';
+import {PropertyAnnotation} from './annotationShapes';
+import {attribute} from './attribute';
 
 export function versionAttribute(
-    parameters: Partial<NumberType> = {}
+	parameters: Partial<NumberType> = {},
 ): PropertyAnnotation {
-    return attribute({
-        ...parameters,
-        type: 'Number',
-        versionAttribute: true,
-    });
+	return attribute({
+		...parameters,
+		type: 'Number',
+		versionAttribute: true,
+	});
 }

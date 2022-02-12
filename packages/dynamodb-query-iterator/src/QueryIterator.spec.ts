@@ -51,7 +51,7 @@ describe('QueryIterator', () => {
 		promiseFunc.mockImplementationOnce(async () => Promise.resolve({}));
 
 		const result: any[] = [];
-		for await (const item of new QueryIterator(mockDynamoDbClient as any, {
+		for await (const item of new QueryIterator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		})) {
 			result.push(item);
@@ -77,7 +77,7 @@ describe('QueryIterator', () => {
 	});
 
 	it('should provide access to the underlying paginator', async () => {
-		const iterator = new QueryIterator(mockDynamoDbClient as any, {
+		const iterator = new QueryIterator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		});
 
@@ -85,7 +85,7 @@ describe('QueryIterator', () => {
 	});
 
 	it('should not allow iteration once the paginator has been detached', async () => {
-		const iterator = new QueryIterator(mockDynamoDbClient as any, {
+		const iterator = new QueryIterator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		});
 
@@ -154,7 +154,7 @@ describe('QueryIterator', () => {
 			}),
 		);
 
-		const iterator = new QueryIterator(mockDynamoDbClient as any, {
+		const iterator = new QueryIterator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		});
 
@@ -189,7 +189,7 @@ describe('QueryIterator', () => {
 				LastEvaluatedKey: {fizz: {S: 'snap'}},
 			}),
 		);
-		const iterator = new QueryIterator(mockDynamoDbClient as any, {
+		const iterator = new QueryIterator(mockDynamoDbClient as unknown as DynamoDBClient, {
 			TableName: 'foo',
 		});
 
