@@ -1,5 +1,5 @@
-import {StringType} from '@aws/dynamodb-data-marshaller';
 import {randomUUID} from 'node:crypto';
+import {StringType} from '@aws/dynamodb-data-marshaller';
 import {PropertyAnnotation} from './annotationShapes';
 import {hashKey} from './hashKey';
 

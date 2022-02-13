@@ -8,7 +8,7 @@ export type OnMissingStrategy = 'remove' | 'skip';
 
 export type ReadConsistency = 'eventual' | 'strong';
 
-export type StringToAnyObjectMap = Record<string, unknown>;
+export type StringToAnyObjectMap = Record<string, any>;
 
 export type SyncOrAsyncIterable<T> = Iterable<T> | AsyncIterable<T>;
 

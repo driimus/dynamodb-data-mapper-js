@@ -5,4 +5,4 @@ export type ZeroArgumentsConstructor<T> = new () => T;
 
 export type ClassAnnotation = (target: ZeroArgumentsConstructor<any>) => void;
 
-export type PropertyAnnotation = (target: Record<string, unknown>, propertyKey: string | symbol) => void;
+export type PropertyAnnotation = (target: any, propertyKey: string | symbol) => void;

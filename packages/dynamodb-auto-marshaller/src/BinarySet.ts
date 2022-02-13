@@ -13,9 +13,9 @@ export class BinarySet extends ObjectSet<BinaryValue> {
 		const scrubbedValues = this._values.filter(item => !binaryEquals(getBinaryView(item), valueView));
 
 		const numberRemoved = this._values.length - scrubbedValues.length;
-        this._values = scrubbedValues;
+		this._values = scrubbedValues;
 
-        return numberRemoved > 0;
+		return numberRemoved > 0;
 	}
 
 	/**

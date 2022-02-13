@@ -29,7 +29,7 @@ export function toSchemaName(
             && cursor
             && cursor.type === 'List'
 		) {
-			cursor = (cursor as any).memberType;
+			cursor = cursor.memberType;
 		} else {
 			break;
 		}

@@ -1,39 +1,37 @@
 import {
-    ConsistentRead,
-    ExpressionAttributeNameMap,
-    ProjectionExpression,
+	ConsistentRead,
+	ExpressionAttributeNameMap,
+	ProjectionExpression,
 } from './types';
 
 export interface BatchGetOptions {
-    /**
+	/**
      * The default read consistency to apply to gets.
      */
-    ConsistentRead?: ConsistentRead;
+	ConsistentRead?: ConsistentRead;
 
-    /**
+	/**
      * Options to apply for all reads directed to a specific table.
      */
-    PerTableOptions?: PerTableOptions;
+	PerTableOptions?: PerTableOptions;
 }
 
-export interface PerTableOptions {
-    [tableName: string]: TableOptions;
-}
+export type PerTableOptions = Record<string, TableOptions>;
 
 export interface TableOptions {
-    /**
+	/**
      * The read consistency to apply to reads against this table.
      */
-    ConsistentRead?: ConsistentRead;
+	ConsistentRead?: ConsistentRead;
 
-    /**
+	/**
      * One or more substitution tokens for attribute names in an expression.
      */
-    ExpressionAttributeNames?: ExpressionAttributeNameMap;
+	ExpressionAttributeNames?: ExpressionAttributeNameMap;
 
-    /**
+	/**
      * A string that identifies one or more attributes to retrieve from the
      * table.
      */
-    ProjectionExpression?: ProjectionExpression;
+	ProjectionExpression?: ProjectionExpression;
 }

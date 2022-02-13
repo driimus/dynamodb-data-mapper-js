@@ -1,5 +1,4 @@
-import {isSchemaType} from './SchemaType';
-import {Schema} from './Schema';
+import {isSchemaType, Schema} from './SchemaType';
 
 describe('isSchemaType', () => {
 	it('should reject scalar values', () => {

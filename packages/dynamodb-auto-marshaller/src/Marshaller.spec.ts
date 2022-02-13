@@ -223,17 +223,19 @@ describe('Marshaller', () => {
 
 			it('should convert objects with inheritance chains to MapAttributeValues', () => {
 				class MyPrototype {
-					public get foo() { return 'bar'; }
+					public readonly foo = 'bar'
 				}
 
 				class MyDescendant extends MyPrototype {
-					public get fizz() { return 'buzz'; }
+					public readonly fizz = 'buzz'
 				}
 
 				const myInstance = new MyDescendant();
 				(myInstance as any).quux = true;
 
-				expect(new Marshaller().marshallValue(myInstance)).toEqual({
+				const actual = new Marshaller().marshallValue(myInstance);
+				console.log({actual, myInstance})
+				expect(actual).toEqual({
 					M: {
 						foo: {S: 'bar'},
 						fizz: {S: 'buzz'},

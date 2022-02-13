@@ -1,10 +1,10 @@
-import { BatchOperation } from './BatchOperation';
-import { itemIdentifier } from './itemIdentifier';
-import { WriteRequest } from './types';
 import {
-    BatchWriteItemCommand,
-    WriteRequest as _WriteRequest,
+	BatchWriteItemCommand,
+	WriteRequest as _WriteRequest,
 } from '@aws-sdk/client-dynamodb';
+import {BatchOperation} from './BatchOperation';
+import {itemIdentifier} from './itemIdentifier';
+import {WriteRequest} from './types';
 
 export const MAX_WRITE_BATCH_SIZE = 25;
 
@@ -22,77 +22,75 @@ export const MAX_WRITE_BATCH_SIZE = 25;
  * per-table basis.
  */
 export class BatchWrite extends BatchOperation<WriteRequest> {
-    protected readonly batchSize = MAX_WRITE_BATCH_SIZE;
+	protected readonly batchSize = MAX_WRITE_BATCH_SIZE;
 
-    protected async doBatchRequest() {
-        const inFlight: Array<[string, WriteRequest]> = [];
-        const operationInput: {
-            RequestItems: Record<string, _WriteRequest[]>;
-        } = { RequestItems: {} };
+	protected async doBatchRequest() {
+		const inFlight: Array<[string, WriteRequest]> = [];
+		const operationInput: {
+			RequestItems: Record<string, _WriteRequest[]>;
+		} = {RequestItems: {}};
 
-        let batchSize = 0;
-        while (this.toSend.length > 0) {
-            const [tableName, marshalled] = this.toSend.shift() as [
-                string,
-                WriteRequest
-            ];
+		let batchSize = 0;
+		while (this.toSend.length > 0) {
+			const [tableName, marshalled] = this.toSend.shift()!;
 
-            inFlight.push([tableName, marshalled]);
+			inFlight.push([tableName, marshalled]);
 
-            if (operationInput.RequestItems[tableName] === undefined) {
-                operationInput.RequestItems[tableName] = [];
-            }
-            operationInput.RequestItems[tableName].push(marshalled);
+			if (operationInput.RequestItems[tableName] === undefined) {
+				operationInput.RequestItems[tableName] = [];
+			}
 
-            if (++batchSize === this.batchSize) {
-                break;
-            }
-        }
+			operationInput.RequestItems[tableName].push(marshalled);
 
-        const { UnprocessedItems = {} } = await this.client.send(
-            new BatchWriteItemCommand(operationInput)
-        );
-        const unprocessedTables = new Set<string>();
+			if (++batchSize === this.batchSize) {
+				break;
+			}
+		}
 
-        for (const table of Object.keys(UnprocessedItems)) {
-            unprocessedTables.add(table);
-            const unprocessed: Array<WriteRequest> = [];
-            for (const item of UnprocessedItems[table]) {
-                if (item.DeleteRequest || item.PutRequest) {
-                    unprocessed.push(item as WriteRequest);
+		const {UnprocessedItems = {}} = await this.client.send(
+			new BatchWriteItemCommand(operationInput),
+		);
+		const unprocessedTables = new Set<string>();
 
-                    const identifier = itemIdentifier(
-                        table,
-                        item as WriteRequest
-                    );
-                    for (let i = inFlight.length - 1; i >= 0; i--) {
-                        const [tableName, attributes] = inFlight[i];
-                        if (
-                            tableName === table &&
-                            itemIdentifier(tableName, attributes) === identifier
-                        ) {
-                            inFlight.splice(i, 1);
-                        }
-                    }
-                }
-            }
+		for (const table of Object.keys(UnprocessedItems)) {
+			unprocessedTables.add(table);
+			const unprocessed: WriteRequest[] = [];
+			for (const item of UnprocessedItems[table]) {
+				if (item.DeleteRequest || item.PutRequest) {
+					unprocessed.push(item as WriteRequest);
 
-            this.handleThrottled(table, unprocessed);
-        }
+					const identifier = itemIdentifier(
+						table,
+						item as WriteRequest,
+					);
+					for (let i = inFlight.length - 1; i >= 0; i--) {
+						const [tableName, attributes] = inFlight[i];
+						if (
+							tableName === table
+                            && itemIdentifier(tableName, attributes) === identifier
+						) {
+							inFlight.splice(i, 1);
+						}
+					}
+				}
+			}
 
-        this.movePendingToThrottled(unprocessedTables);
+			this.handleThrottled(table, unprocessed);
+		}
 
-        const processedTables = new Set<string>();
-        for (const [tableName, marshalled] of inFlight) {
-            processedTables.add(tableName);
-            this.pending.push([tableName, marshalled]);
-        }
+		this.movePendingToThrottled(unprocessedTables);
 
-        for (const tableName of processedTables) {
-            this.state[tableName].backoffFactor = Math.max(
-                0,
-                this.state[tableName].backoffFactor - 1
-            );
-        }
-    }
+		const processedTables = new Set<string>();
+		for (const [tableName, marshalled] of inFlight) {
+			processedTables.add(tableName);
+			this.pending.push([tableName, marshalled]);
+		}
+
+		for (const tableName of processedTables) {
+			this.state[tableName].backoffFactor = Math.max(
+				0,
+				this.state[tableName].backoffFactor - 1,
+			);
+		}
+	}
 }

@@ -1,7 +1,6 @@
 import { BinarySet } from '@aws/dynamodb-auto-marshaller';
 import { marshallItem } from './marshallItem';
-import { Schema } from './Schema';
-import { CustomType } from './SchemaType';
+import { CustomType, Schema } from './SchemaType';
 // import objectContaining = jasmine.objectContaining;
 
 describe('marshallItem', () => {
@@ -284,7 +283,7 @@ describe('marshallItem', () => {
 				} as CustomType<void>,
 			};
 			const document = {custom: 'a value'};
-			expect(marshallItem(schema, document)).toEqual({
+			expect(marshallItem(schema as any, document)).toEqual({
 				custom: {S: 'stubbed'},
 			});
 

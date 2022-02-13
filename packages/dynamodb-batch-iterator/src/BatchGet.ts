@@ -1,11 +1,11 @@
-import { BatchGetOptions, PerTableOptions } from './BatchGetOptions';
-import { BatchOperation } from './BatchOperation';
-import { AttributeMap, SyncOrAsyncIterable, TableState } from './types';
 import {
-    BatchGetItemCommand,
-    KeysAndAttributes,
-    DynamoDBClient,
+	BatchGetItemCommand,
+	KeysAndAttributes,
+	DynamoDBClient,
 } from '@aws-sdk/client-dynamodb';
+import {BatchGetOptions, PerTableOptions} from './BatchGetOptions';
+import {BatchOperation} from './BatchOperation';
+import {AttributeMap, SyncOrAsyncIterable, TableState} from './types';
 
 export const MAX_READ_BATCH_SIZE = 100;
 
@@ -18,12 +18,12 @@ export const MAX_READ_BATCH_SIZE = 100;
  * per-table basis.
  */
 export class BatchGet extends BatchOperation<AttributeMap> {
-    protected readonly batchSize = MAX_READ_BATCH_SIZE;
+	protected readonly batchSize = MAX_READ_BATCH_SIZE;
 
-    private readonly consistentRead?: boolean;
-    private readonly options: PerTableOptions;
+	private readonly consistentRead?: boolean;
+	private readonly options: PerTableOptions;
 
-    /**
+	/**
      * @param client    The AWS SDK client with which to communicate with
      *                  DynamoDB.
      * @param items     A synchronous or asynchronous iterable of tuples
@@ -32,80 +32,78 @@ export class BatchGet extends BatchOperation<AttributeMap> {
      *                  read, and the second should be the marshalled key.
      * @param options   Additional options to apply to the operations executed.
      */
-    constructor(
-        client: DynamoDBClient,
-        items: SyncOrAsyncIterable<[string, AttributeMap]>,
-        { ConsistentRead, PerTableOptions = {} }: BatchGetOptions = {}
-    ) {
-        super(client, items);
-        this.consistentRead = ConsistentRead;
-        this.options = PerTableOptions;
-    }
+	constructor(
+		client: DynamoDBClient,
+		items: SyncOrAsyncIterable<[string, AttributeMap]>,
+		{ConsistentRead, PerTableOptions = {}}: BatchGetOptions = {},
+	) {
+		super(client, items);
+		this.consistentRead = ConsistentRead;
+		this.options = PerTableOptions;
+	}
 
-    protected async doBatchRequest() {
-        const operationInput: {
-            RequestItems: Record<string, KeysAndAttributes>;
-        } = { RequestItems: {} };
-        let batchSize = 0;
+	protected async doBatchRequest() {
+		const operationInput: {
+			RequestItems: Record<string, KeysAndAttributes>;
+		} = {RequestItems: {}};
+		let batchSize = 0;
 
-        while (this.toSend.length > 0) {
-            const [tableName, item] = this.toSend.shift() as [
-                string,
-                AttributeMap
-            ];
-            if (operationInput.RequestItems[tableName] === undefined) {
-                const { projection, consistentRead, attributeNames } =
-                    this.state[tableName];
+		while (this.toSend.length > 0) {
+			const [tableName, item] = this.toSend.shift()!;
+			if (operationInput.RequestItems[tableName] === undefined) {
+				const {projection, consistentRead, attributeNames}
+                    = this.state[tableName];
 
-                operationInput.RequestItems[tableName] = {
-                    Keys: [],
-                    ConsistentRead: consistentRead,
-                    ProjectionExpression: projection,
-                    ExpressionAttributeNames: attributeNames,
-                };
-            }
-            operationInput.RequestItems[tableName].Keys?.push(item);
+				operationInput.RequestItems[tableName] = {
+					Keys: [],
+					ConsistentRead: consistentRead,
+					ProjectionExpression: projection,
+					ExpressionAttributeNames: attributeNames,
+				};
+			}
 
-            if (++batchSize === this.batchSize) {
-                break;
-            }
-        }
+			operationInput.RequestItems[tableName].Keys?.push(item);
 
-        const { Responses = {}, UnprocessedKeys = {} } = await this.client.send(
-            new BatchGetItemCommand(operationInput)
-        );
+			if (++batchSize === this.batchSize) {
+				break;
+			}
+		}
 
-        const unprocessedTables = new Set<string>();
-        for (const table of Object.keys(UnprocessedKeys)) {
-            unprocessedTables.add(table);
-            this.handleThrottled(table, UnprocessedKeys[table].Keys ?? []);
-        }
+		const {Responses = {}, UnprocessedKeys = {}} = await this.client.send(
+			new BatchGetItemCommand(operationInput),
+		);
 
-        this.movePendingToThrottled(unprocessedTables);
+		const unprocessedTables = new Set<string>();
+		for (const table of Object.keys(UnprocessedKeys)) {
+			unprocessedTables.add(table);
+			this.handleThrottled(table, UnprocessedKeys[table].Keys ?? []);
+		}
 
-        for (const table of Object.keys(Responses)) {
-            const tableData = this.state[table];
-            tableData.backoffFactor = Math.max(0, tableData.backoffFactor - 1);
-            for (const item of Responses[table]) {
-                this.pending.push([table, item]);
-            }
-        }
-    }
+		this.movePendingToThrottled(unprocessedTables);
 
-    protected getInitialTableState(
-        tableName: string
-    ): TableState<AttributeMap> {
-        const {
-            ExpressionAttributeNames,
-            ProjectionExpression,
-            ConsistentRead = this.consistentRead,
-        } = this.options[tableName] || ({} as PerTableOptions);
+		for (const table of Object.keys(Responses)) {
+			const tableData = this.state[table];
+			tableData.backoffFactor = Math.max(0, tableData.backoffFactor - 1);
+			for (const item of Responses[table]) {
+				this.pending.push([table, item]);
+			}
+		}
+	}
 
-        return {
-            ...super.getInitialTableState(tableName),
-            attributeNames: ExpressionAttributeNames,
-            projection: ProjectionExpression,
-            consistentRead: ConsistentRead,
-        };
-    }
+	protected getInitialTableState(
+		tableName: string,
+	): TableState<AttributeMap> {
+		const {
+			ExpressionAttributeNames,
+			ProjectionExpression,
+			ConsistentRead = this.consistentRead,
+		} = this.options[tableName] || ({} as PerTableOptions);
+
+		return {
+			...super.getInitialTableState(tableName),
+			attributeNames: ExpressionAttributeNames,
+			projection: ProjectionExpression,
+			consistentRead: ConsistentRead,
+		};
+	}
 }

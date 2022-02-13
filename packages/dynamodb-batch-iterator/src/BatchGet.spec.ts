@@ -1,5 +1,6 @@
 import {
 	BatchGetItemCommand,
+	BatchGetItemCommandInput,
 	BatchGetItemOutput,
 	DynamoDBClient,
 } from '@aws-sdk/client-dynamodb';
@@ -18,6 +19,7 @@ describe('BatchGet', () => {
 	//     batchGetItem: jest.fn(() => ({promise: promiseFunc})),
 	// } as any;
 	const mockDynamoDbClient = mockClient(DynamoDBClient);
+
 	mockDynamoDbClient.on(BatchGetItemCommand).callsFake(promiseFunc);
 
 	beforeEach(() => {
@@ -77,6 +79,7 @@ describe('BatchGet', () => {
 			},
 		);
 
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		for await (const _ of batchGet) {
 			// Pass
 		}
@@ -121,6 +124,7 @@ describe('BatchGet', () => {
 			},
 		);
 
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		for await (const _ of batchGet) {
 			// Pass
 		}
@@ -152,7 +156,19 @@ describe('BatchGet', () => {
 		// For (const asyncInput of [true, false]) {
 		it(`partition get batches into requests with ${MAX_READ_BATCH_SIZE} or fewer items`, async () => {
 			const gets: Array<[string, AttributeMap]> = [];
-			const expected: any = [
+			const expected: Array<Array<{
+				RequestItems: {
+					snap: {
+						Keys: Array<Record<string, Record<string, string>>>;
+					};
+					crackle: {
+						Keys: Array<Record<string, Record<string, string>>>;
+					};
+					pop: {
+						Keys: Array<Record<string, Record<string, string>>>;
+					};
+				};
+			}>> = [
 				[
 					{
 						RequestItems: {
@@ -190,7 +206,13 @@ describe('BatchGet', () => {
 					},
 				],
 			];
-			const responses: any = [
+			const responses: Array<{
+				Responses: {
+					snap: Array<Record<string, Record<string, string>>>;
+					crackle: Array<Record<string, Record<string, string>>>;
+					pop: Array<Record<string, Record<string, string>>>;
+				};
+			}> = [
 				{
 					Responses: {
 						snap: [],
@@ -238,7 +260,7 @@ describe('BatchGet', () => {
 
 			for (const response of responses) {
 				promiseFunc.mockImplementationOnce(async () =>
-					Promise.resolve(response),
+					Promise.resolve(response as unknown as BatchGetItemOutput),
 				);
 			}
 
@@ -365,7 +387,7 @@ describe('BatchGet', () => {
 				mockDynamoDbClient as unknown as DynamoDBClient,
 				input,
 			)) {
-				const id = Number.parseInt(item.fizz.N!);
+				const id = Number.parseInt(item.fizz.N!, 10);
 				expect(idsReturned.has(id)).toBe(false);
 				idsReturned.add(id);
 

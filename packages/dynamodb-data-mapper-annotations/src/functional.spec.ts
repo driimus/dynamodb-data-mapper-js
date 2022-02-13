@@ -67,7 +67,7 @@ describe('annotations', () => {
 
 		post.replies[0].replies = [reply];
 
-		await mapper.put(post);
+		await mapper.put(post as any);
 
 		expect(
 			mockDynamoDbClient.commandCalls(PutItemCommand)[0].args[0].input,

@@ -1,12 +1,12 @@
-import { AttributeValue } from '@aws-sdk/client-dynamodb';
-import { convertToAttr } from '@aws-sdk/util-dynamodb';
-import { BinarySet, BinaryValue } from './BinarySet';
+import {AttributeValue} from '@aws-sdk/client-dynamodb';
+import {convertToAttr} from '@aws-sdk/util-dynamodb';
+import {BinarySet, BinaryValue} from './BinarySet';
 
 export type AttributeMap = Record<string, AttributeValue>;
 export const EmptyHandlingStrategies = {
-    omit: 'omit',
-    nullify: 'nullify',
-    leave: 'leave',
+	omit: 'omit',
+	nullify: 'nullify',
+	leave: 'leave',
 };
 
 /**
@@ -30,15 +30,15 @@ export const EmptyHandlingStrategies = {
 export type EmptyHandlingStrategy = keyof typeof EmptyHandlingStrategies;
 
 export const InvalidHandlingStrategies = {
-    /**
+	/**
      * Remove any invalid values from the serialized output.
      */
-    omit: 'omit',
+	omit: 'omit',
 
-    /**
+	/**
      * Throw an error when an unserializable value is encountered.
      */
-    throw: 'throw',
+	throw: 'throw',
 };
 
 /**
@@ -68,33 +68,31 @@ export type UnmarshalledAttributeValue =
     | UnmarshalledMapAttributeValue;
 
 export interface UnmarshalledListAttributeValue
-    extends Array<UnmarshalledAttributeValue> {}
+	extends Array<UnmarshalledAttributeValue> {}
 
-export interface UnmarshalledMapAttributeValue {
-    [key: string]: UnmarshalledAttributeValue;
-}
+export interface UnmarshalledMapAttributeValue extends Record<string, UnmarshalledAttributeValue> {}
 
 export interface MarshallingOptions {
-    /**
+	/**
      * The behavior the marshaller should exhibit when it encounters "empty"
      * data that would be rejected as invalid by DynamoDB, such as 0-length
      * buffers or the string `''`.
      */
-    onEmpty?: EmptyHandlingStrategy;
+	onEmpty?: EmptyHandlingStrategy;
 
-    /**
+	/**
      * The behavior the marshaller should exhibit when it encounters data that
      * cannot be marshalled to a DynamoDB AttributeValue, such as a Symbol or
      * Function object.
      */
-    onInvalid?: InvalidHandlingStrategy;
+	onInvalid?: InvalidHandlingStrategy;
 
-    /**
+	/**
      * Whether numbers should be unmarshalled to a special object type that can
      * preserve values that would lose precision if converted to JavaScript's
      * native number type.
      */
-    unwrapNumbers?: boolean;
+	unwrapNumbers?: boolean;
 }
 
 /**
@@ -102,281 +100,290 @@ export interface MarshallingOptions {
  * logical in the DynamoDB schema.
  */
 export class Marshaller {
-    private readonly onEmpty: EmptyHandlingStrategy;
-    private readonly onInvalid: InvalidHandlingStrategy;
-    private readonly unwrapNumbers: boolean;
+	private readonly onEmpty: EmptyHandlingStrategy;
+	private readonly onInvalid: InvalidHandlingStrategy;
+	private readonly unwrapNumbers: boolean;
 
-    constructor({
-        onEmpty = 'leave',
-        onInvalid = 'throw',
-        unwrapNumbers = false,
-    }: MarshallingOptions = {}) {
-        this.onEmpty = onEmpty;
-        this.onInvalid = onInvalid;
-        this.unwrapNumbers = unwrapNumbers;
-    }
+	constructor({
+		onEmpty = 'leave',
+		onInvalid = 'throw',
+		unwrapNumbers = false,
+	}: MarshallingOptions = {}) {
+		this.onEmpty = onEmpty;
+		this.onInvalid = onInvalid;
+		this.unwrapNumbers = unwrapNumbers;
+	}
 
-    /**
+	/**
      * Convert a JavaScript object with string keys and arbitrary values into an
      * object with string keys and DynamoDB AttributeValue objects as values.
      */
-    public marshallItem(item: { [key: string]: any }): AttributeMap {
-        const value = this.marshallValue(item);
-        if (!(value && value.M) && this.onInvalid === 'throw') {
-            throw new Error(
-                `Cannot serialize ${typeof item} as an attribute map`
-            );
-        }
+	public marshallItem(item: Record<string, any>): AttributeMap {
+		const value = this.marshallValue(item);
+		if (!value?.M && this.onInvalid === 'throw') {
+			throw new Error(
+				`Cannot serialize ${typeof item} as an attribute map`,
+			);
+		}
 
-        return value && value.M ? value.M : {};
-    }
+		return value?.M ?? {};
+	}
 
-    /**
+	/**
      * Convert a JavaScript value into a DynamoDB AttributeValue or `undefined`.
      *
      * @throws Error if the value cannot be converted to a DynamoDB type and the
      * marshaller has been configured to throw on invalid input.
      */
-    public marshallValue(value: any): AttributeValue | undefined {
-        switch (typeof value) {
-            case 'boolean':
-                return { BOOL: value };
-            case 'number':
-                return { N: value.toString(10) };
-            case 'object':
-            case 'bigint':
-                return this.marshallComplexType(value);
-            case 'string':
-                return value ? { S: value } : this.handleEmptyString(value);
-            case 'undefined':
-                return undefined;
-            case 'function':
-            case 'symbol':
-            default:
-                if (this.onInvalid === 'throw') {
-                    throw new Error(
-                        `Cannot serialize values of the ${typeof value} type`
-                    );
-                }
-        }
-    }
+	public marshallValue(value: any): AttributeValue | undefined {
+		switch (typeof value) {
+			case 'boolean':
+				return {BOOL: value};
+			case 'number':
+				return {N: value.toString(10)};
+			case 'bigint':
+				return convertToAttr(value, {
+					convertClassInstanceToMap: true,
+					removeUndefinedValues: true,
+				});
+			case 'object':
+				return this.marshallComplexType(value);
+			case 'string':
+				return value ? {S: value} : this.handleEmptyString(value);
+			case 'undefined':
+				return undefined;
+			case 'function':
+			case 'symbol':
+			default:
+				if (this.onInvalid === 'throw') {
+					throw new Error(
+						`Cannot serialize values of the ${typeof value} type`,
+					);
+				}
+		}
+	}
 
-    /**
+	/**
      * Convert a DynamoDB operation result (an object with string keys and
      * AttributeValue values) to an object with string keys and native
      * JavaScript values.
      */
-    public unmarshallItem(item: AttributeMap): UnmarshalledMapAttributeValue {
-        return this.unmarshallValue({
-            M: item,
-        }) as UnmarshalledMapAttributeValue;
-    }
+	public unmarshallItem(item: AttributeMap): UnmarshalledMapAttributeValue {
+		return this.unmarshallValue({
+			M: item,
+		}) as UnmarshalledMapAttributeValue;
+	}
 
-    /**
+	/**
      * Convert a DynamoDB AttributeValue into a native JavaScript value.
      */
-    public unmarshallValue(item: AttributeValue): UnmarshalledAttributeValue {
-        if (item.S !== undefined) {
-            return item.S;
-        }
+	public unmarshallValue(item: AttributeValue): UnmarshalledAttributeValue {
+		if (item.S !== undefined) {
+			return item.S;
+		}
 
-        if (item.N !== undefined) {
-            return this.unwrapNumbers ? Number(item.N) : BigInt(item.N);
-        }
+		if (item.N !== undefined) {
+			return this.unwrapNumbers ? Number(item.N) : BigInt(item.N);
+		}
 
-        if (item.B !== undefined) {
-            return item.B as BinaryValue;
-        }
+		if (item.B !== undefined) {
+			return item.B as BinaryValue;
+		}
 
-        if (item.BOOL !== undefined) {
-            return item.BOOL;
-        }
+		if (item.BOOL !== undefined) {
+			return item.BOOL;
+		}
 
-        if (item.NULL !== undefined) {
-            return null;
-        }
+		if (item.NULL !== undefined) {
+			return null;
+		}
 
-        if (item.SS !== undefined) {
-            const set = new Set<string>();
-            for (let member of item.SS) {
-                set.add(member);
-            }
-            return set;
-        }
+		if (item.SS !== undefined) {
+			const set = new Set<string>();
+			for (const member of item.SS) {
+				set.add(member);
+			}
 
-        if (item.NS !== undefined) {
-            if (this.unwrapNumbers) {
-                const set = new Set<number>();
-                for (let member of item.NS) {
-                    set.add(Number(member));
-                }
-                return set;
-            }
+			return set;
+		}
 
-            return new Set(item.NS.map((numberString) => BigInt(numberString)));
-        }
+		if (item.NS !== undefined) {
+			if (this.unwrapNumbers) {
+				const set = new Set<number>();
+				for (const member of item.NS) {
+					set.add(Number(member));
+				}
 
-        if (item.BS !== undefined) {
-            return new BinarySet(item.BS as Array<BinaryValue>);
-        }
+				return set;
+			}
 
-        if (item.L !== undefined) {
-            return item.L.map(this.unmarshallValue.bind(this));
-        }
+			return new Set(item.NS.map(numberString => BigInt(numberString)));
+		}
 
-        const { M = {} } = item;
-        return Object.keys(M).reduce(
-            (map: UnmarshalledMapAttributeValue, key: string) => {
-                map[key] = this.unmarshallValue(M[key]);
-                return map;
-            },
-            {}
-        );
-    }
+		if (item.BS !== undefined) {
+			return new BinarySet(item.BS as BinaryValue[]);
+		}
 
-    private marshallComplexType(
-        value:
-            | Set<number | bigint | string | BinaryValue>
-            | Map<string, any>
-            | Iterable<any>
-            | { [key: string]: any }
-            | null
-            | bigint
-            | BinaryValue
-    ): AttributeValue {
-        // if (isIterable(value)) {
-        //     return this.marshallList(value);
-        // }
-        return convertToAttr(value, {
-            removeUndefinedValues: true,
-            convertClassInstanceToMap: true,
-        });
-    }
+		if (item.L !== undefined) {
+			return item.L.map(this.unmarshallValue.bind(this));
+		}
 
-    // private marshallBinaryValue(binary: NativeAttributeBinary):  { NULL: true } | { B: NativeAttributeBinary } {
-    //     if (this.onEmpty === 'leave') {
-    //         return {B: binary};
-    //     }
-    //     return {NULL: true};
-    // }
+		const {M = {}} = item;
+		return Object.fromEntries(Object.entries(M).map(([k, v]) => [k, this.unmarshallValue(v)]));
+	}
 
-    private marshallList(list: Iterable<any>): AttributeValue {
-        const values: Array<AttributeValue> = [];
-        for (let value of list) {
-            const marshalled = this.marshallValue(value);
-            if (marshalled) {
-                values.push(marshalled);
-            }
-        }
+	private marshallComplexType(
+		value:
+		| Set<number | bigint | string | BinaryValue>
+		| Map<string, any>
+		| Iterable<any>
+		| Record<string, any>
+		| null
+		| bigint
+		| BinaryValue,
+	): AttributeValue {
+		// If (isIterable(value)) {
+		// 	return this.marshallList(value);
+		// }
 
-        return { L: values };
-    }
+		// return this.marshallObject(value as any);
+		return convertToAttr(value, {
+			removeUndefinedValues: true,
+			convertClassInstanceToMap: true,
+		});
+	}
 
-    // private marshallMap(map: Map<any, any>): AttributeValue {
-    //     const members: {[key: string]: AttributeValue} = {};
-    //     for (let [key, value] of map) {
-    //         if (typeof key !== 'string') {
-    //             if (this.onInvalid === 'omit') {
-    //                 continue;
-    //             }
+	// Private marshallBinaryValue(binary: NativeAttributeBinary):  { NULL: true } | { B: NativeAttributeBinary } {
+	//     if (this.onEmpty === 'leave') {
+	//         return {B: binary};
+	//     }
+	//     return {NULL: true};
+	// }
 
-    //             throw new Error(
-    //                 `MapAttributeValues must have strings as keys; ${typeof key} received instead`
-    //             );
-    //         }
+	private marshallList(list: Iterable<any>): AttributeValue {
+		const values: AttributeValue[] = [];
+		for (const value of list) {
+			const marshalled = this.marshallValue(value);
+			if (marshalled) {
+				values.push(marshalled);
+			}
+		}
 
-    //         const marshalled = this.marshallValue(value);
-    //         if (marshalled) {
-    //             members[key] = marshalled;
-    //         }
-    //     }
+		return {L: values};
+	}
 
-    //     return {M: members};
-    // }
+	// Private marshallMap(map: Map<any, any>): AttributeValue {
+	//     const members: {[key: string]: AttributeValue} = {};
+	//     for (let [key, value] of map) {
+	//         if (typeof key !== 'string') {
+	//             if (this.onInvalid === 'omit') {
+	//                 continue;
+	//             }
 
-    // private marshallObject(object: {[key: string]: any}): AttributeValue {
-    //     return {
-    //         M: Object.keys(object).reduce(
-    //             (map: AttributeMap, key: string): AttributeMap => {
-    //                 const marshalled = this.marshallValue(object[key]);
-    //                 if (marshalled) {
-    //                     map[key] = marshalled;
-    //                 }
-    //                 return map;
-    //             },
-    //             {}
-    //         ),
-    //     };
-    // }
+	//             throw new Error(
+	//                 `MapAttributeValues must have strings as keys; ${typeof key} received instead`
+	//             );
+	//         }
 
-    // private marshallSet(arg: Set<any>): AttributeValue|undefined {
-    //     switch (getSetType(arg[Symbol.iterator]().next().value)) {
-    //         case 'binary':
-    //             return this.collectSet(arg, isBinaryEmpty, 'BS', 'binary');
-    //         case 'number':
-    //             return this.collectSet(arg, isNumberEmpty, 'NS', 'number', stringifyNumber);
-    //         case 'string':
-    //             return this.collectSet(arg, isStringEmpty, 'SS', 'string');
-    //         case 'unknown':
-    //             if (this.onInvalid === 'throw') {
-    //                 throw new Error('Sets must be composed of strings,' +
-    //                     ' binary values, or numbers');
-    //             }
-    //             return undefined;
-    //         case 'undefined':
-    //             if (this.onEmpty === 'nullify') {
-    //                 return {NULL: true};
-    //             }
-    //     }
-    // }
+	//         const marshalled = this.marshallValue(value);
+	//         if (marshalled) {
+	//             members[key] = marshalled;
+	//         }
+	//     }
 
-    // private collectSet<T, R = T>(
-    //     set: Set<T>,
-    //     isEmpty: (element: T) => boolean,
-    //     tag: 'BS'|'NS'|'SS',
-    //     elementType: 'binary'|'number'|'string',
-    //     transform?: (arg: T) => R
-    // ): AttributeValue|undefined {
-    //     const values: Array<T|R> = [];
-    //     for (let element of set) {
-    //         if (getSetType(element) !== elementType) {
-    //             if (this.onInvalid === 'omit') {
-    //                 continue;
-    //             }
+	//     return {M: members};
+	// }
 
-    //             throw new Error(
-    //                 `Unable to serialize ${typeof element} as a member of a ${elementType} set`
-    //             );
-    //         }
+	private marshallObject(object: Record<string, unknown>): AttributeValue {
+		return {
+			M: Object.fromEntries(Object.entries(object).map(([k, v]) => [k, this.marshallValue(v)!])),
+		};
+		// Return {
+		// 	M: Object.keys(object).reduce(
+		// 		(map: AttributeMap, key: string): AttributeMap => {
+		// 			const marshalled = this.marshallValue(object[key]);
+		// 			if (marshalled) {
+		// 				map[key] = marshalled;
+		// 			}
 
-    //         if (
-    //             !isEmpty(element) ||
-    //             this.onEmpty === 'leave'
-    //         ) {
-    //             values.push(transform ? transform(element) : element);
-    //         }
-    //     }
+		// 			return map;
+		// 		},
+		// 		{},
+		// 	),
+		// };
+	}
 
-    //     if (values.length > 0 || this.onEmpty === 'leave') {
-    //         return {[tag]: values};
-    //     }
+	// Private marshallSet(arg: Set<any>): AttributeValue|undefined {
+	//     switch (getSetType(arg[Symbol.iterator]().next().value)) {
+	//         case 'binary':
+	//             return this.collectSet(arg, isBinaryEmpty, 'BS', 'binary');
+	//         case 'number':
+	//             return this.collectSet(arg, isNumberEmpty, 'NS', 'number', stringifyNumber);
+	//         case 'string':
+	//             return this.collectSet(arg, isStringEmpty, 'SS', 'string');
+	//         case 'unknown':
+	//             if (this.onInvalid === 'throw') {
+	//                 throw new Error('Sets must be composed of strings,' +
+	//                     ' binary values, or numbers');
+	//             }
+	//             return undefined;
+	//         case 'undefined':
+	//             if (this.onEmpty === 'nullify') {
+	//                 return {NULL: true};
+	//             }
+	//     }
+	// }
 
-    //     if (this.onEmpty === 'nullify') {
-    //         return {NULL: true};
-    //     }
-    // }
+	// private collectSet<T, R = T>(
+	//     set: Set<T>,
+	//     isEmpty: (element: T) => boolean,
+	//     tag: 'BS'|'NS'|'SS',
+	//     elementType: 'binary'|'number'|'string',
+	//     transform?: (arg: T) => R
+	// ): AttributeValue|undefined {
+	//     const values: Array<T|R> = [];
+	//     for (let element of set) {
+	//         if (getSetType(element) !== elementType) {
+	//             if (this.onInvalid === 'omit') {
+	//                 continue;
+	//             }
 
-    private handleEmptyString(value: string): AttributeValue | undefined {
-        switch (this.onEmpty) {
-            case 'leave':
-                return { S: value };
-            case 'nullify':
-                return { NULL: true };
-        }
-    }
+	//             throw new Error(
+	//                 `Unable to serialize ${typeof element} as a member of a ${elementType} set`
+	//             );
+	//         }
+
+	//         if (
+	//             !isEmpty(element) ||
+	//             this.onEmpty === 'leave'
+	//         ) {
+	//             values.push(transform ? transform(element) : element);
+	//         }
+	//     }
+
+	//     if (values.length > 0 || this.onEmpty === 'leave') {
+	//         return {[tag]: values};
+	//     }
+
+	//     if (this.onEmpty === 'nullify') {
+	//         return {NULL: true};
+	//     }
+	// }
+
+	private handleEmptyString(value: string): AttributeValue | undefined {
+		switch (this.onEmpty) {
+			case 'leave':
+				return {S: value};
+			case 'nullify':
+				return {NULL: true};
+			case 'omit':
+				return undefined;
+			// No default
+		}
+	}
 }
 
-// type SetType = 'string'|'number'|'binary';
+// Type SetType = 'string'|'number'|'binary';
 
 // function getSetType(arg: any): SetType|'undefined'|'unknown' {
 //     const type = typeof arg;
@@ -404,10 +411,10 @@ export class Marshaller {
 // }
 
 // function isIterable(arg: any): arg is Iterable<any> {
-//     return Boolean(arg) && typeof arg[Symbol.iterator] === 'function';
+// 	return Boolean(arg) && typeof arg[Symbol.iterator] === 'function';
 // }
 
-// function isMap(arg: any): arg is Map<any, any> {
+// Function isMap(arg: any): arg is Map<any, any> {
 //     return Boolean(arg)
 //         && Object.prototype.toString.call(arg) === '[object Map]';
 // }

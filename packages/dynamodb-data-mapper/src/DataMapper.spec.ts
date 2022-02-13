@@ -663,7 +663,7 @@ describe('DataMapper', () => {
 					BatchWriteItemCommand,
 				);
 				expect(calls.length).toBe(4);
-				expect(calls.map(call => [call.args[0].input])).toEqual(
+				expect(calls.map(call => call.args[0].input)).toEqual(
 					expected,
 				);
 			});
@@ -1793,26 +1793,6 @@ describe('DataMapper', () => {
 			});
 		});
 
-		it('should support the legacy call pattern', async () => {
-			await mapper.delete({
-				item: {
-					fizz: 'buzz',
-					[DynamoDbTable]: 'foo',
-					[DynamoDbSchema]: {
-						fizz: {
-							type: 'String',
-							attributeName: 'foo',
-							keyType: 'HASH',
-						},
-						pop: {
-							type: 'Number',
-							versionAttribute: true,
-						},
-					},
-				},
-			});
-		});
-
 		it('should return instances of the correct class', async () => {
 			promiseFunc.mockImplementation(async () =>
 				Promise.resolve({
@@ -2635,26 +2615,6 @@ describe('DataMapper', () => {
 			});
 		});
 
-		it('should support the legacy call pattern', async () => {
-			await mapper.get({
-				item: {
-					fizz: 'buzz',
-					[DynamoDbTable]: 'foo',
-					[DynamoDbSchema]: {
-						fizz: {
-							type: 'String',
-							attributeName: 'foo',
-							keyType: 'HASH',
-						},
-						pop: {
-							type: 'Number',
-							versionAttribute: true,
-						},
-					},
-				},
-			});
-		});
-
 		it('should return instances of the correct class', async () => {
 			promiseFunc.mockImplementation(async () =>
 				Promise.resolve({
@@ -2953,14 +2913,6 @@ describe('DataMapper', () => {
 				],
 			]);
 		});
-
-		it.skip('should support the legacy call pattern', async () => {
-			const iter = mapper.parallelScan({
-				valueConstructor: ScannableItem,
-				segments: 4,
-			});
-			await iter.next();
-		});
 	});
 
 	describe('#put', () => {
@@ -3240,26 +3192,6 @@ describe('DataMapper', () => {
 			expect(result).toMatchObject({
 				foo: 'keykey',
 				bar: 0,
-			});
-		});
-
-		it('should support the legacy call pattern', async () => {
-			await mapper.put({
-				item: {
-					fizz: 'buzz',
-					[DynamoDbTable]: 'foo',
-					[DynamoDbSchema]: {
-						fizz: {
-							type: 'String',
-							attributeName: 'foo',
-							keyType: 'HASH',
-						},
-						pop: {
-							type: 'Number',
-							versionAttribute: true,
-						},
-					},
-				},
 			});
 		});
 
@@ -3648,34 +3580,6 @@ describe('DataMapper', () => {
 				ExclusiveStartKey: {
 					fizz: {N: '100'},
 				},
-			});
-		});
-
-		it('supports the legacy call pattern', async () => {
-			const iter = mapper.query({
-				valueConstructor: QueryableItem,
-				keyCondition: {snap: 'crackle'},
-				indexName: 'baz-index',
-				pageSize: 1,
-				scanIndexForward: true,
-			});
-
-			await iter.next();
-
-			expect(
-				mockDynamoDbClient.commandCalls(QueryCommand)[0].args[0].input,
-			).toEqual({
-				TableName: 'foo',
-				KeyConditionExpression: '#attr0 = :val1',
-				ExpressionAttributeNames: {
-					'#attr0': 'snap',
-				},
-				ExpressionAttributeValues: {
-					':val1': 'crackle',
-				},
-				IndexName: 'baz-index',
-				Limit: 1,
-				ScanIndexForward: true,
 			});
 		});
 
@@ -4247,22 +4151,6 @@ describe('DataMapper', () => {
 			]);
 		});
 
-		it('should support the legacy call pattern', async () => {
-			const iter = mapper.scan({
-				valueConstructor: ScannableItem,
-				indexName: 'baz-index',
-			});
-
-			await iter.next();
-
-			expect(
-				mockDynamoDbClient.commandCalls(ScanCommand)[0].args[0].input,
-			).toEqual({
-				TableName: 'foo',
-				IndexName: 'baz-index',
-			});
-		});
-
 		describe('startKey serialization', () => {
 			class MyItem {
 				snap?: string;
@@ -4766,26 +4654,6 @@ describe('DataMapper', () => {
 							},
 						},
 					});
-				});
-			});
-
-			it('should support the legacy call pattern', async () => {
-				await mapper.update({
-					item: {
-						fizz: 'buzz',
-						[DynamoDbTable]: 'foo',
-						[DynamoDbSchema]: {
-							fizz: {
-								type: 'String',
-								attributeName: 'foo',
-								keyType: 'HASH',
-							},
-							pop: {
-								type: 'Number',
-								versionAttribute: true,
-							},
-						},
-					},
 				});
 			});
 

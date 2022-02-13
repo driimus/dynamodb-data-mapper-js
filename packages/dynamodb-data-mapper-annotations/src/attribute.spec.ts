@@ -382,8 +382,7 @@ describe('attribute', () => {
 		});
 
 		it('should constructors that descend from Array as collection types', () => {
-			class MyArray extends Array {}
-			(Reflect.getMetadata as any).mockImplementation(() => MyArray);
+			(Reflect.getMetadata as any).mockImplementation(() => Array);
 			const decorator = attribute();
 			const target = Object.create(null);
 			decorator(target, 'property');

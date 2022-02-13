@@ -83,7 +83,7 @@ export function attribute(
 			);
 		}
 
-		(target as any)[DynamoDbSchema][propertyKey] = schemaType;
+		target[DynamoDbSchema][propertyKey] = schemaType;
 	};
 }
 
@@ -91,6 +91,7 @@ function deriveBaseSchema(target: any): Schema {
 	if (target && typeof target === 'object') {
 		const prototype = Object.getPrototypeOf(target);
 		if (prototype) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			return {
 				...deriveBaseSchema(prototype),
 				...(Object.prototype.hasOwnProperty.call(

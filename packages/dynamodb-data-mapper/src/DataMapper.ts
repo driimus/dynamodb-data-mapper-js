@@ -1,4 +1,27 @@
 import {
+	AttributeDefinition,
+	AttributeValue as _AttributeValue,
+	CreateGlobalSecondaryIndexAction,
+	CreateTableCommand,
+	DeleteItemCommand,
+	DeleteItemInput,
+	DeleteTableCommand,
+	DescribeTableCommand, DynamoDBClient, GetItemCommand,
+	GetItemInput,
+	GlobalSecondaryIndex,
+	KeySchemaElement,
+	LocalSecondaryIndex,
+	Projection,
+	ProvisionedThroughput,
+	PutItemCommand,
+	PutItemInput,
+	UpdateItemCommand,
+	UpdateItemInput,
+	UpdateTableCommand,
+	waitUntilTableExists,
+	waitUntilTableNotExists,
+} from '@aws-sdk/client-dynamodb';
+import {
 	BatchGet,
 	BatchWrite,
 	PerTableOptions,
@@ -35,30 +58,6 @@ import {
 	serializeProjectionExpression,
 	UpdateExpression,
 } from '@aws/dynamodb-expressions';
-import {
-	AttributeDefinition,
-	AttributeValue as _AttributeValue,
-	CreateGlobalSecondaryIndexAction,
-	CreateTableCommand,
-	DeleteItemCommand,
-	DeleteItemInput,
-	DeleteTableCommand,
-	DescribeTableCommand,
-	GetItemCommand,
-	GetItemInput,
-	GlobalSecondaryIndex,
-	KeySchemaElement,
-	LocalSecondaryIndex,
-	Projection,
-	ProvisionedThroughput,
-	PutItemCommand,
-	PutItemInput,
-	UpdateItemCommand,
-	UpdateItemInput,
-	UpdateTableCommand,
-	waitUntilTableExists,
-	waitUntilTableNotExists,
-	DynamoDBClient} from '@aws-sdk/client-dynamodb';
 import {BatchState} from './BatchState';
 import {
 	ReadConsistency,
@@ -76,19 +75,11 @@ import {
 	DeleteOptions,
 	DeleteParameters,
 	ExecuteUpdateExpressionOptions,
-	GetOptions,
-	GetParameters,
-	ParallelScanOptions,
-	ParallelScanWorkerOptions,
-	ParallelScanWorkerParameters,
-	PerIndexOptions,
-	PutOptions,
-	PutParameters,
-	QueryOptions,
+	GetOptions, ParallelScanOptions,
+	ParallelScanWorkerOptions, PerIndexOptions,
+	PutOptions, QueryOptions,
 	QueryParameters,
-	ScanOptions,
-	ScanParameters,
-	SecondaryIndexProjection,
+	ScanOptions, SecondaryIndexProjection,
 	UpdateOptions,
 	UpdateParameters,
 } from './namedParameters';
@@ -454,13 +445,6 @@ export class DataMapper {
 		options?: DeleteOptions
 	): Promise<T | undefined>;
 
-	/**
-					* @deprecated
-					*/
-	delete<T extends StringToAnyObjectMap = StringToAnyObjectMap>(
-		parameters: DeleteParameters<T>
-	): Promise<T | undefined>;
-
 	async delete<T extends StringToAnyObjectMap = StringToAnyObjectMap>(
 		itemOrParameters: T | DeleteParameters<T>,
 		options: DeleteOptions = {},
@@ -664,28 +648,10 @@ export class DataMapper {
 		options?: GetOptions
 	): Promise<T>;
 
-	/**
-					* @deprecated
-					*/
-	get<T extends StringToAnyObjectMap = StringToAnyObjectMap>(
-		parameters: GetParameters<T>
-	): Promise<T>;
-
 	async get<T extends StringToAnyObjectMap = StringToAnyObjectMap>(
-		itemOrParameters: T | GetParameters<T>,
+		item: T,
 		options: GetOptions = {},
 	): Promise<T | undefined> {
-		let item: T;
-		if (
-			'item' in itemOrParameters
-												&& (itemOrParameters as any).item[DynamoDbTable]
-		) {
-			item = (itemOrParameters as GetParameters<T>).item;
-			options = itemOrParameters as GetParameters<T>;
-		} else {
-			item = itemOrParameters as T;
-		}
-
 		const {projection, readConsistency = this.readConsistency} = options;
 
 		const schema = getSchema(item);
@@ -776,28 +742,10 @@ export class DataMapper {
 		options?: PutOptions
 	): Promise<T>;
 
-	/**
-					* @deprecated
-					*/
-	put<T extends StringToAnyObjectMap = StringToAnyObjectMap>(
-		parameters: PutParameters<T>
-	): Promise<T>;
-
 	async put<T extends StringToAnyObjectMap = StringToAnyObjectMap>(
-		itemOrParameters: T | PutParameters<T>,
+		item: T,
 		options: PutOptions = {},
 	): Promise<T> {
-		let item: T;
-		if (
-			'item' in itemOrParameters
-												&& (itemOrParameters as any).item[DynamoDbTable]
-		) {
-			item = (itemOrParameters as PutParameters<T>).item;
-			options = itemOrParameters as PutParameters<T>;
-		} else {
-			item = itemOrParameters as T;
-		}
-
 		let {condition, skipVersionCheck = this.skipVersionCheck} = options;
 
 		const schema = getSchema(item);
@@ -880,15 +828,6 @@ export class DataMapper {
 		options?: QueryOptions
 	): QueryIterator<T>;
 
-	/**
-					* @deprecated
-					*
-					* @param parameters Named parameter object
-					*/
-	query<T extends StringToAnyObjectMap = StringToAnyObjectMap>(
-		parameters: QueryParameters<T>
-	): QueryIterator<T>;
-
 	query<T extends StringToAnyObjectMap = StringToAnyObjectMap>(
 		valueConstructorOrParameters:
 		| ZeroArgumentsConstructor<T>
@@ -935,33 +874,10 @@ export class DataMapper {
 		options?: ScanOptions | ParallelScanWorkerOptions
 	): ScanIterator<T>;
 
-	/**
-					* @deprecated
-					*/
 	scan<T extends StringToAnyObjectMap>(
-		parameters: ScanParameters<T> | ParallelScanWorkerParameters<T>
-	): ScanIterator<T>;
-
-	scan<T extends StringToAnyObjectMap>(
-		ctorOrParameters:
-		| ZeroArgumentsConstructor<T>
-		| ScanParameters<T>
-		| ParallelScanWorkerParameters<T>,
+		valueConstructor: ZeroArgumentsConstructor<T>,
 		options: ScanOptions | ParallelScanWorkerOptions = {},
 	): ScanIterator<T> {
-		let valueConstructor: ZeroArgumentsConstructor<T>;
-		if (
-			'valueConstructor' in ctorOrParameters
-												&& (ctorOrParameters as ScanParameters<T>).valueConstructor.prototype
-												&& (ctorOrParameters as any).valueConstructor.prototype[DynamoDbTable]
-		) {
-			valueConstructor = (ctorOrParameters as ScanParameters<T>)
-				.valueConstructor;
-			options = ctorOrParameters as ScanParameters<T>;
-		} else {
-			valueConstructor = ctorOrParameters as ZeroArgumentsConstructor<T>;
-		}
-
 		return new ScanIterator(this.client, valueConstructor, {
 			readConsistency: this.readConsistency,
 			...options,
@@ -980,13 +896,6 @@ export class DataMapper {
 	update<T extends StringToAnyObjectMap = StringToAnyObjectMap>(
 		item: T,
 		options?: UpdateOptions
-	): Promise<T>;
-
-	/**
-					* @deprecated
-					*/
-	update<T extends StringToAnyObjectMap = StringToAnyObjectMap>(
-		parameters: UpdateParameters<T>
 	): Promise<T>;
 
 	async update<T extends StringToAnyObjectMap = StringToAnyObjectMap>(
@@ -1267,7 +1176,7 @@ function convertBatchGetOptions(
 		const attributes = new ExpressionAttributes();
 		out.ProjectionExpression = serializeProjectionExpression(
 			options.projection.map(propName =>
-				toSchemaName(propName, options.projectionSchema || itemSchema),
+				toSchemaName(propName, options.projectionSchema ?? itemSchema),
 			),
 			attributes,
 		);
@@ -1282,7 +1191,7 @@ function getKeyProperties(schema: Schema): string[] {
 	for (const property of Object.keys(schema).sort()) {
 		const fieldSchema = schema[property];
 		if (isKey(fieldSchema)) {
-			keys.push(fieldSchema.attributeName || property);
+			keys.push(fieldSchema.attributeName ?? property);
 		}
 	}
 
