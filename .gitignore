@@ -1,5 +1,8 @@
 .idea/
 
+.turbo
+.next/**
+
 # Created by .ignore support plugin (hsz.mobi)
 logs
 *.log
