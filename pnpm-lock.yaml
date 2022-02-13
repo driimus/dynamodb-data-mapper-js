@@ -50,10 +50,8 @@ importers:
       tslib: ^2.3.1
       typedoc: ^0.14.0
       typescript: ^4.3.5
-      utf8-bytes: ^0.0.1
     dependencies:
       tslib: 2.3.1
-      utf8-bytes: 0.0.1
     devDependencies:
       '@aws-sdk/client-dynamodb': 3.43.0
       '@types/jest': 27.0.3
@@ -5451,10 +5449,6 @@ packages:
     dependencies:
       punycode: 2.1.1
     dev: true
-
-  /utf8-bytes/0.0.1:
-    resolution: {integrity: sha1-EWsCVEjJtQAIHN+/H01sbDfYg30=}
-    dev: false
 
   /uuid/8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}

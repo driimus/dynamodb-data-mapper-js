@@ -54,7 +54,17 @@
         {
           "allow": ["arrowFunctions"] 
         }
-      ]
-    }
+      ],
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/consistent-type-assertions": "off",
+      "@typescript-eslint/restrict-template-expressions": "off"
+    },
+    "ignores": [
+      "*.spec.ts",
+      "*.integ.ts",
+      "*.fixture.ts",
+      "*.js",
+      "packages/dynamodb-data-marshaller"
+    ]
   }
 }
