@@ -20,7 +20,8 @@
         "docs": "typedoc src",
         "prepublishOnly": "tsc",
         "pretest": "tsc -p tsconfig.test.json",
-        "test": "jest"
+        "test": "jest",
+        "build": "tsc"
     },
     "author": {
         "name": "AWS SDK for JavaScript Team",
