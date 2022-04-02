@@ -234,7 +234,6 @@ describe('Marshaller', () => {
 				(myInstance as any).quux = true;
 
 				const actual = new Marshaller().marshallValue(myInstance);
-				console.log({actual, myInstance})
 				expect(actual).toEqual({
 					M: {
 						foo: {S: 'bar'},
