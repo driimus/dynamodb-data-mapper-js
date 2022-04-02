@@ -79,8 +79,7 @@
             "*.spec.ts",
             "*.integ.ts",
             "*.fixture.ts",
-            "*.js",
-            "packages/dynamodb-data-marshaller"
+            "*.js"
         ]
     },
     "packageManager": "pnpm@6.30.1"

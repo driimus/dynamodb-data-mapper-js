@@ -1,13 +1,13 @@
-import { AttributeValue } from '@aws-sdk/client-dynamodb';
-import { convertToAttr } from '@aws-sdk/util-dynamodb';
+import {Buffer} from 'node:buffer';
+import {AttributeValue} from '@aws-sdk/client-dynamodb';
+import {convertToAttr} from '@aws-sdk/util-dynamodb';
 import {
 	BinarySet,
-	Marshaller
+	Marshaller,
 } from '@aws/dynamodb-auto-marshaller';
-import { Buffer } from "node:buffer";
-import { InvalidSchemaError } from './InvalidSchemaError';
-import { InvalidValueError } from './InvalidValueError';
-import { Schema, SchemaType } from './SchemaType';
+import {InvalidSchemaError} from './InvalidSchemaError';
+import {InvalidValueError} from './InvalidValueError';
+import {Schema, SchemaType} from './SchemaType';
 
 export type AttributeMap = Record<string, AttributeValue>;
 /**
@@ -273,7 +273,7 @@ function marshallBinary(
 		return new Uint8Array(input);
 	}
 
-	return new Uint8Array(Buffer.from(input).toJSON().data)
+	return new Uint8Array(Buffer.from(input).toJSON().data);
 }
 
 function marshallNumber(input: number): string {

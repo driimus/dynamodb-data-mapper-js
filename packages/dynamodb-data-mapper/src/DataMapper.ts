@@ -255,8 +255,7 @@ export class DataMapper {
 			const attributes = PutRequest
 				? PutRequest.Item
 				: DeleteRequest?.Key ?? {};
-			const {constructor, schema}
-																= itemSchemata[itemIdentifier(attributes!, keyProperties)];
+			const {constructor, schema}	= itemSchemata[itemIdentifier(attributes!, keyProperties)];
 
 			yield [
 				PutRequest ? 'put' : 'delete',
@@ -627,8 +626,7 @@ export class DataMapper {
 			await this.deleteTable(valueConstructor);
 		} catch (error) {
 			if (
-				error instanceof Error
-																&& error.name !== 'ResourceNotFoundException'
+				error instanceof Error && error.name !== 'ResourceNotFoundException'
 			) {
 				throw error;
 			}

@@ -202,7 +202,10 @@ function normalizeConditionExpression(
 						...expression,
 						subject: toSchemaName(expression.subject, schema),
 					};
+				// No default
 			}
+
+			break;
 
 		case 'Between':
 			return {
@@ -235,6 +238,7 @@ function normalizeConditionExpression(
 					normalizeConditionExpression(condition, schema),
 				),
 			};
+		// No default
 	}
 }
 
@@ -284,8 +288,10 @@ function normalizeUpdateExpression(
 		}
 	}
 
-	for (const element of expression.toRemove)
-		{normalized.remove(toSchemaName(element, schema));}
+	for (const element of expression.toRemove) {
+		normalized.remove(toSchemaName(element, schema));
+	}
+
 	return normalized;
 }
 
