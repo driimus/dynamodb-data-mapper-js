@@ -102,10 +102,10 @@ implements AsyncIterableIterator<AttributeMap> {
 	private async getNext(): Promise<IteratorResult<AttributeMap>> {
 		if (this.pending.length > 0) {
 			this._iteratedCount++;
-			return Promise.resolve({
+			return {
 				value: this.pending.shift()!,
 				done: false,
-			});
+			};
 		}
 
 		const nextResult = await this.paginator.next();

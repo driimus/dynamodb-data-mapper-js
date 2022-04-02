@@ -112,7 +112,7 @@ const parseIdentifier = (curr: IteratorResult<string>, state: ParseState, collec
 
 		// Fallthrough
 		default:
-			collected += curr.value;
+			collected += curr.value as string;
 	}
 
 	return {curr, state, collected, peek};

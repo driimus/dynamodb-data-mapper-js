@@ -39,14 +39,14 @@ export class ScanPaginator extends DynamoDbPaginator {
 				this.nextRequest = undefined;
 			}
 
-			return Promise.resolve({
+			return {
 				value: output,
 				done: false,
-			});
+			};
 		}
 
-		return Promise.resolve({
+		return {
 			done: true,
-		} as IteratorResult<DynamoDbResultsPage>);
+		} as IteratorResult<DynamoDbResultsPage>;
 	}
 }

@@ -87,9 +87,9 @@ export abstract class DynamoDbPaginator implements DynamoDbPaginatorInterface {
 		);
 		this.lastResolved.catch(() => {});
 
-		return Promise.resolve({
+		return {
 			done: true,
-		} as IteratorResult<DynamoDbResultsPage>);
+		} as IteratorResult<DynamoDbResultsPage>;
 	}
 
 	/**

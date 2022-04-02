@@ -259,7 +259,7 @@ export class DataMapper {
 
 			yield [
 				PutRequest ? 'put' : 'delete',
-				unmarshallItem<T>(schema, attributes!, constructor),
+				unmarshallItem(schema, attributes!, constructor),
 			];
 		}
 	}
