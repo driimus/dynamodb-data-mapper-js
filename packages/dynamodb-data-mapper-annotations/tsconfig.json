@@ -1,24 +1,24 @@
 {
-    "compilerOptions": {
-        "target": "ES2020",
-        "downlevelIteration": true,
-        "importHelpers": true,
-        "module": "commonjs",
-        "strict": true,
-        "noUnusedLocals": true,
-        "declaration": true,
-        "sourceMap": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "rootDir": "./src",
-        "outDir": "./build"
-    },
-    "exclude": ["src/*.spec.ts", "node_modules", "build", "src/*.fixture.ts"],
-    "typedocOptions": {
-        "mode": "file",
-        "out": "../../docs/packages/dynamodb-data-mapper-annotations",
-        "excludeNotExported": true,
-        "excludePrivate": true,
-        "hideGenerator": true
-    }
+  "compilerOptions": {
+    "target": "ES2020",
+    "downlevelIteration": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "strict": true,
+    "noUnusedLocals": true,
+    "declaration": true,
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "rootDir": "./src",
+    "outDir": "./build"
+  },
+  "exclude": ["src/*.spec.ts", "node_modules", "build", "src/*.fixture.ts"],
+  "typedocOptions": {
+    "mode": "file",
+    "out": "../../docs/packages/dynamodb-data-mapper-annotations",
+    "excludeNotExported": true,
+    "excludePrivate": true,
+    "hideGenerator": true
+  }
 }

@@ -47,13 +47,13 @@ expressions are:
 Asserts that all of the subexpressions' conditions are satisfied.
 
 ```typescript
-import {ConditionExpression} from '@aws/dynamodb-expressions';
+import { ConditionExpression } from '@aws/dynamodb-expressions';
 
 const andExpression: ConditionExpression = {
-    type: 'And',
-    conditions: [
-        // one or more subexpressions
-    ]
+  type: 'And',
+  conditions: [
+    // one or more subexpressions
+  ],
 };
 ```
 
@@ -62,13 +62,13 @@ const andExpression: ConditionExpression = {
 Asserts that at least one of the subexpressions' conditions are satisfied.
 
 ```typescript
-import {ConditionExpression} from '@aws/dynamodb-expressions';
+import { ConditionExpression } from '@aws/dynamodb-expressions';
 
 const orExpression: ConditionExpression = {
-    type: 'Or',
-    conditions: [
-        // one or more subexpressions
-    ]
+  type: 'Or',
+  conditions: [
+    // one or more subexpressions
+  ],
 };
 ```
 
@@ -77,15 +77,15 @@ const orExpression: ConditionExpression = {
 Asserts that the subexpression's condition is not satisfied.
 
 ```typescript
-import {ConditionExpression} from '@aws/dynamodb-expressions';
+import { ConditionExpression } from '@aws/dynamodb-expressions';
 
 const notExpression: ConditionExpression = {
-    type: 'Not',
-    condition: {
-        type: 'LessThan',
-        subject: 'foo',
-        object: 100
-    }
+  type: 'Not',
+  condition: {
+    type: 'LessThan',
+    subject: 'foo',
+    object: 100,
+  },
 };
 ```
 
@@ -107,25 +107,22 @@ defined `object`. For example, the following predicate object asserts that the
 subject has a value of `'bar'`:
 
 ```typescript
-import {
-    ConditionExpression,
-    ConditionExpressionPredicate,
-} from '@aws/dynamodb-expressions';
+import { ConditionExpression, ConditionExpressionPredicate } from '@aws/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
-    type: 'Equals',
-    object: 'bar'
+  type: 'Equals',
+  object: 'bar',
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import {equals} from '@aws/dynamodb-expressions';
+import { equals } from '@aws/dynamodb-expressions';
 
 equalsExpressionPredicate = equals('bar');
 
 // combine with a subject to create a valid condition expression
 const equalsExpression: ConditionExpression = {
-    ...equalsExpressionPredicate,
-    subject: 'foo'
+  ...equalsExpressionPredicate,
+  subject: 'foo',
 };
 ```
 
@@ -140,25 +137,22 @@ defined `object`. For example, the following predicate object asserts that the
 subject does not have a value of `'bar'`:
 
 ```typescript
-import {
-    ConditionExpression,
-    ConditionExpressionPredicate,
-} from '@aws/dynamodb-expressions';
+import { ConditionExpression, ConditionExpressionPredicate } from '@aws/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
-    type: 'NotEquals',
-    object: 'bar'
+  type: 'NotEquals',
+  object: 'bar',
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import {notEquals} from '@aws/dynamodb-expressions';
+import { notEquals } from '@aws/dynamodb-expressions';
 
 equalsExpressionPredicate = notEquals('bar');
 
 // combine with a subject to create a valid condition expression
 const equalsExpression: ConditionExpression = {
-    ...equalsExpressionPredicate,
-    subject: 'foo'
+  ...equalsExpressionPredicate,
+  subject: 'foo',
 };
 ```
 
@@ -173,25 +167,22 @@ defined `object`. For example, the following predicate object asserts that the
 subject is less than 10:
 
 ```typescript
-import {
-    ConditionExpression,
-    ConditionExpressionPredicate,
-} from '@aws/dynamodb-expressions';
+import { ConditionExpression, ConditionExpressionPredicate } from '@aws/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
-    type: 'LessThan',
-    object: 10
+  type: 'LessThan',
+  object: 10,
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import {lessThan} from '@aws/dynamodb-expressions';
+import { lessThan } from '@aws/dynamodb-expressions';
 
 equalsExpressionPredicate = lessThan(10);
 
 // combine with a subject to create a valid condition expression
 const equalsExpression: ConditionExpression = {
-    ...equalsExpressionPredicate,
-    subject: 'foo'
+  ...equalsExpressionPredicate,
+  subject: 'foo',
 };
 ```
 
@@ -206,25 +197,22 @@ to the defined `object`. For example, the following predicate object asserts
 that the subject is less than or equal to 10:
 
 ```typescript
-import {
-    ConditionExpression,
-    ConditionExpressionPredicate,
-} from '@aws/dynamodb-expressions';
+import { ConditionExpression, ConditionExpressionPredicate } from '@aws/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
-    type: 'LessThanOrEqualTo',
-    object: 10
+  type: 'LessThanOrEqualTo',
+  object: 10,
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import {lessThanOrEqualTo} from '@aws/dynamodb-expressions';
+import { lessThanOrEqualTo } from '@aws/dynamodb-expressions';
 
 equalsExpressionPredicate = lessThanOrEqualTo(10);
 
 // combine with a subject to create a valid condition expression
 const equalsExpression: ConditionExpression = {
-    ...equalsExpressionPredicate,
-    subject: 'foo'
+  ...equalsExpressionPredicate,
+  subject: 'foo',
 };
 ```
 
@@ -239,25 +227,22 @@ defined `object`. For example, the following predicate object asserts that the
 subject is greater than 10:
 
 ```typescript
-import {
-    ConditionExpression,
-    ConditionExpressionPredicate,
-} from '@aws/dynamodb-expressions';
+import { ConditionExpression, ConditionExpressionPredicate } from '@aws/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
-    type: 'GreaterThan',
-    object: 10
+  type: 'GreaterThan',
+  object: 10,
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import {greaterThan} from '@aws/dynamodb-expressions';
+import { greaterThan } from '@aws/dynamodb-expressions';
 
 equalsExpressionPredicate = greaterThan(10);
 
 // combine with a subject to create a valid condition expression
 const equalsExpression: ConditionExpression = {
-    ...equalsExpressionPredicate,
-    subject: 'foo'
+  ...equalsExpressionPredicate,
+  subject: 'foo',
 };
 ```
 
@@ -272,25 +257,22 @@ equal to the defined `object`. For example, the following predicate object
 asserts that the subject is greater than or equal to 10:
 
 ```typescript
-import {
-    ConditionExpression,
-    ConditionExpressionPredicate,
-} from '@aws/dynamodb-expressions';
+import { ConditionExpression, ConditionExpressionPredicate } from '@aws/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
-    type: 'GreaterThanOrEqualTo',
-    object: 10
+  type: 'GreaterThanOrEqualTo',
+  object: 10,
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import {greaterThanOrEqualTo} from '@aws/dynamodb-expressions';
+import { greaterThanOrEqualTo } from '@aws/dynamodb-expressions';
 
 equalsExpressionPredicate = greaterThanOrEqualTo(10);
 
 // combine with a subject to create a valid condition expression
 const equalsExpression: ConditionExpression = {
-    ...equalsExpressionPredicate,
-    subject: 'foo'
+  ...equalsExpressionPredicate,
+  subject: 'foo',
 };
 ```
 
@@ -306,26 +288,23 @@ asserts that the subject is greater than or equal to 10 and less than or equal
 to 99:
 
 ```typescript
-import {
-    ConditionExpression,
-    ConditionExpressionPredicate,
-} from '@aws/dynamodb-expressions';
+import { ConditionExpression, ConditionExpressionPredicate } from '@aws/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
-    type: 'Between',
-    lowerBound: 10,
-    upperBound: 99
+  type: 'Between',
+  lowerBound: 10,
+  upperBound: 99,
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import {between} from '@aws/dynamodb-expressions';
+import { between } from '@aws/dynamodb-expressions';
 
 equalsExpressionPredicate = between(10, 99);
 
 // combine with a subject to create a valid condition expression
 const equalsExpression: ConditionExpression = {
-    ...equalsExpressionPredicate,
-    subject: 'foo'
+  ...equalsExpressionPredicate,
+  subject: 'foo',
 };
 ```
 
@@ -341,25 +320,22 @@ of a list of defined values. For example, the following predicate object asserts
 that the subject is one of `'fizz'`, `'buzz'`, or `'fizzbuzz'`:
 
 ```typescript
-import {
-    ConditionExpression,
-    ConditionExpressionPredicate,
-} from '@aws/dynamodb-expressions';
+import { ConditionExpression, ConditionExpressionPredicate } from '@aws/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
-    type: 'Membership',
-    values: ['fizz', 'buzz', 'fizzbuzz']
+  type: 'Membership',
+  values: ['fizz', 'buzz', 'fizzbuzz'],
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import {inList} from '@aws/dynamodb-expressions';
+import { inList } from '@aws/dynamodb-expressions';
 
 equalsExpressionPredicate = inList('fizz', 'buzz', 'fizzbuzz');
 
 // combine with a subject to create a valid condition expression
 const equalsExpression: ConditionExpression = {
-    ...equalsExpressionPredicate,
-    subject: 'foo'
+  ...equalsExpressionPredicate,
+  subject: 'foo',
 };
 ```
 
@@ -383,11 +359,7 @@ retrieve a the `ExpressionAttributeNames` and `ExpressionAttributeValues` shapes
 to send alongside the input:
 
 ```typescript
-import {
-    AttributePath,
-    AttributeValue,
-    ExpressionAttributes,
-} from '@aws/dynamodb-expressions';
+import { AttributePath, AttributeValue, ExpressionAttributes } from '@aws/dynamodb-expressions';
 const DynamoDb = require('aws-sdk/clients/dynamodb');
 
 const attributes = new ExpressionAttributes();
@@ -402,15 +374,15 @@ attributes.addName(new AttributePath('path.to.nested.field'));
 // raw JavaScript values added will be converted to AttributeValue objects
 const escapedRaw = attributes.addValue(42);
 // already marshalled values must be wrapped in an AttributeValue object
-const escapedMarshalled = attributes.addValue(new AttributeValue({N: "42"}));
+const escapedMarshalled = attributes.addValue(new AttributeValue({ N: '42' }));
 
 const client = new DynamoDb();
 client.query({
-    TableName: 'my_table',
-    KeyConditionExpression: `${escapedFoo} = ${escapedRaw} AND ${escapedPath} = ${escapedMarshalled}`,
-    ExpressionAttributeNames: attributes.names,
-    ExpressionAttributeValues: attributes.values,
-})
+  TableName: 'my_table',
+  KeyConditionExpression: `${escapedFoo} = ${escapedRaw} AND ${escapedPath} = ${escapedMarshalled}`,
+  ExpressionAttributeNames: attributes.names,
+  ExpressionAttributeValues: attributes.values,
+});
 ```
 
 ## Function expressions
@@ -425,17 +397,9 @@ AttributeValue objects), or arbitrary JavaScript values (these will be converted
 by the `@aws/dynamodb-auto-marshaller` package's `Marshaller`):
 
 ```typescript
-import {
-    AttributePath,
-    ExpressionAttributes,
-    FunctionExpression,
-} from '@aws/dynamodb-expressions';
+import { AttributePath, ExpressionAttributes, FunctionExpression } from '@aws/dynamodb-expressions';
 
-const expr = new FunctionExpression(
-    'list_append', 
-    new AttributePath('path.to.list'),
-    'foo'
-);
+const expr = new FunctionExpression('list_append', new AttributePath('path.to.list'), 'foo');
 const attributes = new ExpressionAttributes();
 // serializes as 'list_append(#attr0.#attr1.#attr2, :val3)'
 const serialized = expr.serialize(attributes);
@@ -449,7 +413,7 @@ Mathematical expressions are used in the `SET` clause of update expressions to
 add or subtract numbers from attribute properties containing number values:
 
 ```typescript
-import {MathematicalExpression} from '@aws/dynamodb-expressions';
+import { MathematicalExpression } from '@aws/dynamodb-expressions';
 
 const expr = new MathematicalExpression('version', '+', 1);
 ```
@@ -470,11 +434,7 @@ record, one containing directives to add values to a set, and the last
 containing directives to delete values from a set.
 
 ```typescript
-import {
-    AttributePath,
-    FunctionExpression,
-    UpdateExpression,
-} from '@aws/dynamodb-expressions';
+import { AttributePath, FunctionExpression, UpdateExpression } from '@aws/dynamodb-expressions';
 
 const expr = new UpdateExpression();
 
@@ -482,12 +442,8 @@ const expr = new UpdateExpression();
 expr.set('foo', 'bar');
 // you may also set properties in nested maps and lists
 expr.set(
-    'path.to.my.desired[2].property',
-    new FunctionExpression(
-        'list_append',
-        new AttributePath('path.to.my.desired[2].property'),
-        'baz'   
-    )
+  'path.to.my.desired[2].property',
+  new FunctionExpression('list_append', new AttributePath('path.to.my.desired[2].property'), 'baz')
 );
 
 // remove a value by providing its key or path

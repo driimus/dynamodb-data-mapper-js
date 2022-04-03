@@ -1,4 +1,4 @@
-import {Schema} from '@aws/dynamodb-data-marshaller';
+import type { Schema } from '@aws/dynamodb-data-marshaller';
 
 /**
  * Table metadata is reported by items submitted to the data mapper via methods
@@ -32,18 +32,18 @@ import {Schema} from '@aws/dynamodb-data-marshaller';
  */
 export const DynamoDbSchema = Symbol('DynamoDbSchema');
 
-export function getSchema(item?: {[DynamoDbSchema]?: Schema}): Schema {
-	if (item) {
-		const schema = item[DynamoDbSchema];
-		if (schema && typeof schema === 'object') {
-			return schema;
-		}
-	}
+export function getSchema(item?: { [DynamoDbSchema]?: Schema }): Schema {
+  if (item) {
+    const schema = item[DynamoDbSchema];
+    if (schema && typeof schema === 'object') {
+      return schema;
+    }
+  }
 
-	throw new Error(
-		'The provided item did not adhere to the DynamoDbDocument protocol.'
-            + ' No object property was found at the `DynamoDbSchema` symbol',
-	);
+  throw new Error(
+    'The provided item did not adhere to the DynamoDbDocument protocol.' +
+      ' No object property was found at the `DynamoDbSchema` symbol'
+  );
 }
 
 /**
@@ -68,20 +68,20 @@ export function getSchema(item?: {[DynamoDbSchema]?: Schema}): Schema {
 export const DynamoDbTable = Symbol('DynamoDbTableName');
 
 interface Item {
-	[DynamoDbTable]?: string;
+  [DynamoDbTable]?: string;
 }
 export function getTableName(item?: Item, tableNamePrefix = ''): string {
-	if (item) {
-		const tableName = item[DynamoDbTable];
-		if (typeof tableName === 'string') {
-			return `${tableNamePrefix}${tableName}`;
-		}
-	}
+  if (item) {
+    const tableName = item[DynamoDbTable];
+    if (typeof tableName === 'string') {
+      return `${tableNamePrefix}${tableName}`;
+    }
+  }
 
-	throw new Error(
-		'The provided item did not adhere to the DynamoDbTable protocol. No'
-            + ' string property was found at the `DynamoDbTable` symbol',
-	);
+  throw new Error(
+    'The provided item did not adhere to the DynamoDbTable protocol. No' +
+      ' string property was found at the `DynamoDbTable` symbol'
+  );
 }
 
 /**

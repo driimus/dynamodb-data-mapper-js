@@ -1,25 +1,25 @@
 {
-    "compilerOptions": {
-        "target": "ES2020",
-        "downlevelIteration": true,
-        "importHelpers": true,
-        "module": "commonjs",
-        "noUnusedLocals": true,
-        "strict": true,
-        "declaration": true,
-        "sourceMap": true,
-        "skipLibCheck": true,
-        "rootDir": "./src",
-        "outDir": "./build",
-        "resolveJsonModule": true,
-        "esModuleInterop": true
-    },
-    "exclude": ["src/*.spec.ts", "node_modules", "build", "src/*.integ.ts"],
-    "typedocOptions": {
-        "mode": "file",
-        "out": "../../docs/packages/dynamodb-data-mapper",
-        "excludeNotExported": true,
-        "excludePrivate": true,
-        "hideGenerator": true
-    }
+  "compilerOptions": {
+    "target": "ES2020",
+    "downlevelIteration": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "noUnusedLocals": true,
+    "strict": true,
+    "declaration": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "rootDir": "./src",
+    "outDir": "./build",
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "exclude": ["src/*.spec.ts", "node_modules", "build", "src/*.integ.ts"],
+  "typedocOptions": {
+    "mode": "file",
+    "out": "../../docs/packages/dynamodb-data-mapper",
+    "excludeNotExported": true,
+    "excludePrivate": true,
+    "hideGenerator": true
+  }
 }

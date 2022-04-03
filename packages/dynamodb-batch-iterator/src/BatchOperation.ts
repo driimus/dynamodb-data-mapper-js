@@ -1,249 +1,233 @@
-import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
-import {
-	BatchState,
-	SyncOrAsyncIterable,
-	TableState,
-	TableStateElement,
-	ThrottledTableConfiguration,
+import type { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+
+import type {
+  BatchState,
+  SyncOrAsyncIterable,
+  TableState,
+  TableStateElement,
+  ThrottledTableConfiguration,
 } from './types';
 
 if (Symbol && !Symbol.asyncIterator) {
-	(Symbol as any).asyncIterator = Symbol.for('__@@asyncIterator__');
+  (Symbol as any).asyncIterator = Symbol.for('__@@asyncIterator__');
 }
 
 export abstract class BatchOperation<Element extends TableStateElement>
-implements AsyncIterableIterator<[string, Element]> {
-	/**
-     * Items that have been retrieved and are ready to be returned.
-     */
-	protected readonly pending: Array<[string, Element]> = [];
+  implements AsyncIterableIterator<[string, Element]>
+{
+  /**
+   * Items that have been retrieved and are ready to be returned.
+   */
+  protected readonly pending: Array<[string, Element]> = [];
 
-	/**
-     * A mapping of table names to table-specific operation state (e.g., the
-     * number of throttling events experienced, etc.)
-     */
-	protected readonly state: BatchState<Element> = {};
+  /**
+   * A mapping of table names to table-specific operation state (e.g., the
+   * number of throttling events experienced, etc.)
+   */
+  protected readonly state: BatchState<Element> = {};
 
-	/**
-     * Input elements that are prepared for immediate dispatch
-     */
-	protected readonly toSend: Array<[string, Element]> = [];
+  /**
+   * Input elements that are prepared for immediate dispatch
+   */
+  protected readonly toSend: Array<[string, Element]> = [];
 
-	/**
-     * The maximum number of elements that may be included in a single batch.
-     */
-	protected abstract readonly batchSize: number;
+  /**
+   * The maximum number of elements that may be included in a single batch.
+   */
+  protected abstract readonly batchSize: number;
 
-	private readonly throttled = new Set<
-	Promise<ThrottledTableConfiguration<Element>>
-	>();
+  private readonly throttled = new Set<Promise<ThrottledTableConfiguration<Element>>>();
 
-	private readonly iterator:
-	| Iterator<[string, Element]>
-	| AsyncIterator<[string, Element]>;
+  private readonly iterator: Iterator<[string, Element]> | AsyncIterator<[string, Element]>;
 
-	private sourceDone = false;
-	private sourceNext:
-	| IteratorResult<[string, Element]>
-	| Promise<IteratorResult<[string, Element]>>;
+  private sourceDone = false;
+  private sourceNext:
+    | IteratorResult<[string, Element]>
+    | Promise<IteratorResult<[string, Element]>>;
 
-	private lastResolved?: Promise<IteratorResult<[string, Element]>>;
+  private lastResolved?: Promise<IteratorResult<[string, Element]>>;
 
-	/**
-     * @param client    The AWS SDK client with which to communicate with
-     *                  DynamoDB.
-     * @param items     A synchronous or asynchronous iterable of tuples
-     *                  describing the operations to execute. The first member
-     *                  of the tuple should be the name of the table targeted by
-     *                  the operation.
-     */
-	constructor(
-		protected readonly client: DynamoDBClient,
-		items: SyncOrAsyncIterable<[string, Element]>,
-	) {
-		this.iterator = isIterable(items) ? items[Symbol.iterator]() : items[Symbol.asyncIterator]();
+  /**
+   * @param client    The AWS SDK client with which to communicate with
+   *                  DynamoDB.
+   * @param items     A synchronous or asynchronous iterable of tuples
+   *                  describing the operations to execute. The first member
+   *                  of the tuple should be the name of the table targeted by
+   *                  the operation.
+   */
+  constructor(
+    protected readonly client: DynamoDBClient,
+    items: SyncOrAsyncIterable<[string, Element]>
+  ) {
+    this.iterator = isIterable(items) ? items[Symbol.iterator]() : items[Symbol.asyncIterator]();
 
-		this.sourceNext = this.iterator.next();
-	}
+    this.sourceNext = this.iterator.next();
+  }
 
-	async next(): Promise<IteratorResult<[string, Element]>> {
-		this.lastResolved = this.lastResolved ? this.lastResolved.then(async () => this.getNext()) : this.getNext();
+  async next(): Promise<IteratorResult<[string, Element]>> {
+    this.lastResolved = this.lastResolved
+      ? this.lastResolved.then(async () => this.getNext())
+      : this.getNext();
 
-		return this.lastResolved;
-	}
+    return this.lastResolved;
+  }
 
-	[Symbol.asyncIterator]() {
-		return this;
-	}
+  [Symbol.asyncIterator]() {
+    return this;
+  }
 
-	/**
-     * Create and return the initial state object for a given DynamoDB table.
-     *
-     * @param tableName The name of the table whose initial state should be
-     *                  returned.
-     */
-	protected getInitialTableState(tableName: string): TableState<Element> {
-		return {
-			backoffFactor: 0,
-			name: tableName,
-		};
-	}
+  /**
+   * Create and return the initial state object for a given DynamoDB table.
+   *
+   * @param tableName The name of the table whose initial state should be
+   *                  returned.
+   */
+  protected getInitialTableState(tableName: string): TableState<Element> {
+    return {
+      backoffFactor: 0,
+      name: tableName,
+    };
+  }
 
-	/**
-     * Accept an array of unprocessed items belonging to a single table and
-     * re-enqueue it for submission, making sure the appropriate level of
-     * backoff is applied to future operations on the same table.
-     *
-     * @param tableName     The table to which the unprocessed elements belong.
-     * @param unprocessed   Elements returned by DynamoDB as not yet processed.
-     *                      The elements should not be unmarshalled, but they
-     *                      should be reverted to the form used for elements
-     *                      that have not yet been sent.
-     */
-	protected handleThrottled(
-		tableName: string,
-		unprocessed: Element[],
-	): void {
-		const tableState = this.state[tableName];
-		tableState.backoffFactor++;
+  /**
+   * Accept an array of unprocessed items belonging to a single table and
+   * re-enqueue it for submission, making sure the appropriate level of
+   * backoff is applied to future operations on the same table.
+   *
+   * @param tableName     The table to which the unprocessed elements belong.
+   * @param unprocessed   Elements returned by DynamoDB as not yet processed.
+   *                      The elements should not be unmarshalled, but they
+   *                      should be reverted to the form used for elements
+   *                      that have not yet been sent.
+   */
+  protected handleThrottled(tableName: string, unprocessed: Element[]): void {
+    const tableState = this.state[tableName];
+    tableState.backoffFactor++;
 
-		if (tableState.tableThrottling) {
-			this.throttled.delete(tableState.tableThrottling.backoffWaiter);
-			unprocessed.unshift(...tableState.tableThrottling.unprocessed);
-		}
+    if (tableState.tableThrottling) {
+      this.throttled.delete(tableState.tableThrottling.backoffWaiter);
+      unprocessed.unshift(...tableState.tableThrottling.unprocessed);
+    }
 
-		tableState.tableThrottling = {
-			unprocessed,
-			backoffWaiter: new Promise(resolve => {
-				setTimeout(
-					resolve,
-					exponentialBackoff(tableState.backoffFactor),
-					tableState,
-				);
-			}),
-		};
+    tableState.tableThrottling = {
+      unprocessed,
+      backoffWaiter: new Promise((resolve) => {
+        setTimeout(resolve, exponentialBackoff(tableState.backoffFactor), tableState);
+      }),
+    };
 
-		this.throttled.add(tableState.tableThrottling.backoffWaiter);
-	}
+    this.throttled.add(tableState.tableThrottling.backoffWaiter);
+  }
 
-	/**
-     * Iterate over all pending writes and move those targeting throttled tables
-     * into the throttled queue.
-     *
-     * @param unprocessedTables     A set of tables for which some items were
-     *                              returned without being processed.
-     */
-	protected movePendingToThrottled(unprocessedTables: Set<string>) {
-		for (let i = this.toSend.length - 1; i > -1; i--) {
-			const [table, attributes] = this.toSend[i];
-			if (unprocessedTables.has(table)) {
-				(
-					this.state[table] as ThrottledTableConfiguration<Element>
-				).tableThrottling?.unprocessed.push(attributes);
-				this.toSend.splice(i, 1);
-			}
-		}
-	}
+  /**
+   * Iterate over all pending writes and move those targeting throttled tables
+   * into the throttled queue.
+   *
+   * @param unprocessedTables     A set of tables for which some items were
+   *                              returned without being processed.
+   */
+  protected movePendingToThrottled(unprocessedTables: Set<string>) {
+    for (let i = this.toSend.length - 1; i > -1; i--) {
+      const [table, attributes] = this.toSend[i];
+      if (unprocessedTables.has(table)) {
+        (
+          this.state[table] as ThrottledTableConfiguration<Element>
+        ).tableThrottling?.unprocessed.push(attributes);
+        this.toSend.splice(i, 1);
+      }
+    }
+  }
 
-	/**
-     * Execute a single batch request and process the result.
-     */
-	protected abstract doBatchRequest(): Promise<void>;
+  /**
+   * Execute a single batch request and process the result.
+   */
+  protected abstract doBatchRequest(): Promise<void>;
 
-	private addToSendQueue([tableName, attributes]: [string, Element]): void {
-		if (!this.state[tableName]) {
-			this.state[tableName] = this.getInitialTableState(tableName);
-		}
+  private addToSendQueue([tableName, attributes]: [string, Element]): void {
+    if (!this.state[tableName]) {
+      this.state[tableName] = this.getInitialTableState(tableName);
+    }
 
-		const tableState = this.state[tableName];
+    const tableState = this.state[tableName];
 
-		if (tableState.tableThrottling) {
-			tableState.tableThrottling.unprocessed.push(attributes);
-		} else {
-			this.toSend.push([tableName, attributes]);
-		}
-	}
+    if (tableState.tableThrottling) {
+      tableState.tableThrottling.unprocessed.push(attributes);
+    } else {
+      this.toSend.push([tableName, attributes]);
+    }
+  }
 
-	private enqueueThrottled(
-		table: ThrottledTableConfiguration<Element>,
-	): void {
-		const {backoffWaiter, unprocessed} = table.tableThrottling ?? {};
-		if (unprocessed?.length) {
-			this.toSend.push(
-				...unprocessed.map(
-					attr => [table.name, attr] as [string, Element],
-				),
-			);
-		}
+  private enqueueThrottled(table: ThrottledTableConfiguration<Element>): void {
+    const { backoffWaiter, unprocessed } = table.tableThrottling ?? {};
+    if (unprocessed?.length) {
+      this.toSend.push(...unprocessed.map((attr) => [table.name, attr] as [string, Element]));
+    }
 
-		if (backoffWaiter) {
-			this.throttled.delete(backoffWaiter);
-		}
+    if (backoffWaiter) {
+      this.throttled.delete(backoffWaiter);
+    }
 
-		delete table.tableThrottling;
-	}
+    delete table.tableThrottling;
+  }
 
-	private async getNext(): Promise<IteratorResult<[string, Element]>> {
-		if (
-			this.sourceDone
-            && this.pending.length === 0
-            && this.toSend.length === 0
-            && this.throttled.size === 0
-		) {
-			return {done: true} as IteratorResult<[string, Element]>;
-		}
+  private async getNext(): Promise<IteratorResult<[string, Element]>> {
+    if (
+      this.sourceDone &&
+      this.pending.length === 0 &&
+      this.toSend.length === 0 &&
+      this.throttled.size === 0
+    ) {
+      return { done: true } as IteratorResult<[string, Element]>;
+    }
 
-		if (this.pending.length > 0) {
-			return {
-				done: false,
-				value: this.pending.shift()!,
-			};
-		}
+    if (this.pending.length > 0) {
+      return {
+        done: false,
+        value: this.pending.shift()!,
+      };
+    }
 
-		await this.refillPending();
-		return this.getNext();
-	}
+    await this.refillPending();
+    return this.getNext();
+  }
 
-	private async refillPending() {
-		while (!this.sourceDone && this.toSend.length < this.batchSize) {
-			const toProcess = isIteratorResult(this.sourceNext)
-				? this.sourceNext
-			// eslint-disable-next-line no-await-in-loop
-				: await Promise.race([
-					this.sourceNext,
-					Promise.race(this.throttled),
-				]);
+  private async refillPending() {
+    while (!this.sourceDone && this.toSend.length < this.batchSize) {
+      const toProcess = isIteratorResult(this.sourceNext)
+        ? this.sourceNext
+        : // eslint-disable-next-line no-await-in-loop
+          await Promise.race([this.sourceNext, Promise.race(this.throttled)]);
 
-			if (isIteratorResult(toProcess)) {
-				this.sourceDone = Boolean(toProcess.done);
-				if (!this.sourceDone) {
-					this.addToSendQueue(toProcess.value);
-					this.sourceNext = this.iterator.next();
-				}
-			} else {
-				this.enqueueThrottled(toProcess);
-			}
-		}
+      if (isIteratorResult(toProcess)) {
+        this.sourceDone = Boolean(toProcess.done);
+        if (!this.sourceDone) {
+          this.addToSendQueue(toProcess.value);
+          this.sourceNext = this.iterator.next();
+        }
+      } else {
+        this.enqueueThrottled(toProcess);
+      }
+    }
 
-		while (this.toSend.length < this.batchSize && this.throttled.size > 0) {
-			// eslint-disable-next-line no-await-in-loop
-			this.enqueueThrottled(await Promise.race(this.throttled));
-		}
+    while (this.toSend.length < this.batchSize && this.throttled.size > 0) {
+      // eslint-disable-next-line no-await-in-loop
+      this.enqueueThrottled(await Promise.race(this.throttled));
+    }
 
-		if (this.toSend.length > 0) {
-			await this.doBatchRequest();
-		}
-	}
+    if (this.toSend.length > 0) {
+      await this.doBatchRequest();
+    }
+  }
 }
 
 function exponentialBackoff(attempts: number) {
-	return Math.floor(Math.random() * (2 ** attempts));
+  return Math.floor(Math.random() * 2 ** attempts);
 }
 
 function isIterable<T>(arg: any): arg is Iterable<T> {
-	return Boolean(arg) && typeof arg[Symbol.iterator] === 'function';
+  return Boolean(arg) && typeof arg[Symbol.iterator] === 'function';
 }
 
 function isIteratorResult<T>(arg: any): arg is IteratorResult<T> {
-	return Boolean(arg) && typeof arg.done === 'boolean';
+  return Boolean(arg) && typeof arg.done === 'boolean';
 }

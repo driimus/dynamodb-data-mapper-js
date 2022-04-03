@@ -17,28 +17,28 @@ in a DynamoDB table:
 
 ```javascript
 const schema = {
-    foo: {type: 'Binary'},
-    bar: {type: 'Boolean'},
-    baz: {type: 'String'},
-    quux: {
-        type: 'Document',
-        members: {
-            fizz: {type: 'Set', memberType: 'String'},
-            buzz: {
-                type: 'Tuple',
-                members: [
-                    {
-                        type: 'List',
-                        memberType: {type: 'Set', memberType: 'Number'},
-                    },
-                    {
-                        type: 'Map',
-                        memberType: {type: 'Date'},
-                    }
-                ]
-            },
-        },
+  foo: { type: 'Binary' },
+  bar: { type: 'Boolean' },
+  baz: { type: 'String' },
+  quux: {
+    type: 'Document',
+    members: {
+      fizz: { type: 'Set', memberType: 'String' },
+      buzz: {
+        type: 'Tuple',
+        members: [
+          {
+            type: 'List',
+            memberType: { type: 'Set', memberType: 'Number' },
+          },
+          {
+            type: 'Map',
+            memberType: { type: 'Date' },
+          },
+        ],
+      },
     },
+  },
 };
 ```
 
@@ -46,26 +46,22 @@ This schema may be used to marshall JavaScript values to DynamoDB attribute
 values:
 
 ```javascript
-import {marshallItem} from '@aws/dynamodb-data-marshaller';
+import { marshallItem } from '@aws/dynamodb-data-marshaller';
 
 const marshalled = marshallItem(schema, {
-    foo: Uint8Array.from([0xde, 0xad, 0xbe, 0xef]),
-    bar: false,
-    baz: '',
-    quux: {
-        fizz: new Set(['a', 'b', 'c']),
-        buzz: [
-            [
-                new Set([1, 2, 3]),
-                new Set([2, 3, 4]),
-                new Set([3, 4, 5]),
-            ],
-            new Map([
-                ['now', new Date()],
-                ['then', new Date(0)],
-            ]),
-        ]
-    }
+  foo: Uint8Array.from([0xde, 0xad, 0xbe, 0xef]),
+  bar: false,
+  baz: '',
+  quux: {
+    fizz: new Set(['a', 'b', 'c']),
+    buzz: [
+      [new Set([1, 2, 3]), new Set([2, 3, 4]), new Set([3, 4, 5])],
+      new Map([
+        ['now', new Date()],
+        ['then', new Date(0)],
+      ]),
+    ],
+  },
 });
 ```
 
@@ -73,54 +69,50 @@ The schema can also be used to unmarshall DynamoDB attribute values back to
 their original JavaScript representation:
 
 ```javascript
-import {unmarshallItem} from '@aws/dynamodb-data-marshaller';
+import { unmarshallItem } from '@aws/dynamodb-data-marshaller';
 
 const unmarshalled = unmarshallItem(schema, {
-    foo: {B: Uint8Array.from([0xde, 0xad, 0xbe, 0xef])},
-    bar: {BOOL: false},
-    baz: {NULL: true},
-    quux: {
-        fizz: {SS: ['a', 'b', 'c']},
-        buzz: {
-            L: [
-                L: [
-                    {NS: ['1', '2', '3']},
-                    {NS: ['2', '3', '4']},
-                    {NS: ['3', '4', '5']},
-                ],
-                M: {
-                    now: {N: '1507189047'},
-                    then: {N: '0'}
-                },
-            ],
-        },
+  foo: { B: Uint8Array.from([0xde, 0xad, 0xbe, 0xef]) },
+  bar: { BOOL: false },
+  baz: { NULL: true },
+  quux: {
+    fizz: { SS: ['a', 'b', 'c'] },
+    buzz: {
+      L: [
+        (L: [{ NS: ['1', '2', '3'] }, { NS: ['2', '3', '4'] }, { NS: ['3', '4', '5'] }]),
+        (M: {
+          now: { N: '1507189047' },
+          then: { N: '0' },
+        }),
+      ],
     },
+  },
 });
 ```
 
 ## Specifying keys
 
 DynamoDB tables must define a hash key and may optionally define a range key. In
-DynamoDB documentation, these keys are sometimes referred to as *partition* and
-*sort* keys, respectively. To declare a property to be a key, add a `keyType`
+DynamoDB documentation, these keys are sometimes referred to as _partition_ and
+_sort_ keys, respectively. To declare a property to be a key, add a `keyType`
 property to its property schema (example taken from the [DynamoDB developer
 guide](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html)):
 
 ```javascript
 // Table model taken from http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html
 const gameScores = {
-    UserId: {
-        type: 'String',
-        keyType: 'HASH'
-    },
-    GameTitle: {
-        type: 'String',
-        keyType: 'RANGE'
-    },
-    TopScore: {type: 'Number'},
-    TopScoreDateTime: {type: 'Date'},
-    Wins: {type: 'Number'},
-    Losses: {type: 'Number'}
+  UserId: {
+    type: 'String',
+    keyType: 'HASH',
+  },
+  GameTitle: {
+    type: 'String',
+    keyType: 'RANGE',
+  },
+  TopScore: { type: 'Number' },
+  TopScoreDateTime: { type: 'Date' },
+  Wins: { type: 'Number' },
+  Losses: { type: 'Number' },
 };
 ```
 
@@ -130,32 +122,32 @@ and `'Binary'` properties, it may be used on `'Date'` and `'Custom'` properties.
 
 Index keys are specified using an object mapping index names to the key type as
 which the value is used in a given index. To continue with the `gameScores`
-example given above, you could add the index key declarations described in [the 
+example given above, you could add the index key declarations described in [the
 DynamoDB Global Secondary Index developer guide](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html)
 as follows:
 
 ```javascript
 const gameScores = {
-    UserId: {
-        type: 'String',
-        keyType: 'HASH'
+  UserId: {
+    type: 'String',
+    keyType: 'HASH',
+  },
+  GameTitle: {
+    type: 'String',
+    keyType: 'RANGE',
+    indexKeyConfigurations: {
+      GameTitleIndex: 'HASH',
     },
-    GameTitle: {
-        type: 'String',
-        keyType: 'RANGE',
-        indexKeyConfigurations: {
-            GameTitleIndex: 'HASH'
-        }
+  },
+  TopScore: {
+    type: 'Number',
+    indexKeyConfigurations: {
+      GameTitleIndex: 'RANGE',
     },
-    TopScore: {
-        type: 'Number',
-        indexKeyConfigurations: {
-            GameTitleIndex: 'RANGE'
-        }
-    },
-    TopScoreDateTime: {type: 'Date'},
-    Wins: {type: 'Number'},
-    Losses: {type: 'Number'}
+  },
+  TopScoreDateTime: { type: 'Date' },
+  Wins: { type: 'Number' },
+  Losses: { type: 'Number' },
 };
 ```
 
@@ -170,12 +162,12 @@ DynamoDB AttributeValue shape.
 const uuidV4 = require('uuid/v4');
 
 const schema = {
-    key: {
-        type: 'String',
-        defaultProvider: uuidV4,
-        keyType: 'HASH',
-    },
-    // ...
+  key: {
+    type: 'String',
+    defaultProvider: uuidV4,
+    keyType: 'HASH',
+  },
+  // ...
 };
 ```
 
@@ -190,12 +182,12 @@ package, which detects the type of a given value at runtime.
 
 ```javascript
 const anyProperty = {
-    type: 'Any',
-    // optionally, you may specify configuration options for the
-    // @aws/dynamodb-auto-marshaller package's Marshaller class:
-    unwrapNumbers: false,
-    onInvalid: 'omit',
-    onEmpty: 'nullify',
+  type: 'Any',
+  // optionally, you may specify configuration options for the
+  // @aws/dynamodb-auto-marshaller package's Marshaller class:
+  unwrapNumbers: false,
+  onInvalid: 'omit',
+  onEmpty: 'nullify',
 };
 ```
 
@@ -209,7 +201,7 @@ buffers.
 #### Example
 
 ```javascript
-const binaryProperty = {type: 'Binary'};
+const binaryProperty = { type: 'Binary' };
 ```
 
 ### Boolean
@@ -219,7 +211,7 @@ Used for `true`/`false` values.
 #### Example
 
 ```javascript
-const booleanProperty = {type: 'Boolean'};
+const booleanProperty = { type: 'Boolean' };
 ```
 
 ### Collection
@@ -231,12 +223,12 @@ unmarshalled using the `@aws/dynamodb-auto-marshaller`.
 
 ```javascript
 const collectionProperty = {
-    type: 'Collection',
-    // optionally, you may specify configuration options for the
-    // @aws/dynamodb-auto-marshaller package's Marshaller class:
-    unwrapNumbers: false,
-    onInvalid: 'omit',
-    onEmpty: 'nullify',
+  type: 'Collection',
+  // optionally, you may specify configuration options for the
+  // @aws/dynamodb-auto-marshaller package's Marshaller class:
+  unwrapNumbers: false,
+  onInvalid: 'omit',
+  onEmpty: 'nullify',
 };
 ```
 
@@ -255,13 +247,13 @@ value.
 ```javascript
 // This custom property handles strings
 const customProperty = {
-    type: 'Custom',
-    marshall(input) {
-        return {S: input};
-    },
-    unmarshall(persistedValue) {
-        return persistedValue.S;
-    }
+  type: 'Custom',
+  marshall(input) {
+    return { S: input };
+  },
+  unmarshall(persistedValue) {
+    return persistedValue.S;
+  },
 };
 ```
 
@@ -276,7 +268,7 @@ information will not be persisted.
 #### Example
 
 ```javascript
-const dateProperty = {type: 'Date'};
+const dateProperty = { type: 'Date' };
 ```
 
 ### Document
@@ -290,7 +282,7 @@ class MyCustomDocument {
     method() {
         // pass
     }
-    
+
     get computedProperty() {
         // pass
     }
@@ -320,12 +312,12 @@ Used for objects with string keys and untyped values.
 
 ```javascript
 const collectionProperty = {
-    type: 'Hash',
-    // optionally, you may specify configuration options for the
-    // @aws/dynamodb-auto-marshaller package's Marshaller class:
-    unwrapNumbers: false,
-    onInvalid: 'omit',
-    onEmpty: 'nullify',
+  type: 'Hash',
+  // optionally, you may specify configuration options for the
+  // @aws/dynamodb-auto-marshaller package's Marshaller class:
+  unwrapNumbers: false,
+  onInvalid: 'omit',
+  onEmpty: 'nullify',
 };
 ```
 
@@ -337,8 +329,8 @@ Used for arrays or iterable objects whose elements are all of the same type.
 
 ```javascript
 const listOfStrings = {
-    type: 'List',
-    memberType: {type: 'String'}
+  type: 'List',
+  memberType: { type: 'String' },
 };
 ```
 
@@ -350,8 +342,8 @@ Used for `Map` objects whose values are all of the same type.
 
 ```javascript
 const mapOfStrings = {
-    type: 'Map',
-    memberType: {type: 'String'}
+  type: 'Map',
+  memberType: { type: 'String' },
 };
 ```
 
@@ -362,7 +354,7 @@ Used to serialize `null`. Often used as a sigil value.
 #### Example
 
 ```javascript
-const nullProperty = {type: 'Null'};
+const nullProperty = { type: 'Null' };
 ```
 
 ### Number
@@ -374,7 +366,7 @@ Used to serialize numbers.
 #### Example
 
 ```javascript
-const numberProperty = {type: 'Number'};
+const numberProperty = { type: 'Number' };
 ```
 
 ### Set
@@ -385,9 +377,9 @@ sets of numbers, sets of strings, and sets of binary values.
 #### Example
 
 ```javascript
-const binarySetProperty = {type: 'Set', memberType: 'Binary'};
-const numberSetProperty = {type: 'Set', memberType: 'Number'};
-const stringSetProperty = {type: 'Set', memberType: 'String'};
+const binarySetProperty = { type: 'Set', memberType: 'Binary' };
+const numberSetProperty = { type: 'Set', memberType: 'Number' };
+const stringSetProperty = { type: 'Set', memberType: 'String' };
 ```
 
 ### String
@@ -399,7 +391,7 @@ Used to serialize strings.
 #### Example
 
 ```javascript
-const stringProperty = {type: 'String'};
+const stringProperty = { type: 'String' };
 ```
 
 ### Tuple
@@ -410,10 +402,7 @@ Used to store arrays that have a specific length and sequence of elements.
 
 ```javascript
 const tupleProperty = {
-    type: 'Tuple',
-    members: [
-        {type: 'Boolean'},
-        {type: 'String'}
-    ]
+  type: 'Tuple',
+  members: [{ type: 'Boolean' }, { type: 'String' }],
 };
 ```

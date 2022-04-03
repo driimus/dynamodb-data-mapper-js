@@ -1,17 +1,17 @@
 {
-    "compilerOptions": {
-        "target": "es2020",
-        "module": "commonjs",
-        "strict": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
-    },
-    "typedocOptions": {
-        "mode": "file",
-        "out": "./docs",
-        "excludeNotExported": true,
-        "excludePrivate": true,
-        "hideGenerator": true,
-        "name": "Amazon DynamoDB DataMapper For JavaScript - V3"
-    }
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "strict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "typedocOptions": {
+    "mode": "file",
+    "out": "./docs",
+    "excludeNotExported": true,
+    "excludePrivate": true,
+    "hideGenerator": true,
+    "name": "Amazon DynamoDB DataMapper For JavaScript - V3"
+  }
 }

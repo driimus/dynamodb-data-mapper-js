@@ -1,4 +1,4 @@
-import {GetItemInput} from '@aws-sdk/client-dynamodb';
+import type { GetItemInput } from '@aws-sdk/client-dynamodb';
 
 /**
  * An exception thrown when an item was sought with a DynamoDB::GetItem
@@ -6,20 +6,20 @@ import {GetItemInput} from '@aws-sdk/client-dynamodb';
  * `itemSought`.
  */
 export class ItemNotFoundException extends Error {
-	get name() {
-		return 'ItemNotFoundException';
-	}
+  get name() {
+    return 'ItemNotFoundException';
+  }
 
-	constructor(
-		public readonly itemSought: GetItemInput,
-		message: string = defaultErrorMessage(itemSought),
-	) {
-		super(message);
-	}
+  constructor(
+    public readonly itemSought: GetItemInput,
+    message: string = defaultErrorMessage(itemSought)
+  ) {
+    super(message);
+  }
 }
 
 function defaultErrorMessage(itemSought: GetItemInput): string {
-	return `No item with the key ${JSON.stringify(
-		itemSought.Key,
-	)} found in the ${itemSought.TableName} table.`;
+  return `No item with the key ${JSON.stringify(itemSought.Key)} found in the ${
+    itemSought.TableName
+  } table.`;
 }

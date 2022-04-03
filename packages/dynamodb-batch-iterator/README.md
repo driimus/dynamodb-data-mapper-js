@@ -23,17 +23,17 @@ object stream wrapped with [async-iter-stream](https://github.com/calvinmetcalf/
 import { BatchGet } from '@aws/dynamodb-batch-iterator';
 import DynamoDB = require('aws-sdk/clients/dynamodb');
 
-const dynamoDb = new DynamoDB({region: 'us-west-2'});
+const dynamoDb = new DynamoDB({ region: 'us-west-2' });
 const keys = [
-    ['tableName', {keyProperty: {N: '0'}}],
-    ['tableName', {keyProperty: {N: '1'}}],
-    ['tableName', {keyProperty: {N: '2'}}],
-    // etc., continuing to count up to
-    ['tableName', {keyProperty: {N: '1001'}}],
+  ['tableName', { keyProperty: { N: '0' } }],
+  ['tableName', { keyProperty: { N: '1' } }],
+  ['tableName', { keyProperty: { N: '2' } }],
+  // etc., continuing to count up to
+  ['tableName', { keyProperty: { N: '1001' } }],
 ];
 
 for await (const item of new BatchGet(dynamoDb, keys)) {
-    console.log(item);
+  console.log(item);
 }
 ```
 
@@ -62,19 +62,25 @@ key as described [in the Amazon DynamoDB API reference](http://docs.aws.amazon.c
 import { BatchWrite } from '@aws/dynamodb-batch-iterator';
 import DynamoDB = require('aws-sdk/clients/dynamodb');
 
-const dynamoDb = new DynamoDB({region: 'us-west-2'});
+const dynamoDb = new DynamoDB({ region: 'us-west-2' });
 const keys = [
-    ['tableName', {DeleteRequest: {Key: {keyProperty: {N: '0'}}}}],
-    ['tableName', {PutRequest: {Item: {keyProperty: {N: '1'}, otherProperty: {BOOL: false}}}}],
-    ['tableName', {DeleteRequest: {Key: {keyProperty: {N: '2'}}}}],
-    ['tableName', {PutRequest: {Item: {keyProperty: {N: '3'}, otherProperty: {BOOL: false}}}}],
-    ['tableName', {N: '2'}],
-    // etc., continuing to count up to
-    ['tableName', {DeleteRequest: {Key: {keyProperty: {N: '102'}}}}],
+  ['tableName', { DeleteRequest: { Key: { keyProperty: { N: '0' } } } }],
+  [
+    'tableName',
+    { PutRequest: { Item: { keyProperty: { N: '1' }, otherProperty: { BOOL: false } } } },
+  ],
+  ['tableName', { DeleteRequest: { Key: { keyProperty: { N: '2' } } } }],
+  [
+    'tableName',
+    { PutRequest: { Item: { keyProperty: { N: '3' }, otherProperty: { BOOL: false } } } },
+  ],
+  ['tableName', { N: '2' }],
+  // etc., continuing to count up to
+  ['tableName', { DeleteRequest: { Key: { keyProperty: { N: '102' } } } }],
 ];
 
 for await (const item of new BatchWrite(dynamoDb, keys)) {
-    console.log(item);
+  console.log(item);
 }
 ```
 

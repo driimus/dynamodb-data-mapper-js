@@ -1,28 +1,22 @@
 {
-    "compilerOptions": {
-        "target": "ES2020",
-        "downlevelIteration": true,
-        "importHelpers": true,
-        "module": "commonjs",
-        "strict": true,
-        "noUnusedLocals": true,
-        "declaration": true,
-        "sourceMap": true,
-        "rootDir": "./src",
-        "outDir": "./build"
-    },
-    "exclude": [
-        "src/*.spec.ts",
-        "src/*.integ.ts",
-        "src/*.fixture.ts",
-        "node_modules",
-        "build"
-    ],
-    "typedocOptions": {
-        "mode": "file",
-        "out": "../../docs/packages/dynamodb-data-marshaller",
-        "excludeNotExported": true,
-        "excludePrivate": true,
-        "hideGenerator": true
-    }
+  "compilerOptions": {
+    "target": "ES2020",
+    "downlevelIteration": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "strict": true,
+    "noUnusedLocals": true,
+    "declaration": true,
+    "sourceMap": true,
+    "rootDir": "./src",
+    "outDir": "./build"
+  },
+  "exclude": ["src/*.spec.ts", "src/*.integ.ts", "src/*.fixture.ts", "node_modules", "build"],
+  "typedocOptions": {
+    "mode": "file",
+    "out": "../../docs/packages/dynamodb-data-marshaller",
+    "excludeNotExported": true,
+    "excludePrivate": true,
+    "hideGenerator": true
+  }
 }

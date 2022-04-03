@@ -1,5 +1,5 @@
-import {AttributePath} from './AttributePath';
-import {ExpressionAttributes} from './ExpressionAttributes';
+import type { AttributePath } from './AttributePath';
+import type { ExpressionAttributes } from './ExpressionAttributes';
 
 /**
  * An array of attributes to project. Each may be represented as
@@ -13,13 +13,13 @@ export type ProjectionExpression = Array<AttributePath | string>;
  * provided ExpressionAttributes object.
  */
 export function serializeProjectionExpression(
-	projection: ProjectionExpression,
-	attributes: ExpressionAttributes,
+  projection: ProjectionExpression,
+  attributes: ExpressionAttributes
 ): string {
-	const serialized: string[] = [];
-	for (const projected of projection) {
-		serialized.push(attributes.addName(projected));
-	}
+  const serialized: string[] = [];
+  for (const projected of projection) {
+    serialized.push(attributes.addName(projected));
+  }
 
-	return serialized.join(', ');
+  return serialized.join(', ');
 }

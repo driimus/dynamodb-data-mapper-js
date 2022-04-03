@@ -1,23 +1,23 @@
 {
-    "compilerOptions": {
-        "target": "ES2020",
-        "downlevelIteration": true,
-        "importHelpers": true,
-        "module": "commonjs",
-        "noUnusedLocals": true,
-        "strict": true,
-        "declaration": true,
-        "sourceMap": true,
-        "inlineSources": true,
-        "rootDir": "./src",
-        "outDir": "./build"
-    },
-    "exclude": ["src/*.spec.ts", "node_modules", "build", "src/*.integ.ts"],
-    "typedocOptions": {
-        "mode": "file",
-        "out": "../../docs/packages/dynamodb-query-iterator",
-        "excludeNotExported": true,
-        "excludePrivate": true,
-        "hideGenerator": true
-    }
+  "compilerOptions": {
+    "target": "ES2020",
+    "downlevelIteration": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "noUnusedLocals": true,
+    "strict": true,
+    "declaration": true,
+    "sourceMap": true,
+    "inlineSources": true,
+    "rootDir": "./src",
+    "outDir": "./build"
+  },
+  "exclude": ["src/*.spec.ts", "node_modules", "build", "src/*.integ.ts"],
+  "typedocOptions": {
+    "mode": "file",
+    "out": "../../docs/packages/dynamodb-query-iterator",
+    "excludeNotExported": true,
+    "excludePrivate": true,
+    "hideGenerator": true
+  }
 }

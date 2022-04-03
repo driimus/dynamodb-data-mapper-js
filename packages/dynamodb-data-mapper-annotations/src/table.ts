@@ -1,5 +1,6 @@
-import {DynamoDbTable} from '@aws/dynamodb-data-mapper';
-import {ClassAnnotation} from './annotationShapes';
+import { DynamoDbTable } from '@aws/dynamodb-data-mapper';
+
+import type { ClassAnnotation } from './annotationShapes';
 
 /**
  * Declare a TypeScript class to represent items in a table in a way that is
@@ -11,7 +12,7 @@ import {ClassAnnotation} from './annotationShapes';
  * @see https://www.typescriptlang.org/docs/handbook/compiler-options.html
  */
 export function table(tableName: string): ClassAnnotation {
-	return constructor => {
-		constructor.prototype[DynamoDbTable] = tableName;
-	};
+  return (constructor) => {
+    constructor.prototype[DynamoDbTable] = tableName;
+  };
 }

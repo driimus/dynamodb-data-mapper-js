@@ -1,8 +1,8 @@
-import {ReadConsistency} from '../constants';
+import type { ReadConsistency } from '../constants';
 
 export interface ReadConsistencyConfiguration {
-	/**
-     * The read consistency to require when reading from DynamoDB.
-     */
-	readConsistency?: ReadConsistency;
+  /**
+   * The read consistency to require when reading from DynamoDB.
+   */
+  readConsistency?: ReadConsistency;
 }

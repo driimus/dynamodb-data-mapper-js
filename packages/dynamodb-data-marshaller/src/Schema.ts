@@ -1,18 +1,19 @@
-import {isSchemaType, Schema} from './SchemaType';
+import type { Schema } from './SchemaType';
+import { isSchemaType } from './SchemaType';
 
 /**
  * Evaluates whether the provided argument is a Schema object
  */
 export function isSchema(arg: any): arg is Schema {
-	if (!arg || typeof arg !== 'object') {
-		return false;
-	}
+  if (!arg || typeof arg !== 'object') {
+    return false;
+  }
 
-	for (const key of Object.keys(arg)) {
-		if (!isSchemaType(arg[key])) {
-			return false;
-		}
-	}
+  for (const key of Object.keys(arg)) {
+    if (!isSchemaType(arg[key])) {
+      return false;
+    }
+  }
 
-	return true;
+  return true;
 }

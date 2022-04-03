@@ -1,13 +1,14 @@
-import {
-	DocumentType,
-	// Schema,
-	ZeroArgumentsConstructor,
+import type {
+  DocumentType,
+  // Schema,
+  ZeroArgumentsConstructor,
 } from '@aws/dynamodb-data-marshaller';
-import {DynamoDbSchema} from './protocols';
+
+import { DynamoDbSchema } from './protocols';
 
 export interface DocumentTypeOptions<T> {
-	defaultProvider?: () => T;
-	attributeName?: string;
+  defaultProvider?: () => T;
+  attributeName?: string;
 }
 
 // Declare class DocumentClass {
@@ -15,14 +16,14 @@ export interface DocumentTypeOptions<T> {
 // }
 
 export function embed<T>(
-	documentConstructor: ZeroArgumentsConstructor<T>,
-	{attributeName, defaultProvider}: DocumentTypeOptions<T> = {},
+  documentConstructor: ZeroArgumentsConstructor<T>,
+  { attributeName, defaultProvider }: DocumentTypeOptions<T> = {}
 ): DocumentType {
-	return {
-		type: 'Document',
-		members: documentConstructor.prototype[DynamoDbSchema] || {},
-		attributeName,
-		defaultProvider,
-		valueConstructor: documentConstructor,
-	};
+  return {
+    type: 'Document',
+    members: documentConstructor.prototype[DynamoDbSchema] || {},
+    attributeName,
+    defaultProvider,
+    valueConstructor: documentConstructor,
+  };
 }

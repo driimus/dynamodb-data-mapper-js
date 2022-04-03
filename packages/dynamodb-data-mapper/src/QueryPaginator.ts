@@ -1,128 +1,124 @@
-import {QueryPaginator as BasePaginator} from '@aws/dynamodb-query-iterator';
+import type { ZeroArgumentsConstructor } from '@aws/dynamodb-data-marshaller';
 import {
-	marshallConditionExpression,
-	marshallProjectionExpression,
-	ZeroArgumentsConstructor,
+  marshallConditionExpression,
+  marshallProjectionExpression,
 } from '@aws/dynamodb-data-marshaller';
+import type { ConditionExpression, ConditionExpressionPredicate } from '@aws/dynamodb-expressions';
 import {
-	ConditionExpression,
-	ConditionExpressionPredicate,
-	ExpressionAttributes,
-	isConditionExpression,
-	isConditionExpressionPredicate,
+  ExpressionAttributes,
+  isConditionExpression,
+  isConditionExpressionPredicate,
 } from '@aws/dynamodb-expressions';
-import {DynamoDBClient, QueryInput} from '@aws-sdk/client-dynamodb';
-import {marshallStartKey} from './marshallStartKey';
-import {QueryOptions} from './namedParameters';
-import {Paginator} from './Paginator';
-import {getSchema, getTableName} from './protocols';
+import { QueryPaginator as BasePaginator } from '@aws/dynamodb-query-iterator';
+import type { DynamoDBClient, QueryInput } from '@aws-sdk/client-dynamodb';
+
+import { marshallStartKey } from './marshallStartKey';
+import type { QueryOptions } from './namedParameters';
+import { Paginator } from './Paginator';
+import { getSchema, getTableName } from './protocols';
 
 /**
  * Iterates over each page of items returned by a DynamoDB query until no more
  * pages are available.
  */
 export class QueryPaginator<T> extends Paginator<T> {
-	constructor(
-		client: DynamoDBClient,
-		valueConstructor: ZeroArgumentsConstructor<T>,
-		keyCondition:
-		| ConditionExpression
-		| Record<string, ConditionExpressionPredicate | any>,
-		options: QueryOptions & {tableNamePrefix?: string} = {},
-	) {
-		const itemSchema = getSchema(valueConstructor.prototype);
+  constructor(
+    client: DynamoDBClient,
+    valueConstructor: ZeroArgumentsConstructor<T>,
+    keyCondition: ConditionExpression | Record<string, ConditionExpressionPredicate | any>,
+    options: QueryOptions & { tableNamePrefix?: string } = {}
+  ) {
+    const itemSchema = getSchema(valueConstructor.prototype);
 
-		const {
-			filter,
-			indexName,
-			limit,
-			pageSize,
-			projection,
-			readConsistency,
-			scanIndexForward,
-			startKey,
-			tableNamePrefix: prefix,
-		} = options;
+    const {
+      filter,
+      indexName,
+      limit,
+      pageSize,
+      projection,
+      readConsistency,
+      scanIndexForward,
+      startKey,
+      tableNamePrefix: prefix,
+    } = options;
 
-		const request: QueryInput = {
-			TableName: getTableName(valueConstructor.prototype, prefix),
-			ScanIndexForward: scanIndexForward,
-			Limit: pageSize,
-			IndexName: indexName,
-		};
+    const request: QueryInput = {
+      TableName: getTableName(valueConstructor.prototype, prefix),
+      ScanIndexForward: scanIndexForward,
+      Limit: pageSize,
+      IndexName: indexName,
+    };
 
-		if (readConsistency === 'strong') {
-			request.ConsistentRead = true;
-		}
+    if (readConsistency === 'strong') {
+      request.ConsistentRead = true;
+    }
 
-		const attributes = new ExpressionAttributes();
-		request.KeyConditionExpression = marshallConditionExpression(
-			normalizeKeyCondition(keyCondition),
-			itemSchema,
-			attributes,
-		).expression;
+    const attributes = new ExpressionAttributes();
+    request.KeyConditionExpression = marshallConditionExpression(
+      normalizeKeyCondition(keyCondition),
+      itemSchema,
+      attributes
+    ).expression;
 
-		if (filter) {
-			request.FilterExpression = marshallConditionExpression(
-				filter,
-				itemSchema,
-				attributes,
-			).expression;
-		}
+    if (filter) {
+      request.FilterExpression = marshallConditionExpression(
+        filter,
+        itemSchema,
+        attributes
+      ).expression;
+    }
 
-		if (projection) {
-			request.ProjectionExpression = marshallProjectionExpression(
-				projection,
-				itemSchema,
-				attributes,
-			).expression;
-		}
+    if (projection) {
+      request.ProjectionExpression = marshallProjectionExpression(
+        projection,
+        itemSchema,
+        attributes
+      ).expression;
+    }
 
-		if (Object.keys(attributes.names).length > 0) {
-			request.ExpressionAttributeNames = attributes.names;
-		}
+    if (Object.keys(attributes.names).length > 0) {
+      request.ExpressionAttributeNames = attributes.names;
+    }
 
-		if (Object.keys(attributes.values).length > 0) {
-			request.ExpressionAttributeValues = attributes.values;
-		}
+    if (Object.keys(attributes.values).length > 0) {
+      request.ExpressionAttributeValues = attributes.values;
+    }
 
-		if (startKey) {
-			request.ExclusiveStartKey = marshallStartKey(itemSchema, startKey);
-		}
+    if (startKey) {
+      request.ExclusiveStartKey = marshallStartKey(itemSchema, startKey);
+    }
 
-		super(new BasePaginator(client, request, limit), valueConstructor);
-	}
+    super(new BasePaginator(client, request, limit), valueConstructor);
+  }
 }
 
 function normalizeKeyCondition(
-	keyCondition:
-	| ConditionExpression
-	| Record<string, ConditionExpressionPredicate | any>,
+  keyCondition: ConditionExpression | Record<string, ConditionExpressionPredicate | any>
 ): ConditionExpression {
-	if (isConditionExpression(keyCondition)) {
-		return keyCondition;
-	}
+  if (isConditionExpression(keyCondition)) {
+    return keyCondition;
+  }
 
-	const conditions: ConditionExpression[] = [];
-	for (const property of Object.keys(keyCondition)) {
-		const predicate = keyCondition[property];
-		if (isConditionExpressionPredicate(predicate)) {
-			conditions.push({
-				...predicate,
-				subject: property,
-			});
-		} else {
-			conditions.push({
-				type: 'Equals',
-				subject: property,
-				object: predicate,
-			});
-		}
-	}
+  const conditions: ConditionExpression[] = [];
+  for (const property of Object.keys(keyCondition)) {
+    const predicate = keyCondition[property];
+    if (isConditionExpressionPredicate(predicate)) {
+      conditions.push({
+        ...predicate,
+        subject: property,
+      });
+    } else {
+      conditions.push({
+        type: 'Equals',
+        subject: property,
+        object: predicate,
+      });
+    }
+  }
 
-	if (conditions.length === 1) {
-		return conditions[0];
-	}
+  if (conditions.length === 1) {
+    return conditions[0];
+  }
 
-	return {type: 'And', conditions};
+  return { type: 'And', conditions };
 }

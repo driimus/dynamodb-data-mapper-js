@@ -1,4 +1,4 @@
-import {AttributeValue as BaseAttributeValue} from '@aws-sdk/client-dynamodb';
+import type { AttributeValue as BaseAttributeValue } from '@aws-sdk/client-dynamodb';
 
 const MARSHALLED_ATTRIBUTE_VALUE_TAG = 'AmazonDynamoDbAttributeValue';
 const EXPECTED_TOSTRING = `[object ${MARSHALLED_ATTRIBUTE_VALUE_TAG}]`;
@@ -9,14 +9,13 @@ const EXPECTED_TOSTRING = `[object ${MARSHALLED_ATTRIBUTE_VALUE_TAG}]`;
  * and distinguished from maps that resemble marshalled values.
  */
 export class AttributeValue {
-	static isAttributeValue(arg: any): arg is AttributeValue {
-		return (
-			arg instanceof AttributeValue
-            || Object.prototype.toString.call(arg) === EXPECTED_TOSTRING
-		);
-	}
+  static isAttributeValue(arg: any): arg is AttributeValue {
+    return (
+      arg instanceof AttributeValue || Object.prototype.toString.call(arg) === EXPECTED_TOSTRING
+    );
+  }
 
-	readonly [Symbol.toStringTag] = MARSHALLED_ATTRIBUTE_VALUE_TAG;
+  readonly [Symbol.toStringTag] = MARSHALLED_ATTRIBUTE_VALUE_TAG;
 
-	constructor(public readonly marshalled: BaseAttributeValue) {}
+  constructor(public readonly marshalled: BaseAttributeValue) {}
 }

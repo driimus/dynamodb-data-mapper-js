@@ -1,9 +1,9 @@
-import {ConditionExpression} from '@aws/dynamodb-expressions';
+import type { ConditionExpression } from '@aws/dynamodb-expressions';
 
 export interface ExecuteUpdateExpressionOptions {
-	/**
-     * A condition on which this update operation's completion will be
-     * predicated.
-     */
-	condition?: ConditionExpression;
+  /**
+   * A condition on which this update operation's completion will be
+   * predicated.
+   */
+  condition?: ConditionExpression;
 }

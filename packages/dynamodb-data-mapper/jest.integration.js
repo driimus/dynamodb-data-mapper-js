@@ -1,6 +1,4 @@
 module.exports = {
-    collectCoverage: true,
-    testMatch: [
-        '**/?(*.)(integ).js'
-    ]
+  collectCoverage: true,
+  testMatch: ['**/?(*.)(integ).js'],
 };

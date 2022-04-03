@@ -1,10 +1,10 @@
 name: Test
 on:
-    push:
+  push:
 
 jobs:
-    test:
-        uses: driimus/shared-workflows/.github/workflows/test.yml@main
-        secrets:
-            turbo_token: ${{ secrets.TURBO_TOKEN }}
-            turbo_team: ${{ secrets.TURBO_TEAM }}
+  test:
+    uses: driimus/shared-workflows/.github/workflows/test.yml@main
+    secrets:
+      turbo_token: ${{ secrets.TURBO_TOKEN }}
+      turbo_team: ${{ secrets.TURBO_TEAM }}

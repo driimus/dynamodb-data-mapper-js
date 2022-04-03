@@ -1,40 +1,43 @@
-import {
-	AttributePath,
-	ConditionExpression,
-	FunctionExpression,
-	MathematicalExpression,
-	ProjectionExpression,
-	UpdateExpression,
-	ExpressionAttributes,
-	ExpressionAttributeNameMap,
-	ExpressionAttributeValueMap,
-	serializeConditionExpression,
-	serializeProjectionExpression,
+import type {
+  ConditionExpression,
+  ExpressionAttributeNameMap,
+  ExpressionAttributeValueMap,
+  ProjectionExpression,
 } from '@aws/dynamodb-expressions';
-import {Schema} from './SchemaType';
-import {toSchemaName} from './toSchemaName';
+import {
+  AttributePath,
+  ExpressionAttributes,
+  FunctionExpression,
+  MathematicalExpression,
+  serializeConditionExpression,
+  serializeProjectionExpression,
+  UpdateExpression,
+} from '@aws/dynamodb-expressions';
+
+import type { Schema } from './SchemaType';
+import { toSchemaName } from './toSchemaName';
 
 /**
  * A DynamoDB expression serialized to a string and accompanied by the name and
  * value substitutions that have been performed during serialization.
  */
 export interface MarshalledExpression {
-	/**
-     * A serialized expression.
-     */
-	expression: string;
+  /**
+   * A serialized expression.
+   */
+  expression: string;
 
-	/**
-     * A map of name tokens => the property name for which the token has been
-     * substituted in the serialized expression.
-     */
-	ExpressionAttributeNames: ExpressionAttributeNameMap;
+  /**
+   * A map of name tokens => the property name for which the token has been
+   * substituted in the serialized expression.
+   */
+  ExpressionAttributeNames: ExpressionAttributeNameMap;
 
-	/**
-     * A map of value tokens => the value for which the token has been
-     * substituted in the serialized expression.
-     */
-	ExpressionAttributeValues: ExpressionAttributeValueMap;
+  /**
+   * A map of value tokens => the value for which the token has been
+   * substituted in the serialized expression.
+   */
+  ExpressionAttributeValues: ExpressionAttributeValueMap;
 }
 
 /**
@@ -47,20 +50,20 @@ export interface MarshalledExpression {
  *                      substitutions across multiple expressions.
  */
 export function marshallConditionExpression(
-	expression: ConditionExpression,
-	schema: Schema,
-	attributes: ExpressionAttributes = new ExpressionAttributes(),
+  expression: ConditionExpression,
+  schema: Schema,
+  attributes: ExpressionAttributes = new ExpressionAttributes()
 ): MarshalledExpression {
-	const serialized = serializeConditionExpression(
-		normalizeConditionExpression(expression, schema),
-		attributes,
-	);
+  const serialized = serializeConditionExpression(
+    normalizeConditionExpression(expression, schema),
+    attributes
+  );
 
-	return {
-		expression: serialized,
-		ExpressionAttributeNames: attributes.names,
-		ExpressionAttributeValues: attributes.values,
-	};
+  return {
+    expression: serialized,
+    ExpressionAttributeNames: attributes.names,
+    ExpressionAttributeValues: attributes.values,
+  };
 }
 
 /**
@@ -73,20 +76,17 @@ export function marshallConditionExpression(
  *                      substitutions across multiple expressions.
  */
 export function marshallFunctionExpression(
-	expression: FunctionExpression,
-	schema: Schema,
-	attributes: ExpressionAttributes = new ExpressionAttributes(),
+  expression: FunctionExpression,
+  schema: Schema,
+  attributes: ExpressionAttributes = new ExpressionAttributes()
 ): MarshalledExpression {
-	const serialized = normalizeFunctionExpression(
-		expression,
-		schema,
-	).serialize(attributes);
+  const serialized = normalizeFunctionExpression(expression, schema).serialize(attributes);
 
-	return {
-		expression: serialized,
-		ExpressionAttributeNames: attributes.names,
-		ExpressionAttributeValues: attributes.values,
-	};
+  return {
+    expression: serialized,
+    ExpressionAttributeNames: attributes.names,
+    ExpressionAttributeValues: attributes.values,
+  };
 }
 
 /**
@@ -99,20 +99,17 @@ export function marshallFunctionExpression(
  *                      substitutions across multiple expressions.
  */
 export function marshallMathematicalExpression(
-	expression: MathematicalExpression,
-	schema: Schema,
-	attributes: ExpressionAttributes = new ExpressionAttributes(),
+  expression: MathematicalExpression,
+  schema: Schema,
+  attributes: ExpressionAttributes = new ExpressionAttributes()
 ): MarshalledExpression {
-	const serialized = normalizeMathematicalExpression(
-		expression,
-		schema,
-	).serialize(attributes);
+  const serialized = normalizeMathematicalExpression(expression, schema).serialize(attributes);
 
-	return {
-		expression: serialized,
-		ExpressionAttributeNames: attributes.names,
-		ExpressionAttributeValues: attributes.values,
-	};
+  return {
+    expression: serialized,
+    ExpressionAttributeNames: attributes.names,
+    ExpressionAttributeValues: attributes.values,
+  };
 }
 
 /**
@@ -125,20 +122,20 @@ export function marshallMathematicalExpression(
  *                      substitutions across multiple expressions.
  */
 export function marshallProjectionExpression(
-	expression: ProjectionExpression,
-	schema: Schema,
-	attributes: ExpressionAttributes = new ExpressionAttributes(),
+  expression: ProjectionExpression,
+  schema: Schema,
+  attributes: ExpressionAttributes = new ExpressionAttributes()
 ): MarshalledExpression {
-	const serialized = serializeProjectionExpression(
-		expression.map(element => toSchemaName(element, schema)),
-		attributes,
-	);
+  const serialized = serializeProjectionExpression(
+    expression.map((element) => toSchemaName(element, schema)),
+    attributes
+  );
 
-	return {
-		expression: serialized,
-		ExpressionAttributeNames: attributes.names,
-		ExpressionAttributeValues: attributes.values,
-	};
+  return {
+    expression: serialized,
+    ExpressionAttributeNames: attributes.names,
+    ExpressionAttributeValues: attributes.values,
+  };
 }
 
 /**
@@ -151,154 +148,140 @@ export function marshallProjectionExpression(
  *                      substitutions across multiple expressions.
  */
 export function marshallUpdateExpression(
-	expression: UpdateExpression,
-	schema: Schema,
-	attributes: ExpressionAttributes = new ExpressionAttributes(),
+  expression: UpdateExpression,
+  schema: Schema,
+  attributes: ExpressionAttributes = new ExpressionAttributes()
 ): MarshalledExpression {
-	const serialized = normalizeUpdateExpression(expression, schema).serialize(
-		attributes,
-	);
+  const serialized = normalizeUpdateExpression(expression, schema).serialize(attributes);
 
-	return {
-		expression: serialized,
-		ExpressionAttributeNames: attributes.names,
-		ExpressionAttributeValues: attributes.values,
-	};
+  return {
+    expression: serialized,
+    ExpressionAttributeNames: attributes.names,
+    ExpressionAttributeValues: attributes.values,
+  };
 }
 
 function normalizeConditionExpression(
-	expression: ConditionExpression,
-	schema: Schema,
+  expression: ConditionExpression,
+  schema: Schema
 ): ConditionExpression {
-	if (FunctionExpression.isFunctionExpression(expression)) {
-		return normalizeFunctionExpression(expression, schema);
-	}
+  if (FunctionExpression.isFunctionExpression(expression)) {
+    return normalizeFunctionExpression(expression, schema);
+  }
 
-	switch (expression.type) {
-		case 'Equals':
-		case 'NotEquals':
-		case 'LessThan':
-		case 'LessThanOrEqualTo':
-		case 'GreaterThan':
-		case 'GreaterThanOrEqualTo':
-			return {
-				...expression,
-				subject: toSchemaName(expression.subject, schema),
-				object: normalizeIfPath(expression.object, schema),
-			};
+  switch (expression.type) {
+    case 'Equals':
+    case 'NotEquals':
+    case 'LessThan':
+    case 'LessThanOrEqualTo':
+    case 'GreaterThan':
+    case 'GreaterThanOrEqualTo':
+      return {
+        ...expression,
+        subject: toSchemaName(expression.subject, schema),
+        object: normalizeIfPath(expression.object, schema),
+      };
 
-		case 'Function':
-			switch (expression.name) {
-				case 'attribute_exists':
-				case 'attribute_not_exists':
-					return {
-						...expression,
-						subject: toSchemaName(expression.subject, schema),
-					};
-				case 'attribute_type':
-				case 'begins_with':
-				case 'contains':
-					return {
-						...expression,
-						subject: toSchemaName(expression.subject, schema),
-					};
-				// No default
-			}
+    case 'Function':
+      switch (expression.name) {
+        case 'attribute_exists':
+        case 'attribute_not_exists':
+          return {
+            ...expression,
+            subject: toSchemaName(expression.subject, schema),
+          };
+        case 'attribute_type':
+        case 'begins_with':
+        case 'contains':
+          return {
+            ...expression,
+            subject: toSchemaName(expression.subject, schema),
+          };
+        // No default
+      }
 
-			break;
+      break;
 
-		case 'Between':
-			return {
-				...expression,
-				subject: toSchemaName(expression.subject, schema),
-				lowerBound: normalizeIfPath(expression.lowerBound, schema),
-				upperBound: normalizeIfPath(expression.upperBound, schema),
-			};
-		case 'Membership':
-			return {
-				...expression,
-				subject: toSchemaName(expression.subject, schema),
-				values: expression.values.map(arg =>
-					normalizeIfPath(arg, schema),
-				),
-			};
-		case 'Not':
-			return {
-				...expression,
-				condition: normalizeConditionExpression(
-					expression.condition,
-					schema,
-				),
-			};
-		case 'And':
-		case 'Or':
-			return {
-				...expression,
-				conditions: expression.conditions.map(condition =>
-					normalizeConditionExpression(condition, schema),
-				),
-			};
-		// No default
-	}
+    case 'Between':
+      return {
+        ...expression,
+        subject: toSchemaName(expression.subject, schema),
+        lowerBound: normalizeIfPath(expression.lowerBound, schema),
+        upperBound: normalizeIfPath(expression.upperBound, schema),
+      };
+    case 'Membership':
+      return {
+        ...expression,
+        subject: toSchemaName(expression.subject, schema),
+        values: expression.values.map((arg) => normalizeIfPath(arg, schema)),
+      };
+    case 'Not':
+      return {
+        ...expression,
+        condition: normalizeConditionExpression(expression.condition, schema),
+      };
+    case 'And':
+    case 'Or':
+      return {
+        ...expression,
+        conditions: expression.conditions.map((condition) =>
+          normalizeConditionExpression(condition, schema)
+        ),
+      };
+    // No default
+  }
 }
 
 function normalizeFunctionExpression(
-	expression: FunctionExpression,
-	schema: Schema,
+  expression: FunctionExpression,
+  schema: Schema
 ): FunctionExpression {
-	return new FunctionExpression(
-		expression.name,
-		...expression.args.map(arg => normalizeIfPath(arg, schema)),
-	);
+  return new FunctionExpression(
+    expression.name,
+    ...expression.args.map((arg) => normalizeIfPath(arg, schema))
+  );
 }
 
 function normalizeMathematicalExpression(
-	expression: MathematicalExpression,
-	schema: Schema,
+  expression: MathematicalExpression,
+  schema: Schema
 ): MathematicalExpression {
-	return new MathematicalExpression(
-		AttributePath.isAttributePath(expression.lhs)
-        || typeof expression.lhs === 'string'
-			? toSchemaName(expression.lhs, schema)
-			: expression.lhs,
-		expression.operator,
-		AttributePath.isAttributePath(expression.rhs)
-        || typeof expression.rhs === 'string'
-			? toSchemaName(expression.rhs, schema)
-			: expression.rhs,
-	);
+  return new MathematicalExpression(
+    AttributePath.isAttributePath(expression.lhs) || typeof expression.lhs === 'string'
+      ? toSchemaName(expression.lhs, schema)
+      : expression.lhs,
+    expression.operator,
+    AttributePath.isAttributePath(expression.rhs) || typeof expression.rhs === 'string'
+      ? toSchemaName(expression.rhs, schema)
+      : expression.rhs
+  );
 }
 
-const mapsToTransform: Array<
-['toAdd' | 'toDelete' | 'toSet', 'add' | 'delete' | 'set']
-> = [
-	['toAdd', 'add'],
-	['toDelete', 'delete'],
-	['toSet', 'set'],
+const mapsToTransform: Array<['toAdd' | 'toDelete' | 'toSet', 'add' | 'delete' | 'set']> = [
+  ['toAdd', 'add'],
+  ['toDelete', 'delete'],
+  ['toSet', 'set'],
 ];
 
-function normalizeUpdateExpression(
-	expression: UpdateExpression,
-	schema: Schema,
-): UpdateExpression {
-	const normalized = new UpdateExpression();
-	for (const [dataSet, exprMethod] of mapsToTransform) {
-		for (const [path, value] of expression[dataSet]) {
-			normalized[exprMethod](toSchemaName(path, schema), value);
-		}
-	}
+function normalizeUpdateExpression(expression: UpdateExpression, schema: Schema): UpdateExpression {
+  const normalized = new UpdateExpression();
+  for (const [dataSet, exprMethod] of mapsToTransform) {
+    for (const [path, value] of expression[dataSet]) {
+      normalized[exprMethod](toSchemaName(path, schema), value);
+    }
+  }
 
-	for (const element of expression.toRemove) {
-		normalized.remove(toSchemaName(element, schema));
-	}
+  for (const element of expression.toRemove) {
+    normalized.remove(toSchemaName(element, schema));
+  }
 
-	return normalized;
+  return normalized;
 }
 
 function normalizeIfPath(path: any, schema: Schema): any {
-	if (AttributePath.isAttributePath(path)) {
-		return toSchemaName(path, schema);
-	}
+  if (AttributePath.isAttributePath(path)) {
+    return toSchemaName(path, schema);
+  }
 
-	return path;
+  return path;
 }

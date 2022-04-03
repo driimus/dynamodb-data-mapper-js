@@ -1,0 +1,6 @@
+# *.spec.ts
+# *.integ.ts
+# *.fixture.ts
+
+packages/*/build
+.eslintrc.js

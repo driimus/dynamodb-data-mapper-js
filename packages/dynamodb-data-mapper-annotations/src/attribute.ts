@@ -1,15 +1,17 @@
 import 'reflect-metadata';
-import {BinarySet} from '@aws/dynamodb-auto-marshaller';
-import {DynamoDbSchema} from '@aws/dynamodb-data-mapper';
-import {
-	DocumentType,
-	KeyableType,
-	Schema,
-	SchemaType,
-	SetType,
+
+import { BinarySet } from '@aws/dynamodb-auto-marshaller';
+import { DynamoDbSchema } from '@aws/dynamodb-data-mapper';
+import type {
+  DocumentType,
+  KeyableType,
+  Schema,
+  SchemaType,
+  SetType,
 } from '@aws/dynamodb-data-marshaller';
-import {METADATA_TYPE_KEY} from './constants';
-import {PropertyAnnotation} from './annotationShapes';
+
+import type { PropertyAnnotation } from './annotationShapes';
+import { METADATA_TYPE_KEY } from './constants';
 
 /**
  * Declare a property in a TypeScript class to be part of a DynamoDB schema.
@@ -56,135 +58,123 @@ import {PropertyAnnotation} from './annotationShapes';
  *      binary?: Uint8Array;
  *  }
  */
-export function attribute(
-	parameters: Partial<SchemaType> = {},
-): PropertyAnnotation {
-	return (target, propertyKey) => {
-		if (!Object.prototype.hasOwnProperty.call(target, DynamoDbSchema)) {
-			Object.defineProperty(
-				target,
-				DynamoDbSchema as any, // TypeScript complains about the use of symbols here, though it should be allowed
-				{value: deriveBaseSchema(target)},
-			);
-		}
+export function attribute(parameters: Partial<SchemaType> = {}): PropertyAnnotation {
+  return (target, propertyKey) => {
+    if (!Object.prototype.hasOwnProperty.call(target, DynamoDbSchema)) {
+      Object.defineProperty(
+        target,
+        DynamoDbSchema as any, // TypeScript complains about the use of symbols here, though it should be allowed
+        { value: deriveBaseSchema(target) }
+      );
+    }
 
-		const schemaType = metadataToSchemaType(
-			Reflect.getMetadata(METADATA_TYPE_KEY, target, propertyKey),
-			parameters,
-		);
+    const schemaType = metadataToSchemaType(
+      Reflect.getMetadata(METADATA_TYPE_KEY, target, propertyKey),
+      parameters
+    );
 
-		if (
-			((schemaType as KeyableType).keyType
-                || (schemaType as KeyableType).indexKeyConfigurations)
-            && !['Binary', 'Custom', 'Date', 'Number', 'String'].includes(schemaType.type)
-		) {
-			throw new Error(
-				`Properties of type ${schemaType.type} may not be used as index or table keys. If you are relying on automatic type detection and have encountered this error, please ensure that the 'emitDecoratorMetadata' TypeScript compiler option is enabled. Please see https://www.typescriptlang.org/docs/handbook/decorators.html#metadata for more information on this compiler option.`,
-			);
-		}
+    if (
+      ((schemaType as KeyableType).keyType || (schemaType as KeyableType).indexKeyConfigurations) &&
+      !['Binary', 'Custom', 'Date', 'Number', 'String'].includes(schemaType.type)
+    ) {
+      throw new Error(
+        `Properties of type ${schemaType.type} may not be used as index or table keys. If you are relying on automatic type detection and have encountered this error, please ensure that the 'emitDecoratorMetadata' TypeScript compiler option is enabled. Please see https://www.typescriptlang.org/docs/handbook/decorators.html#metadata for more information on this compiler option.`
+      );
+    }
 
-		target[DynamoDbSchema][propertyKey] = schemaType;
-	};
+    target[DynamoDbSchema][propertyKey] = schemaType;
+  };
 }
 
 function deriveBaseSchema(target: any): Schema {
-	if (target && typeof target === 'object') {
-		const prototype = Object.getPrototypeOf(target);
-		if (prototype) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			return {
-				...deriveBaseSchema(prototype),
-				...(Object.prototype.hasOwnProperty.call(
-					prototype,
-					DynamoDbSchema,
-				)
-					? prototype[DynamoDbSchema]
-					: {}),
-			};
-		}
-	}
+  if (target && typeof target === 'object') {
+    const prototype = Object.getPrototypeOf(target);
+    if (prototype) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return {
+        ...deriveBaseSchema(prototype),
+        ...(Object.prototype.hasOwnProperty.call(prototype, DynamoDbSchema)
+          ? prototype[DynamoDbSchema]
+          : {}),
+      };
+    }
+  }
 
-	return {};
+  return {};
 }
 
 function metadataToSchemaType(
-	ctor: (new () => any) | undefined,
-	declaration: Partial<SchemaType>,
+  ctor: (new () => any) | undefined,
+  declaration: Partial<SchemaType>
 ): SchemaType {
-	let {type, ...rest} = declaration;
-	if (type === undefined) {
-		if (ctor) {
-			switch (ctor) {
-				case String: {
-					type = 'String';
+  let { type, ...rest } = declaration;
+  if (type === undefined) {
+    if (ctor) {
+      switch (ctor) {
+        case String: {
+          type = 'String';
 
-					break;
-				}
+          break;
+        }
 
-				case Number: {
-					type = 'Number';
+        case Number: {
+          type = 'Number';
 
-					break;
-				}
+          break;
+        }
 
-				case Boolean: {
-					type = 'Boolean';
+        case Boolean: {
+          type = 'Boolean';
 
-					break;
-				}
+          break;
+        }
 
-				default: if (ctor === Date || ctor.prototype instanceof Date) {
-					type = 'Date';
-				} else if (
-					ctor === BinarySet
-                || ctor.prototype instanceof BinarySet
-				) {
-					type = 'Set';
-					(rest as SetType).memberType = 'Binary';
-					// } else if (ctor === Set || ctor.prototype instanceof Set) {
-					//     type = 'Set';
-					//     (rest as SetType).memberType = 'Number';
-				} else if (ctor === Set || ctor.prototype instanceof Set) {
-					type = 'Set';
-					if (!('memberType' in rest)) {
-						throw new Error(
-							'Invalid set declaration. You must specify a memberType',
-						);
-					}
-				} else if (ctor === Map || ctor.prototype instanceof Map) {
-					type = 'Map';
-					if (!('memberType' in rest)) {
-						throw new Error(
-							'Invalid map declaration. You must specify a memberType',
-						);
-					}
-				} else if (ctor.prototype[DynamoDbSchema]) {
-					type = 'Document';
-					(rest as DocumentType).members = ctor.prototype[DynamoDbSchema];
-					(rest as DocumentType).valueConstructor = ctor;
-				} else if (isBinaryType(ctor)) {
-					type = 'Binary';
-				} else if (ctor === Array || Array.isArray(ctor.prototype)) {
-					if ('members' in declaration) {
-						type = 'Tuple';
-					} else if ('memberType' in declaration) {
-						type = 'List';
-					} else {
-						type = 'Collection';
-					}
-				} else {
-					type = 'Any';
-				}
-			}
-		} else {
-			type = 'Any';
-		}
-	}
+        default:
+          if (ctor === Date || ctor.prototype instanceof Date) {
+            type = 'Date';
+          } else if (ctor === BinarySet || ctor.prototype instanceof BinarySet) {
+            type = 'Set';
+            (rest as SetType).memberType = 'Binary';
+            // } else if (ctor === Set || ctor.prototype instanceof Set) {
+            //     type = 'Set';
+            //     (rest as SetType).memberType = 'Number';
+          } else if (ctor === Set || ctor.prototype instanceof Set) {
+            type = 'Set';
+            if (!('memberType' in rest)) {
+              throw new Error('Invalid set declaration. You must specify a memberType');
+            }
+          } else if (ctor === Map || ctor.prototype instanceof Map) {
+            type = 'Map';
+            if (!('memberType' in rest)) {
+              throw new Error('Invalid map declaration. You must specify a memberType');
+            }
+          } else if (ctor.prototype[DynamoDbSchema]) {
+            type = 'Document';
+            (rest as DocumentType).members = ctor.prototype[DynamoDbSchema];
+            (rest as DocumentType).valueConstructor = ctor;
+          } else if (isBinaryType(ctor)) {
+            type = 'Binary';
+          } else if (ctor === Array || Array.isArray(ctor.prototype)) {
+            if ('members' in declaration) {
+              type = 'Tuple';
+            } else if ('memberType' in declaration) {
+              type = 'List';
+            } else {
+              type = 'Collection';
+            }
+          } else {
+            type = 'Any';
+          }
+      }
+    } else {
+      type = 'Any';
+    }
+  }
 
-	return {
-		...rest,
-		type,
-	} as SchemaType;
+  return {
+    ...rest,
+    type,
+  } as SchemaType;
 }
 
 /**
@@ -202,28 +192,28 @@ function metadataToSchemaType(
  * @see https://developer.mozilla.org/en-US/docs/Web/API/ArrayBufferView
  */
 function isBinaryType(arg: any): boolean {
-	return (
-		arg === Uint8Array
-        || arg.prototype instanceof Uint8Array
-        || arg === Uint8ClampedArray
-        || arg.prototype instanceof Uint8ClampedArray
-        || arg === Uint16Array
-        || arg.prototype instanceof Uint16Array
-        || arg === Uint32Array
-        || arg.prototype instanceof Uint32Array
-        || arg === Int8Array
-        || arg.prototype instanceof Int8Array
-        || arg === Int16Array
-        || arg.prototype instanceof Int16Array
-        || arg === Int32Array
-        || arg.prototype instanceof Int32Array
-        || arg === Float32Array
-        || arg.prototype instanceof Float32Array
-        || arg === Float64Array
-        || arg.prototype instanceof Float64Array
-        || arg === ArrayBuffer
-        || arg.prototype instanceof ArrayBuffer
-        || arg === DataView
-        || arg.prototype instanceof DataView
-	);
+  return (
+    arg === Uint8Array ||
+    arg.prototype instanceof Uint8Array ||
+    arg === Uint8ClampedArray ||
+    arg.prototype instanceof Uint8ClampedArray ||
+    arg === Uint16Array ||
+    arg.prototype instanceof Uint16Array ||
+    arg === Uint32Array ||
+    arg.prototype instanceof Uint32Array ||
+    arg === Int8Array ||
+    arg.prototype instanceof Int8Array ||
+    arg === Int16Array ||
+    arg.prototype instanceof Int16Array ||
+    arg === Int32Array ||
+    arg.prototype instanceof Int32Array ||
+    arg === Float32Array ||
+    arg.prototype instanceof Float32Array ||
+    arg === Float64Array ||
+    arg.prototype instanceof Float64Array ||
+    arg === ArrayBuffer ||
+    arg.prototype instanceof ArrayBuffer ||
+    arg === DataView ||
+    arg.prototype instanceof DataView
+  );
 }

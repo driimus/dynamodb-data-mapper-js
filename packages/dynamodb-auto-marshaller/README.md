@@ -15,43 +15,34 @@ by Amazon DynamoDB, simply create an instance of the marshaller and call
 `marshallItem`:
 
 ```typescript
-import {BinarySet, Marshaller} from '@aws/dynamodb-auto-marshaller';
+import { BinarySet, Marshaller } from '@aws/dynamodb-auto-marshaller';
 
 const marshaller = new Marshaller();
 const original = {
-    string: 'a string',
-    number: 1234,
-    list: [
-        'a',
-        'list',
-        'of',
-        'values',
-    ],
-    buffer: Buffer.from([0xde, 0xad, 0xbe, 0xef]),
-    setOfBuffers: new BinarySet([
-        Uint8Array.from([0xde, 0xad]),
-        Uint8Array.from([0xbe, 0xef]),
-        Uint8Array.from([0xfa, 0xce]),
-    ] as Iterable<ArrayBufferView>),
-    stringSet: new Set<string>([
-        'foo',
-        'bar',
-        'baz',
-    ]),
-    any: {
-        level: {
-            of: {
-                nesting: {
-                    is: {
-                        supported: true
-                    }
-                }
-            }
-        }
+  string: 'a string',
+  number: 1234,
+  list: ['a', 'list', 'of', 'values'],
+  buffer: Buffer.from([0xde, 0xad, 0xbe, 0xef]),
+  setOfBuffers: new BinarySet([
+    Uint8Array.from([0xde, 0xad]),
+    Uint8Array.from([0xbe, 0xef]),
+    Uint8Array.from([0xfa, 0xce]),
+  ] as Iterable<ArrayBufferView>),
+  stringSet: new Set<string>(['foo', 'bar', 'baz']),
+  any: {
+    level: {
+      of: {
+        nesting: {
+          is: {
+            supported: true,
+          },
+        },
+      },
     },
-}
+  },
+};
 
-// create a variable ready to be used with DynamoDB's low-level API 
+// create a variable ready to be used with DynamoDB's low-level API
 const marshalled = marshaller.marshallItem(original);
 
 // the output of `.marshallItem` can be converted back to a JavaScript type with
@@ -67,7 +58,7 @@ Values may be converted to and from AttributeValue objects with `.marshallValue`
 and `.unmarshallValue` directly:
 
 ```typescript
-import {Marshaller} from '@aws/dynamodb-auto-marshaller';
+import { Marshaller } from '@aws/dynamodb-auto-marshaller';
 
 const marshaller = new Marshaller();
 const marshalled = marshaller.marshallValue('string'); // returns {S: 'string'}
@@ -96,9 +87,9 @@ To disable this behavior, pass a configuration options argument to the
 `Marshaller` constructor with `unwrapNumbers` set to `true`:
 
 ```typescript
-import {Marshaller} from '@aws/dynamodb-auto-marshaller';
+import { Marshaller } from '@aws/dynamodb-auto-marshaller';
 
-const marshaller = new Marshaller({unwrapNumbers: true});
+const marshaller = new Marshaller({ unwrapNumbers: true });
 ```
 
 ### Empty value support
@@ -119,9 +110,9 @@ it will be slightly altered. When fetched from DynamoDB, the value will be
 unmarshalled as `null`:
 
 ```typescript
-import {Marshaller} from '@aws/dynamodb-auto-marshaller';
+import { Marshaller } from '@aws/dynamodb-auto-marshaller';
 
-const marshaller = new Marshaller({onEmpty: 'nullify'});
+const marshaller = new Marshaller({ onEmpty: 'nullify' });
 const marshalled = marshaller.marshallValue(''); // returns {NULL: true}
 const unmarshalled = marshaller.unmarshallValue(marshalled); // returns null
 ```
@@ -130,9 +121,9 @@ Setting `onEmpty` to `'omit'` will direct the marshaller to remove empty values
 from the serialized item:
 
 ```typescript
-import {Marshaller} from '@aws/dynamodb-auto-marshaller';
+import { Marshaller } from '@aws/dynamodb-auto-marshaller';
 
-const marshaller = new Marshaller({onEmpty: 'omit'});
+const marshaller = new Marshaller({ onEmpty: 'omit' });
 const marshalled = marshaller.marshallValue(''); // returns undefined
 const unmarshalled = marshaller.unmarshallValue(marshalled); // returns undefined
 ```
@@ -144,9 +135,9 @@ function. You can direct the marshaller to instead omit such values from its
 output by setting the `onInvalid` configuration option to `'omit'`:
 
 ```typescript
-import {Marshaller} from '@aws/dynamodb-auto-marshaller';
+import { Marshaller } from '@aws/dynamodb-auto-marshaller';
 
-const marshaller = new Marshaller({onInvalid: 'omit'});
+const marshaller = new Marshaller({ onInvalid: 'omit' });
 const marshalled = marshaller.marshallValue(Symbol.iterator); // returns undefined
 const unmarshalled = marshaller.unmarshallValue(marshalled); // returns undefined
 ```
