@@ -214,7 +214,7 @@ export class Marshaller {
         return set;
       }
 
-      return new Set(item.NS.map((numberString) => BigInt(numberString)));
+      return new Set(item.NS.map(BigInt));
     }
 
     if (item.BS !== undefined) {

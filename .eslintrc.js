@@ -1,12 +1,12 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'jest', 'simple-import-sort', 'import'],
+  plugins: ['@typescript-eslint', 'jest', 'simple-import-sort', 'import', 'unicorn'],
   env: {
     node: true,
     es6: true,
   },
-  extends: ['eslint:recommended', 'plugin:jest/recommended'],
+  extends: ['eslint:recommended', 'plugin:jest/recommended', 'plugin:unicorn/recommended'],
   parserOptions: {
     ecmaVersion: 2020,
     sourceType: 'module',
@@ -61,6 +61,10 @@ module.exports = {
         'import/first': 'error',
         'import/newline-after-import': 'error',
         'import/no-duplicates': 'error',
+        'unicorn/filename-case': 'off',
+        'unicorn/prevent-abbreviations': 'off',
+        'unicorn/no-null': 'off',
+        'unicorn/no-useless-switch-case': 'off',
       },
     },
   ],

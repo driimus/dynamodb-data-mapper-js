@@ -59,8 +59,8 @@ export class ParallelScanPaginator<T> extends Paginator<T> {
    * The `lastEvaluatedKey` attribute is not available on parallel scans. Use
    * {@link scanState} instead.
    */
-  get lastEvaluatedKey() {
-    return undefined;
+  get lastEvaluatedKey(): undefined {
+    return;
   }
 
   /**

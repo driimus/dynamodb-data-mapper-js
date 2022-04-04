@@ -25,25 +25,22 @@ export function keysFromSchema(schema: Schema): KeySchema {
       fieldSchema.type === 'Number' ||
       fieldSchema.type === 'String'
     ) {
-      const { attributeName = propertyName } = fieldSchema;
+      const { attributeName = propertyName, keyType, indexKeyConfigurations } = fieldSchema;
 
-      if (fieldSchema.keyType) {
+      if (keyType) {
         attributes[attributeName] = attributeType(fieldSchema);
-        tableKeys[attributeName] = fieldSchema.keyType;
+        tableKeys[attributeName] = keyType;
       }
 
-      if (
-        fieldSchema.indexKeyConfigurations &&
-        Object.keys(fieldSchema.indexKeyConfigurations).length > 0
-      ) {
+      if (indexKeyConfigurations && Object.keys(indexKeyConfigurations).length > 0) {
         attributes[attributeName] = attributeType(fieldSchema);
 
-        for (const indexName of Object.keys(fieldSchema.indexKeyConfigurations)) {
+        for (const indexName of Object.keys(indexKeyConfigurations)) {
           if (!(indexName in indexKeys)) {
             indexKeys[indexName] = {};
           }
 
-          indexKeys[indexName][attributeName] = fieldSchema.indexKeyConfigurations[indexName];
+          indexKeys[indexName][attributeName] = indexKeyConfigurations[indexName];
         }
       }
     }

@@ -98,11 +98,12 @@ export class ParallelScanPaginator implements DynamoDbPaginatorInterface {
    * @inheritDoc
    */
   get consumedCapacity(): ConsumedCapacity | undefined {
-    return this.iterators.reduce(
-      (merged: ConsumedCapacity | undefined, paginator) =>
-        mergeConsumedCapacities(merged, paginator.consumedCapacity),
-      undefined
-    );
+    let consumedCapacity: ConsumedCapacity | undefined;
+
+    for (const paginator of this.iterators)
+      consumedCapacity = mergeConsumedCapacities(consumedCapacity, paginator.consumedCapacity);
+
+    return consumedCapacity;
   }
 
   /**

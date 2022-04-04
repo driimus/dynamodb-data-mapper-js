@@ -21,14 +21,13 @@ export class QueryPaginator extends DynamoDbPaginator {
         })
       );
 
-      if (this.nextRequest && output.LastEvaluatedKey) {
-        this.nextRequest = {
-          ...this.nextRequest,
-          ExclusiveStartKey: output.LastEvaluatedKey,
-        };
-      } else {
-        this.nextRequest = undefined;
-      }
+      this.nextRequest =
+        this.nextRequest && output.LastEvaluatedKey
+          ? {
+              ...this.nextRequest,
+              ExclusiveStartKey: output.LastEvaluatedKey,
+            }
+          : undefined;
 
       return {
         value: output,
