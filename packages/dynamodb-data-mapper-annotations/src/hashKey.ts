@@ -1,10 +1,4 @@
-import type {
-  BinaryType,
-  CustomType,
-  DateType,
-  NumberType,
-  StringType,
-} from '@aws/dynamodb-data-marshaller';
+import type { BinaryType, CustomType, DateType, NumberType, StringType } from 'ddb-data-marshaller';
 
 import type { PropertyAnnotation } from './annotationShapes';
 import { attribute } from './attribute';

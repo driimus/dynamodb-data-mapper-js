@@ -1,9 +1,9 @@
-import type { ZeroArgumentsConstructor } from '@aws/dynamodb-data-marshaller';
+import type { ZeroArgumentsConstructor } from 'ddb-data-marshaller';
 import type {
   ConditionExpression,
   ConditionExpressionPredicate,
   ProjectionExpression,
-} from '@aws/dynamodb-expressions';
+} from 'ddb-expressions';
 
 import type { StringToAnyObjectMap } from '../constants';
 import type { ReadConsistencyConfiguration } from './ReadConsistencyConfiguration';

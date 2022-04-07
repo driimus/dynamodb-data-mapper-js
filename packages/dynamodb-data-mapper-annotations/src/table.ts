@@ -1,4 +1,4 @@
-import { DynamoDbTable } from '@aws/dynamodb-data-mapper';
+import { DynamoDbTable } from 'ddb-data-mapper';
 
 import type { ClassAnnotation } from './annotationShapes';
 

@@ -1,10 +1,7 @@
-import type { ZeroArgumentsConstructor } from '@aws/dynamodb-data-marshaller';
-import {
-  marshallConditionExpression,
-  marshallProjectionExpression,
-} from '@aws/dynamodb-data-marshaller';
-import { ExpressionAttributes } from '@aws/dynamodb-expressions';
 import type { ScanInput } from '@aws-sdk/client-dynamodb';
+import type { ZeroArgumentsConstructor } from 'ddb-data-marshaller';
+import { marshallConditionExpression, marshallProjectionExpression } from 'ddb-data-marshaller';
+import { ExpressionAttributes } from 'ddb-expressions';
 
 import { marshallStartKey } from './marshallStartKey';
 import type { SequentialScanOptions } from './namedParameters';

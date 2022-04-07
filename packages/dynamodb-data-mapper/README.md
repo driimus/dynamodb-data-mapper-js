@@ -4,8 +4,8 @@
 
 This library provides a `DataMapper` class that allows easy interoperability
 between your application's domain classes and their persisted form in Amazon
-DynamoDB. Powered by the `@aws/dynamodb-data-marshaller` and
-`@aws/dynamodb-expressions` packages, using `DataMapper` lets you define each
+DynamoDB. Powered by the `ddb-data-marshaller` and
+`ddb-expressions` packages, using `DataMapper` lets you define each
 object's persisted representation once and then load, save, scan, and query your
 tables using the vocabulary of your application domain rather than its
 representation in DynamoDB.
@@ -18,7 +18,7 @@ DynamoDB table. Specifically, you will need to provide a schema and the name of
 the table:
 
 ```typescript
-import { DynamoDbSchema, DynamoDbTable } from '@aws/dynamodb-data-mapper';
+import { DynamoDbSchema, DynamoDbTable } from 'ddb-data-mapper';
 
 class MyDomainModel {
   // declare methods and properties as normal
@@ -52,7 +52,7 @@ The schema and table name may be declared as property accessors directly on the
 class if the value should be determined dynamically:
 
 ```typescript
-import { DynamoDbTable } from '@aws/dynamodb-data-mapper';
+import { DynamoDbTable } from 'ddb-data-mapper';
 
 class MyOtherDomainClass {
   id: number;
@@ -67,7 +67,7 @@ Next, create an instance of `DataMapper` and use the `MyDomainClass` constructor
 defined above to save and load objects from DynamoDB:
 
 ```typescript
-import { DataMapper, DynamoDbSchema, DynamoDbTable } from '@aws/dynamodb-data-mapper';
+import { DataMapper, DynamoDbSchema, DynamoDbTable } from 'ddb-data-mapper';
 import DynamoDB = require('aws-sdk/clients/dynamodb');
 
 const client = new DynamoDB({ region: 'us-west-2' });
@@ -188,7 +188,7 @@ Takes two parameters:
 
     - `projection` - A projection expression directing DynamoDB to return a
       subset of the fetched item's attributes. Please refer to the
-      documentation for the `@aws/dynamodb-expressions` package for
+      documentation for the `ddb-expressions` package for
       guidance on creating projection expression objects.
 
     - `projectionSchema` - The schema to use when mapping the supplied
@@ -257,7 +257,7 @@ Removes an item from a DynamoDB table. Takes two parameters:
 
   - `condition` - A condition expression whose assertion must be satisfied in
     order for the delete operation to be executed. Please refer to the
-    documentation for the `@aws/dynamodb-expressions` package for guidance
+    documentation for the `ddb-expressions` package for guidance
     on creating condition expression objects.
 
   - `returnValues` - Specify `'ALL_OLD'` to have the deleted item returned to
@@ -288,7 +288,7 @@ parameters:
 
   - `projection` - A projection expression directing DynamoDB to return a
     subset of the fetched item's attributes. Please refer to the
-    documentation for the `@aws/dynamodb-expressions` package for guidance
+    documentation for the `ddb-expressions` package for guidance
     on creating projection expression objects.
 
 ### `put`
@@ -304,7 +304,7 @@ Inserts an item into a DynamoDB table. Takes two parameters:
 
   - `condition` - A condition expression whose assertion must be satisfied in
     order for the put operation to be executed. Please refer to the
-    documentation for the `@aws/dynamodb-expressions` package for guidance
+    documentation for the `ddb-expressions` package for guidance
     on creating condition expression objects.
 
   - `returnValues` - Specify `'ALL_OLD'` to have the overwritten item (if one
@@ -341,7 +341,7 @@ Takes three parameters:
   predicates and exact value matches:
 
   ```typescript
-  import { between } from '@aws/dynamodb-expressions';
+  import { between } from 'ddb-expressions';
 
   const keyCondition = {
     partitionKey: 'foo',
@@ -351,7 +351,7 @@ Takes three parameters:
 
   The key condition must target a single value for the partition key.
 
-  Please refer to the documentation for the `@aws/dynamodb-expressions`
+  Please refer to the documentation for the `ddb-expressions`
   package for guidance on creating condition expression objects.
 
 - (Optional) An object specifying any of the following options:
@@ -363,7 +363,7 @@ Takes three parameters:
     You cannot define a filter expression based on a partition key or a sort
     key.
 
-    Please refer to the documentation for the `@aws/dynamodb-expressions`
+    Please refer to the documentation for the `ddb-expressions`
     package for guidance on creating condition expression objects.
 
   - `indexName` - The name of the index against which to execute this query.
@@ -375,7 +375,7 @@ Takes three parameters:
 
   - `projection` - A projection expression directing DynamoDB to return a
     subset of any fetched item's attributes. Please refer to the
-    documentation for the `@aws/dynamodb-expressions` package for guidance
+    documentation for the `ddb-expressions` package for guidance
     on creating projection expression objects.
 
   - `readConsistency` - Specify `'strong'` to perform a strongly consistent
@@ -465,7 +465,7 @@ Takes two parameters:
     You cannot define a filter expression based on a partition key or a sort
     key.
 
-    Please refer to the documentation for the `@aws/dynamodb-expressions`
+    Please refer to the documentation for the `ddb-expressions`
     package for guidance on creating condition expression objects.
 
   - `indexName` - The name of the index against which to execute this query.
@@ -477,7 +477,7 @@ Takes two parameters:
 
   - `projection` - A projection expression directing DynamoDB to return a
     subset of any fetched item's attributes. Please refer to the
-    documentation for the `@aws/dynamodb-expressions` package for guidance
+    documentation for the `ddb-expressions` package for guidance
     on creating projection expression objects.
 
   - `readConsistency` - Specify `'strong'` to perform a strongly consistent
@@ -564,7 +564,7 @@ Takes three parameters:
     You cannot define a filter expression based on a partition key or a sort
     key.
 
-    Please refer to the documentation for the `@aws/dynamodb-expressions`
+    Please refer to the documentation for the `ddb-expressions`
     package for guidance on creating condition expression objects.
 
   - `indexName` - The name of the index against which to execute this query.
@@ -574,7 +574,7 @@ Takes three parameters:
 
   - `projection` - A projection expression directing DynamoDB to return a
     subset of any fetched item's attributes. Please refer to the
-    documentation for the `@aws/dynamodb-expressions` package for guidance
+    documentation for the `ddb-expressions` package for guidance
     on creating projection expression objects.
 
   - `readConsistency` - Specify `'strong'` to perform a strongly consistent
@@ -638,7 +638,7 @@ Takes two parameters:
 
   - `condition` - A condition expression whose assertion must be satisfied in
     order for the update operation to be executed. Please refer to the
-    documentation for the `@aws/dynamodb-expressions` package for guidance
+    documentation for the `ddb-expressions` package for guidance
     on creating condition expression objects.
 
   - `onMissing` - Specify `'remove'` (the default) to treat the absence of a
@@ -658,7 +658,7 @@ known.
 Takes four parameters:
 
 - The expression to execute. Please refer to the documentation for the
-  `@aws/dynamodb-expressions` package for guidance on creating update
+  `ddb-expressions` package for guidance on creating update
   expression objects.
 
 - The key of the item being updated.
@@ -672,5 +672,5 @@ Takes four parameters:
 
   - `condition` - A condition expression whose assertion must be satisfied in
     order for the update operation to be executed. Please refer to the
-    documentation for the `@aws/dynamodb-expressions` package for guidance
+    documentation for the `ddb-expressions` package for guidance
     on creating condition expression objects.

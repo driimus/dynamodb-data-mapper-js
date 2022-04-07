@@ -1,4 +1,4 @@
-import type { Schema, ZeroArgumentsConstructor } from '@aws/dynamodb-data-marshaller';
+import type { Schema, ZeroArgumentsConstructor } from 'ddb-data-marshaller';
 
 export type BatchState<T> = Record<
   string,

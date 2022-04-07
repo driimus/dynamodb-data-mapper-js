@@ -1,6 +1,6 @@
-import type { ZeroArgumentsConstructor } from '@aws/dynamodb-data-marshaller';
-import { ScanPaginator as BasePaginator } from '@aws/dynamodb-query-iterator';
 import type { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import type { ZeroArgumentsConstructor } from 'ddb-data-marshaller';
+import { ScanPaginator as BasePaginator } from 'ddb-query-iterator';
 
 import { buildScanInput } from './buildScanInput';
 import type { SequentialScanOptions } from './namedParameters';

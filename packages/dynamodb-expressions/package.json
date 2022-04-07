@@ -1,5 +1,5 @@
 {
-  "name": "@aws/dynamodb-expressions",
+  "name": "ddb-expressions",
   "version": "0.7.3",
   "description": "Composable expression objects for Amazon DynamoDB",
   "keywords": [
@@ -43,7 +43,7 @@
     "@aws-sdk/client-dynamodb": "^3.41.0"
   },
   "dependencies": {
-    "@aws/dynamodb-auto-marshaller": "workspace:*",
+    "ddb-auto-marshaller": "workspace:*",
     "tslib": "^2.3.1"
   }
 }

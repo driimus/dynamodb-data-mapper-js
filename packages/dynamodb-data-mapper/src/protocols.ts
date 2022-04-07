@@ -1,4 +1,4 @@
-import type { Schema } from '@aws/dynamodb-data-marshaller';
+import type { Schema } from 'ddb-data-marshaller';
 
 /**
  * Table metadata is reported by items submitted to the data mapper via methods

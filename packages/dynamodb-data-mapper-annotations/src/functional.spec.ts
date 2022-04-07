@@ -1,5 +1,5 @@
-import { DataMapper, DynamoDbSchema } from '@aws/dynamodb-data-mapper';
-import { isSchema } from '@aws/dynamodb-data-marshaller';
+import { DataMapper, DynamoDbSchema } from 'ddb-data-mapper';
+import { isSchema } from 'ddb-data-marshaller';
 import { mockClient } from 'aws-sdk-client-mock';
 import { DynamoDBClient, PutItemCommand } from '@aws-sdk/client-dynamodb';
 import { Author, Comment, Post } from './exampleSchema.fixture';

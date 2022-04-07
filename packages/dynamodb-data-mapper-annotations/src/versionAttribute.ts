@@ -1,4 +1,4 @@
-import type { NumberType } from '@aws/dynamodb-data-marshaller';
+import type { NumberType } from 'ddb-data-marshaller';
 
 import type { PropertyAnnotation } from './annotationShapes';
 import { attribute } from './attribute';

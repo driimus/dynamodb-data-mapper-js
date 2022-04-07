@@ -1,4 +1,4 @@
-import type { ConditionExpression } from '@aws/dynamodb-expressions';
+import type { ConditionExpression } from 'ddb-expressions';
 
 import type { StringToAnyObjectMap } from '../constants';
 

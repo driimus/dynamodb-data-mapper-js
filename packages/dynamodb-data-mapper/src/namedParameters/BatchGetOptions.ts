@@ -1,4 +1,4 @@
-import type { Schema } from '@aws/dynamodb-data-marshaller';
+import type { Schema } from 'ddb-data-marshaller';
 
 import type { GetOptions } from './GetOptions';
 import type { ReadConsistencyConfiguration } from './ReadConsistencyConfiguration';

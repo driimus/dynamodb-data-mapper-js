@@ -1,5 +1,5 @@
 {
-  "name": "@aws/dynamodb-data-marshaller",
+  "name": "ddb-data-marshaller",
   "version": "0.7.3",
   "description": "A schema-based data marshaller for Amazon DynamoDB",
   "keywords": [
@@ -40,8 +40,8 @@
   },
   "dependencies": {
     "@aws-sdk/util-dynamodb": "^3.58.0",
-    "@aws/dynamodb-auto-marshaller": "workspace:*",
-    "@aws/dynamodb-expressions": "workspace:*",
+    "ddb-auto-marshaller": "workspace:*",
+    "ddb-expressions": "workspace:*",
     "tslib": "^2.3.1"
   },
   "peerDependencies": {

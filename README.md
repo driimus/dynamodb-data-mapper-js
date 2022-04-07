@@ -7,15 +7,15 @@ document mapper for JavaScript applications using Amazon DynamoDB.
 
 ## Getting started
 
-[The `@aws/dynamodb-data-mapper` package](packages/dynamodb-data-mapper) provides
+[The `ddb-data-mapper` package](packages/dynamodb-data-mapper) provides
 a simple way to persist and load an application's domain objects to and from
 Amazon DynamoDB. When used together with the decorators provided by [the
-`@aws/dynamodb-data-mapper-annotations` package](packages/dynamodb-data-mapper-annotations),
+`ddb-data-mapper-annotations` package](packages/dynamodb-data-mapper-annotations),
 you can describe the relationship between a class and its representation in
 DynamoDB by adding a few decorators:
 
 ```typescript
-import { attribute, hashKey, rangeKey, table } from '@aws/dynamodb-data-mapper-annotations';
+import { attribute, hashKey, rangeKey, table } from 'ddb-data-mapper-annotations';
 
 @table('table_name')
 class MyDomainObject {
@@ -34,7 +34,7 @@ With domain classes defined, you can interact with records in DynamoDB via an
 instance of `DataMapper`:
 
 ```typescript
-import { DataMapper } from '@aws/dynamodb-data-mapper';
+import { DataMapper } from 'ddb-data-mapper';
 import DynamoDB = require('aws-sdk/clients/dynamodb');
 
 const mapper = new DataMapper({
@@ -187,7 +187,7 @@ import {
     AttributePath,
     FunctionExpression,
     UpdateExpression,
-} from '@aws/dynamodb-expressions';
+} from 'ddb-expressions';
 
 const expr = new UpdateExpression();
 

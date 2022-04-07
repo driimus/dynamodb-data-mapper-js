@@ -1,4 +1,4 @@
-import { BinarySet } from '@aws/dynamodb-auto-marshaller';
+import { BinarySet } from 'ddb-auto-marshaller';
 import { Schema } from './SchemaType';
 import { unmarshallItem } from './unmarshallItem';
 

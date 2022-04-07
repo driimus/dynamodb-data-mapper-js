@@ -1,4 +1,4 @@
-import type { ProjectionExpression } from '@aws/dynamodb-expressions';
+import type { ProjectionExpression } from 'ddb-expressions';
 
 import type { StringToAnyObjectMap } from '../constants';
 import type { ReadConsistencyConfiguration } from './ReadConsistencyConfiguration';

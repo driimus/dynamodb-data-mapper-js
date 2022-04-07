@@ -1,6 +1,6 @@
-import type { ZeroArgumentsConstructor } from '@aws/dynamodb-data-marshaller';
-import type { ConditionExpression, ConditionExpressionPredicate } from '@aws/dynamodb-expressions';
 import type { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import type { ZeroArgumentsConstructor } from 'ddb-data-marshaller';
+import type { ConditionExpression, ConditionExpressionPredicate } from 'ddb-expressions';
 
 import { Iterator } from './Iterator';
 import type { QueryOptions } from './namedParameters';

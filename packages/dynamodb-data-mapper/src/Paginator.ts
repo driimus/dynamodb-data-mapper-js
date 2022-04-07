@@ -1,7 +1,7 @@
-import type { AttributeMap, Schema, ZeroArgumentsConstructor } from '@aws/dynamodb-data-marshaller';
-import { unmarshallItem } from '@aws/dynamodb-data-marshaller';
-import type { DynamoDbPaginatorInterface } from '@aws/dynamodb-query-iterator';
 import type { ConsumedCapacity } from '@aws-sdk/client-dynamodb';
+import type { AttributeMap, Schema, ZeroArgumentsConstructor } from 'ddb-data-marshaller';
+import { unmarshallItem } from 'ddb-data-marshaller';
+import type { DynamoDbPaginatorInterface } from 'ddb-query-iterator';
 
 import { getSchema } from './protocols';
 

@@ -1,39 +1,3 @@
-import type { PerTableOptions, TableOptions, WriteRequest } from '@aws/dynamodb-batch-iterator';
-import { BatchGet, BatchWrite } from '@aws/dynamodb-batch-iterator';
-import type {
-  AttributeTypeMap,
-  KeyTypeMap,
-  PerIndexKeys,
-  Schema,
-  SchemaType,
-  ZeroArgumentsConstructor,
-} from '@aws/dynamodb-data-marshaller';
-import {
-  getSchemaName,
-  isKey,
-  keysFromSchema,
-  marshallConditionExpression,
-  marshallItem,
-  marshallKey,
-  marshallUpdateExpression,
-  marshallValue,
-  toSchemaName,
-  unmarshallItem,
-} from '@aws/dynamodb-data-marshaller';
-import type {
-  ConditionExpression,
-  ConditionExpressionPredicate,
-  PathElement,
-} from '@aws/dynamodb-expressions';
-import {
-  AttributePath,
-  AttributeValue,
-  ExpressionAttributes,
-  FunctionExpression,
-  MathematicalExpression,
-  serializeProjectionExpression,
-  UpdateExpression,
-} from '@aws/dynamodb-expressions';
 import type {
   AttributeDefinition,
   AttributeValue as _AttributeValue,
@@ -61,6 +25,42 @@ import {
   waitUntilTableExists,
   waitUntilTableNotExists,
 } from '@aws-sdk/client-dynamodb';
+import type { PerTableOptions, TableOptions, WriteRequest } from 'ddb-batch-iterator';
+import { BatchGet, BatchWrite } from 'ddb-batch-iterator';
+import type {
+  AttributeTypeMap,
+  KeyTypeMap,
+  PerIndexKeys,
+  Schema,
+  SchemaType,
+  ZeroArgumentsConstructor,
+} from 'ddb-data-marshaller';
+import {
+  getSchemaName,
+  isKey,
+  keysFromSchema,
+  marshallConditionExpression,
+  marshallItem,
+  marshallKey,
+  marshallUpdateExpression,
+  marshallValue,
+  toSchemaName,
+  unmarshallItem,
+} from 'ddb-data-marshaller';
+import type {
+  ConditionExpression,
+  ConditionExpressionPredicate,
+  PathElement,
+} from 'ddb-expressions';
+import {
+  AttributePath,
+  AttributeValue,
+  ExpressionAttributes,
+  FunctionExpression,
+  MathematicalExpression,
+  serializeProjectionExpression,
+  UpdateExpression,
+} from 'ddb-expressions';
 
 import type { BatchState } from './BatchState';
 import type {
