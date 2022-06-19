@@ -8,12 +8,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/awslabs/dynamodb-data-mapper-js.git"
+    "url": "git+https://github.com/driimus/dynamodb-data-mapper-js-v3.git"
   },
   "bugs": {
-    "url": "https://github.com/awslabs/dynamodb-data-mapper-js/issues"
+    "url": "https://github.com/driimus/dynamodb-data-mapper-js-v3/issues"
   },
-  "homepage": "https://awslabs.github.io/dynamodb-data-mapper-js/packages/dynamodb-data-mapper-annotations/",
+  "homepage": "https://github.com/driimus/dynamodb-data-mapper-js-v3/tree/feat/v3/packages/dynamodb-data-mapper-annotations#readme",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "scripts": {
