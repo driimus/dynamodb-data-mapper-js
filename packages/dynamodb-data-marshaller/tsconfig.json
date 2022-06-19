@@ -11,12 +11,5 @@
     "rootDir": "./src",
     "outDir": "./build"
   },
-  "exclude": ["src/*.spec.ts", "src/*.integ.ts", "src/*.fixture.ts", "node_modules", "build"],
-  "typedocOptions": {
-    "mode": "file",
-    "out": "../../docs/packages/dynamodb-data-marshaller",
-    "excludeNotExported": true,
-    "excludePrivate": true,
-    "hideGenerator": true
-  }
+  "exclude": ["src/*.spec.ts", "src/*.integ.ts", "src/*.fixture.ts", "node_modules", "build"]
 }

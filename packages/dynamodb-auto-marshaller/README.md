@@ -14,8 +14,8 @@ To use the `Marshaller` to convert a JavaScript object to the data type expected
 by Amazon DynamoDB, simply create an instance of the marshaller and call
 `marshallItem`:
 
-```typescript
-import { BinarySet, Marshaller } from 'ddb-auto-marshaller';
+```ts
+import { BinarySet, Marshaller } from '@driimus/dynamodb-auto-marshaller';
 
 const marshaller = new Marshaller();
 const original = {
@@ -57,8 +57,8 @@ deepEqual(original, unmarshalled); // true
 Values may be converted to and from AttributeValue objects with `.marshallValue`
 and `.unmarshallValue` directly:
 
-```typescript
-import { Marshaller } from 'ddb-auto-marshaller';
+```ts
+import { Marshaller } from '@driimus/dynamodb-auto-marshaller';
 
 const marshaller = new Marshaller();
 const marshalled = marshaller.marshallValue('string'); // returns {S: 'string'}
@@ -86,8 +86,8 @@ compatible with both numbers and `NumberValue`s.
 To disable this behavior, pass a configuration options argument to the
 `Marshaller` constructor with `unwrapNumbers` set to `true`:
 
-```typescript
-import { Marshaller } from 'ddb-auto-marshaller';
+```ts
+import { Marshaller } from '@driimus/dynamodb-auto-marshaller';
 
 const marshaller = new Marshaller({ unwrapNumbers: true });
 ```
@@ -109,8 +109,8 @@ This allows consumers of the item to know that an empty value was saved, though
 it will be slightly altered. When fetched from DynamoDB, the value will be
 unmarshalled as `null`:
 
-```typescript
-import { Marshaller } from 'ddb-auto-marshaller';
+```ts
+import { Marshaller } from '@driimus/dynamodb-auto-marshaller';
 
 const marshaller = new Marshaller({ onEmpty: 'nullify' });
 const marshalled = marshaller.marshallValue(''); // returns {NULL: true}
@@ -120,8 +120,8 @@ const unmarshalled = marshaller.unmarshallValue(marshalled); // returns null
 Setting `onEmpty` to `'omit'` will direct the marshaller to remove empty values
 from the serialized item:
 
-```typescript
-import { Marshaller } from 'ddb-auto-marshaller';
+```ts
+import { Marshaller } from '@driimus/dynamodb-auto-marshaller';
 
 const marshaller = new Marshaller({ onEmpty: 'omit' });
 const marshalled = marshaller.marshallValue(''); // returns undefined
@@ -134,8 +134,8 @@ By default, the marshaller will throw an error when it encounters a symbol or
 function. You can direct the marshaller to instead omit such values from its
 output by setting the `onInvalid` configuration option to `'omit'`:
 
-```typescript
-import { Marshaller } from 'ddb-auto-marshaller';
+```ts
+import { Marshaller } from '@driimus/dynamodb-auto-marshaller';
 
 const marshaller = new Marshaller({ onInvalid: 'omit' });
 const marshalled = marshaller.marshallValue(Symbol.iterator); // returns undefined

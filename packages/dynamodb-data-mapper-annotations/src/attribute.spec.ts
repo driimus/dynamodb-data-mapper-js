@@ -1,6 +1,6 @@
-import { DynamoDbSchema } from 'ddb-data-mapper';
-import { BinarySet } from 'ddb-auto-marshaller';
-import { isSchema, SchemaType } from 'ddb-data-marshaller';
+import { DynamoDbSchema } from '@driimus/dynamodb-data-mapper';
+import { BinarySet } from '@driimus/dynamodb-auto-marshaller';
+import { isSchema, SchemaType } from '@driimus/dynamodb-data-marshaller';
 import { METADATA_TYPE_KEY } from './constants';
 import { attribute } from './attribute';
 

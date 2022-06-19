@@ -1,4 +1,4 @@
-import { AttributePath } from 'ddb-expressions';
+import { AttributePath } from '@driimus/dynamodb-expressions';
 import { Schema } from './SchemaType';
 import { toSchemaName } from './toSchemaName';
 

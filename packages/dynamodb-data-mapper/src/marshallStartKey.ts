@@ -1,6 +1,6 @@
 import type { AttributeValue } from '@aws-sdk/client-dynamodb';
-import type { Schema } from 'ddb-data-marshaller';
-import { marshallValue } from 'ddb-data-marshaller';
+import type { Schema } from '@driimus/dynamodb-data-marshaller';
+import { marshallValue } from '@driimus/dynamodb-data-marshaller';
 
 export type AttributeMap = Record<string, AttributeValue>;
 export type Key = AttributeMap;

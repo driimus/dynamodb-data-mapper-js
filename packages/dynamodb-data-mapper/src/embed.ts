@@ -2,7 +2,7 @@ import type {
   DocumentType,
   // Schema,
   ZeroArgumentsConstructor,
-} from 'ddb-data-marshaller';
+} from '@driimus/dynamodb-data-marshaller';
 
 import { DynamoDbSchema } from './protocols';
 

@@ -3,7 +3,7 @@ import type {
   ExpressionAttributeNameMap,
   ExpressionAttributeValueMap,
   ProjectionExpression,
-} from 'ddb-expressions';
+} from '@driimus/dynamodb-expressions';
 import {
   AttributePath,
   ExpressionAttributes,
@@ -12,7 +12,7 @@ import {
   serializeConditionExpression,
   serializeProjectionExpression,
   UpdateExpression,
-} from 'ddb-expressions';
+} from '@driimus/dynamodb-expressions';
 
 import type { Schema } from './SchemaType';
 import { toSchemaName } from './toSchemaName';

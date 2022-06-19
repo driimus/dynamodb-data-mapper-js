@@ -14,12 +14,5 @@
     "resolveJsonModule": true,
     "esModuleInterop": true
   },
-  "exclude": ["src/*.spec.ts", "node_modules", "build", "src/*.integ.ts"],
-  "typedocOptions": {
-    "mode": "file",
-    "out": "../../docs/packages/dynamodb-data-mapper",
-    "excludeNotExported": true,
-    "excludePrivate": true,
-    "hideGenerator": true
-  }
+  "exclude": ["src/*.spec.ts", "node_modules", "build", "src/*.integ.ts"]
 }

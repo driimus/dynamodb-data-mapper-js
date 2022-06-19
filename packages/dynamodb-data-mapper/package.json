@@ -1,6 +1,6 @@
 {
-  "name": "ddb-data-mapper",
-  "version": "0.7.3",
+  "name": "@driimus/dynamodb-data-mapper",
+  "version": "0.8.0",
   "description": "A schema-based data mapper for Amazon DynamoDB",
   "keywords": [
     "aws",
@@ -18,7 +18,6 @@
   "types": "./build/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "docs": "typedoc src",
     "integ": "npm run pretest && jest --config=jest.integration.js",
     "prepublishOnly": "npm run build",
     "pretest": "tsc -p tsconfig.test.json",
@@ -30,26 +29,31 @@
     "name": "AWS SDK for JavaScript Team",
     "email": "aws-sdk-js@amazon.com"
   },
+  "contributors": [
+    {
+      "name": "Cristian Petre",
+      "email": "driimus@vivaldi.net"
+    }
+  ],
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-sdk/client-dynamodb": "^3.58.0",
-    "@aws-sdk/types": "^3.55.0",
+    "@aws-sdk/client-dynamodb": "^3.113.0",
+    "@aws-sdk/types": "^3.110.0",
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.23",
-    "aws-sdk-client-mock": "^0.6.2",
+    "aws-sdk-client-mock": "^1.0.0",
     "jest": "^27.5.1",
-    "typedoc": "^0.22.13",
-    "typescript": "^4.6.3"
+    "typescript": "^4.7.4"
   },
   "dependencies": {
-    "ddb-auto-marshaller": "workspace:*",
-    "ddb-batch-iterator": "workspace:*",
-    "ddb-data-marshaller": "workspace:*",
-    "ddb-expressions": "workspace:*",
-    "ddb-query-iterator": "workspace:*",
+    "@driimus/dynamodb-auto-marshaller": "workspace:*",
+    "@driimus/dynamodb-batch-iterator": "workspace:*",
+    "@driimus/dynamodb-data-marshaller": "workspace:*",
+    "@driimus/dynamodb-expressions": "workspace:*",
+    "@driimus/dynamodb-query-iterator": "workspace:*",
     "tslib": "^2.3.1"
   },
   "peerDependencies": {
-    "@aws-sdk/client-dynamodb": "^3.41.0"
+    "@aws-sdk/client-dynamodb": "^3.113.0"
   }
 }

@@ -1,13 +1,19 @@
 import type { DynamoDBClient, QueryInput } from '@aws-sdk/client-dynamodb';
-import type { ZeroArgumentsConstructor } from 'ddb-data-marshaller';
-import { marshallConditionExpression, marshallProjectionExpression } from 'ddb-data-marshaller';
-import type { ConditionExpression, ConditionExpressionPredicate } from 'ddb-expressions';
+import type { ZeroArgumentsConstructor } from '@driimus/dynamodb-data-marshaller';
+import {
+  marshallConditionExpression,
+  marshallProjectionExpression,
+} from '@driimus/dynamodb-data-marshaller';
+import type {
+  ConditionExpression,
+  ConditionExpressionPredicate,
+} from '@driimus/dynamodb-expressions';
 import {
   ExpressionAttributes,
   isConditionExpression,
   isConditionExpressionPredicate,
-} from 'ddb-expressions';
-import { QueryPaginator as BasePaginator } from 'ddb-query-iterator';
+} from '@driimus/dynamodb-expressions';
+import { QueryPaginator as BasePaginator } from '@driimus/dynamodb-query-iterator';
 
 import { marshallStartKey } from './marshallStartKey';
 import type { QueryOptions } from './namedParameters';

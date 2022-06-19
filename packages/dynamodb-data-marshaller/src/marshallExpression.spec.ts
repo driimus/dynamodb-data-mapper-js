@@ -3,7 +3,7 @@ import {
   FunctionExpression,
   MathematicalExpression,
   UpdateExpression,
-} from 'ddb-expressions';
+} from '@driimus/dynamodb-expressions';
 import {
   marshallConditionExpression,
   marshallFunctionExpression,

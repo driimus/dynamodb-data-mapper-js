@@ -4,8 +4,8 @@
 
 This library provides a `DataMapper` class that allows easy interoperability
 between your application's domain classes and their persisted form in Amazon
-DynamoDB. Powered by the `ddb-data-marshaller` and
-`ddb-expressions` packages, using `DataMapper` lets you define each
+DynamoDB. Powered by the `@driimus/dynamodb-data-marshaller` and
+`@driimus/dynamodb-expressions` packages, using `DataMapper` lets you define each
 object's persisted representation once and then load, save, scan, and query your
 tables using the vocabulary of your application domain rather than its
 representation in DynamoDB.
@@ -17,8 +17,8 @@ couple properties to the prototype of the class you would like to map to a
 DynamoDB table. Specifically, you will need to provide a schema and the name of
 the table:
 
-```typescript
-import { DynamoDbSchema, DynamoDbTable } from 'ddb-data-mapper';
+```ts
+import { DynamoDbSchema, DynamoDbTable } from '@driimus/dynamodb-data-mapper';
 
 class MyDomainModel {
   // declare methods and properties as normal
@@ -51,8 +51,8 @@ Object.defineProperties(MyDomainModel.prototype, {
 The schema and table name may be declared as property accessors directly on the
 class if the value should be determined dynamically:
 
-```typescript
-import { DynamoDbTable } from 'ddb-data-mapper';
+```ts
+import { DynamoDbTable } from '@driimus/dynamodb-data-mapper';
 
 class MyOtherDomainClass {
   id: number;
@@ -66,11 +66,11 @@ class MyOtherDomainClass {
 Next, create an instance of `DataMapper` and use the `MyDomainClass` constructor
 defined above to save and load objects from DynamoDB:
 
-```typescript
-import { DataMapper, DynamoDbSchema, DynamoDbTable } from 'ddb-data-mapper';
-import DynamoDB = require('aws-sdk/clients/dynamodb');
+```ts
+import { DataMapper, DynamoDbSchema, DynamoDbTable } from '@driimus/dynamodb-data-mapper';
+import { DynamoDBClient } from 'aws-sdk/client-dynamodb';
 
-const client = new DynamoDB({ region: 'us-west-2' });
+const client = new DynamoDBClient({ region: 'us-west-2' });
 const mapper = new DataMapper({ client });
 
 class MyDomainModel {
@@ -188,7 +188,7 @@ Takes two parameters:
 
     - `projection` - A projection expression directing DynamoDB to return a
       subset of the fetched item's attributes. Please refer to the
-      documentation for the `ddb-expressions` package for
+      documentation for the `@driimus/dynamodb-expressions` package for
       guidance on creating projection expression objects.
 
     - `projectionSchema` - The schema to use when mapping the supplied
@@ -257,7 +257,7 @@ Removes an item from a DynamoDB table. Takes two parameters:
 
   - `condition` - A condition expression whose assertion must be satisfied in
     order for the delete operation to be executed. Please refer to the
-    documentation for the `ddb-expressions` package for guidance
+    documentation for the `@driimus/dynamodb-expressions` package for guidance
     on creating condition expression objects.
 
   - `returnValues` - Specify `'ALL_OLD'` to have the deleted item returned to
@@ -288,7 +288,7 @@ parameters:
 
   - `projection` - A projection expression directing DynamoDB to return a
     subset of the fetched item's attributes. Please refer to the
-    documentation for the `ddb-expressions` package for guidance
+    documentation for the `@driimus/dynamodb-expressions` package for guidance
     on creating projection expression objects.
 
 ### `put`
@@ -304,7 +304,7 @@ Inserts an item into a DynamoDB table. Takes two parameters:
 
   - `condition` - A condition expression whose assertion must be satisfied in
     order for the put operation to be executed. Please refer to the
-    documentation for the `ddb-expressions` package for guidance
+    documentation for the `@driimus/dynamodb-expressions` package for guidance
     on creating condition expression objects.
 
   - `returnValues` - Specify `'ALL_OLD'` to have the overwritten item (if one
@@ -340,8 +340,8 @@ Takes three parameters:
   If a hash is provided, it may contain a mixture of condition expression
   predicates and exact value matches:
 
-  ```typescript
-  import { between } from 'ddb-expressions';
+  ```ts
+  import { between } from '@driimus/dynamodb-expressions';
 
   const keyCondition = {
     partitionKey: 'foo',
@@ -351,7 +351,7 @@ Takes three parameters:
 
   The key condition must target a single value for the partition key.
 
-  Please refer to the documentation for the `ddb-expressions`
+  Please refer to the documentation for the `@driimus/dynamodb-expressions`
   package for guidance on creating condition expression objects.
 
 - (Optional) An object specifying any of the following options:
@@ -363,7 +363,7 @@ Takes three parameters:
     You cannot define a filter expression based on a partition key or a sort
     key.
 
-    Please refer to the documentation for the `ddb-expressions`
+    Please refer to the documentation for the `@driimus/dynamodb-expressions`
     package for guidance on creating condition expression objects.
 
   - `indexName` - The name of the index against which to execute this query.
@@ -375,7 +375,7 @@ Takes three parameters:
 
   - `projection` - A projection expression directing DynamoDB to return a
     subset of any fetched item's attributes. Please refer to the
-    documentation for the `ddb-expressions` package for guidance
+    documentation for the `@driimus/dynamodb-expressions` package for guidance
     on creating projection expression objects.
 
   - `readConsistency` - Specify `'strong'` to perform a strongly consistent
@@ -394,7 +394,7 @@ Takes three parameters:
 The iterator returned by `query` will keep track of the number of items yielded
 and the number of items scanned via its `count` and `scannedCount` properties:
 
-```typescript
+```ts
 const iterator = mapper.query(MyClass, { partitionKey: 'foo', rangeKey: between(0, 10) });
 for await (const record of iterator) {
   console.log(record, iterator.count, iterator.scannedCount);
@@ -409,7 +409,7 @@ paginator differs from the iterator in that it yields arrays of unmarshalled
 records and has a `lastEvaluatedKey` property that may be provided to a new
 call to `mapper.query` to resume the query later or in a separate process:
 
-```typescript
+```ts
 const paginator = mapper
   .query(
     MyClass,
@@ -465,7 +465,7 @@ Takes two parameters:
     You cannot define a filter expression based on a partition key or a sort
     key.
 
-    Please refer to the documentation for the `ddb-expressions`
+    Please refer to the documentation for the `@driimus/dynamodb-expressions`
     package for guidance on creating condition expression objects.
 
   - `indexName` - The name of the index against which to execute this query.
@@ -477,7 +477,7 @@ Takes two parameters:
 
   - `projection` - A projection expression directing DynamoDB to return a
     subset of any fetched item's attributes. Please refer to the
-    documentation for the `ddb-expressions` package for guidance
+    documentation for the `@driimus/dynamodb-expressions` package for guidance
     on creating projection expression objects.
 
   - `readConsistency` - Specify `'strong'` to perform a strongly consistent
@@ -499,7 +499,7 @@ Takes two parameters:
 The iterator returned by `scan` will keep track of the number of items yielded
 and the number of items scanned via its `count` and `scannedCount` properties:
 
-```typescript
+```ts
 const iterator = mapper.scan(MyClass);
 for await (const record of iterator) {
   console.log(record, iterator.count, iterator.scannedCount);
@@ -514,7 +514,7 @@ paginator differs from the iterator in that it yields arrays of unmarshalled
 records and has a `lastEvaluatedKey` property that may be provided to a new
 call to `mapper.scan` to resume the scan later or in a separate process:
 
-```typescript
+```ts
 const paginator = mapper
   .scan(MyClass, {
     // automatically stop after 25 items or the entire result set has been
@@ -564,7 +564,7 @@ Takes three parameters:
     You cannot define a filter expression based on a partition key or a sort
     key.
 
-    Please refer to the documentation for the `ddb-expressions`
+    Please refer to the documentation for the `@driimus/dynamodb-expressions`
     package for guidance on creating condition expression objects.
 
   - `indexName` - The name of the index against which to execute this query.
@@ -574,7 +574,7 @@ Takes three parameters:
 
   - `projection` - A projection expression directing DynamoDB to return a
     subset of any fetched item's attributes. Please refer to the
-    documentation for the `ddb-expressions` package for guidance
+    documentation for the `@driimus/dynamodb-expressions` package for guidance
     on creating projection expression objects.
 
   - `readConsistency` - Specify `'strong'` to perform a strongly consistent
@@ -590,7 +590,7 @@ The iterator returned by `parallelScan` will keep track of the number of items
 yielded and the number of items scanned via its `count` and `scannedCount`
 properties:
 
-```typescript
+```ts
 const iterator = mapper.parallelScan(MyClass, 4);
 for await (const record of iterator) {
   console.log(record, iterator.count, iterator.scannedCount);
@@ -606,7 +606,7 @@ unmarshalled records and has a `scanState` property that may be provided
 to a new call to `mapper.parallelScan` to resume the scan later or in a separate
 process:
 
-```typescript
+```ts
 const paginator = mapper.parallelScan(MyClass, 4).pages();
 for await (const page of paginator) {
   console.log(paginator.count, paginator.scannedCount, paginator.lastEvaluatedKey);
@@ -638,7 +638,7 @@ Takes two parameters:
 
   - `condition` - A condition expression whose assertion must be satisfied in
     order for the update operation to be executed. Please refer to the
-    documentation for the `ddb-expressions` package for guidance
+    documentation for the `@driimus/dynamodb-expressions` package for guidance
     on creating condition expression objects.
 
   - `onMissing` - Specify `'remove'` (the default) to treat the absence of a
@@ -658,7 +658,7 @@ known.
 Takes four parameters:
 
 - The expression to execute. Please refer to the documentation for the
-  `ddb-expressions` package for guidance on creating update
+  `@driimus/dynamodb-expressions` package for guidance on creating update
   expression objects.
 
 - The key of the item being updated.
@@ -672,5 +672,5 @@ Takes four parameters:
 
   - `condition` - A condition expression whose assertion must be satisfied in
     order for the update operation to be executed. Please refer to the
-    documentation for the `ddb-expressions` package for guidance
+    documentation for the `@driimus/dynamodb-expressions` package for guidance
     on creating condition expression objects.

@@ -1,6 +1,9 @@
 import type { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import type { ZeroArgumentsConstructor } from 'ddb-data-marshaller';
-import type { ConditionExpression, ConditionExpressionPredicate } from 'ddb-expressions';
+import type { ZeroArgumentsConstructor } from '@driimus/dynamodb-data-marshaller';
+import type {
+  ConditionExpression,
+  ConditionExpressionPredicate,
+} from '@driimus/dynamodb-expressions';
 
 import { Iterator } from './Iterator';
 import type { QueryOptions } from './namedParameters';

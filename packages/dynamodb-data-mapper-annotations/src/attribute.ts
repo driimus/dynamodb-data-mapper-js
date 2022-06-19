@@ -1,8 +1,14 @@
 import 'reflect-metadata';
 
-import { BinarySet } from 'ddb-auto-marshaller';
-import { DynamoDbSchema } from 'ddb-data-mapper';
-import type { DocumentType, KeyableType, Schema, SchemaType, SetType } from 'ddb-data-marshaller';
+import { BinarySet } from '@driimus/dynamodb-auto-marshaller';
+import { DynamoDbSchema } from '@driimus/dynamodb-data-mapper';
+import type {
+  DocumentType,
+  KeyableType,
+  Schema,
+  SchemaType,
+  SetType,
+} from '@driimus/dynamodb-data-marshaller';
 
 import type { PropertyAnnotation } from './annotationShapes';
 import { METADATA_TYPE_KEY } from './constants';

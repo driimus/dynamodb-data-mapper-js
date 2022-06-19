@@ -1,5 +1,5 @@
 import type { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import type { ZeroArgumentsConstructor } from 'ddb-data-marshaller';
+import type { ZeroArgumentsConstructor } from '@driimus/dynamodb-data-marshaller';
 
 import { Iterator } from './Iterator';
 import type { SequentialScanOptions } from './namedParameters';

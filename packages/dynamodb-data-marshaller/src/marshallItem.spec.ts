@@ -1,4 +1,4 @@
-import { BinarySet } from 'ddb-auto-marshaller';
+import { BinarySet } from '@driimus/dynamodb-auto-marshaller';
 import { marshallItem } from './marshallItem';
 import { CustomType, Schema } from './SchemaType';
 // import objectContaining = jasmine.objectContaining;

@@ -1,5 +1,5 @@
 import type { AttributeValue } from '@aws-sdk/client-dynamodb';
-import type { BinaryValue, MarshallingOptions } from 'ddb-auto-marshaller';
+import type { BinaryValue, MarshallingOptions } from '@driimus/dynamodb-auto-marshaller';
 
 /**
  * A key => value mapping outlining how to convert an arbitrary JavaScript

@@ -19,11 +19,11 @@ iterable may be synchronous (such as an array) or asynchronous (such as an
 object stream wrapped with [async-iter-stream](https://github.com/calvinmetcalf/async-iter-stream)'s
 `wrap` method).
 
-```typescript
-import { BatchGet } from 'ddb-batch-iterator';
-import DynamoDB = require('aws-sdk/clients/dynamodb');
+```ts
+import { BatchGet } from '@driimus/dynamodb-batch-iterator';
+import { DynamoDBClient } from 'aws-sdk/client-dynamodb';
 
-const dynamoDb = new DynamoDB({ region: 'us-west-2' });
+const dynamoDb = new DynamoDBClient({ region: 'us-west-2' });
 const keys = [
   ['tableName', { keyProperty: { N: '0' } }],
   ['tableName', { keyProperty: { N: '1' } }],
@@ -58,11 +58,11 @@ execute. The iterable may be synchronous (such as an array) or asynchronous
 Each write request should contain either a `DeleteRequest` key or a `PutRequest`
 key as described [in the Amazon DynamoDB API reference](http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_WriteRequest.html#DDB-Type-WriteRequest-DeleteRequest).
 
-```typescript
-import { BatchWrite } from 'ddb-batch-iterator';
-import DynamoDB = require('aws-sdk/clients/dynamodb');
+```ts
+import { BatchWrite } from '@driimus/dynamodb-batch-iterator';
+import { DynamoDBClient } from 'aws-sdk/client-dynamodb';
 
-const dynamoDb = new DynamoDB({ region: 'us-west-2' });
+const dynamoDb = new DynamoDBClient({ region: 'us-west-2' });
 const keys = [
   ['tableName', { DeleteRequest: { Key: { keyProperty: { N: '0' } } } }],
   [

@@ -1,6 +1,6 @@
 import type { AttributeValue } from '@aws-sdk/client-dynamodb';
-import type { AttributeMap } from 'ddb-auto-marshaller';
-import { BinarySet, Marshaller } from 'ddb-auto-marshaller';
+import type { AttributeMap } from '@driimus/dynamodb-auto-marshaller';
+import { BinarySet, Marshaller } from '@driimus/dynamodb-auto-marshaller';
 
 import { InvalidSchemaError } from './InvalidSchemaError';
 import type {

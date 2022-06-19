@@ -1,7 +1,7 @@
 import { hostname } from 'node:os';
 import { hrtime } from 'node:process';
-import { DocumentType, Schema } from 'ddb-data-marshaller';
-import { equals } from 'ddb-expressions';
+import { DocumentType, Schema } from '@driimus/dynamodb-data-marshaller';
+import { equals } from '@driimus/dynamodb-expressions';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDbSchema, DynamoDbTable } from './protocols';
 import { ItemNotFoundException } from './ItemNotFoundException';

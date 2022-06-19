@@ -25,8 +25,8 @@ import {
   waitUntilTableExists,
   waitUntilTableNotExists,
 } from '@aws-sdk/client-dynamodb';
-import type { PerTableOptions, TableOptions, WriteRequest } from 'ddb-batch-iterator';
-import { BatchGet, BatchWrite } from 'ddb-batch-iterator';
+import type { PerTableOptions, TableOptions, WriteRequest } from '@driimus/dynamodb-batch-iterator';
+import { BatchGet, BatchWrite } from '@driimus/dynamodb-batch-iterator';
 import type {
   AttributeTypeMap,
   KeyTypeMap,
@@ -34,7 +34,7 @@ import type {
   Schema,
   SchemaType,
   ZeroArgumentsConstructor,
-} from 'ddb-data-marshaller';
+} from '@driimus/dynamodb-data-marshaller';
 import {
   getSchemaName,
   isKey,
@@ -46,12 +46,12 @@ import {
   marshallValue,
   toSchemaName,
   unmarshallItem,
-} from 'ddb-data-marshaller';
+} from '@driimus/dynamodb-data-marshaller';
 import type {
   ConditionExpression,
   ConditionExpressionPredicate,
   PathElement,
-} from 'ddb-expressions';
+} from '@driimus/dynamodb-expressions';
 import {
   AttributePath,
   AttributeValue,
@@ -60,7 +60,7 @@ import {
   MathematicalExpression,
   serializeProjectionExpression,
   UpdateExpression,
-} from 'ddb-expressions';
+} from '@driimus/dynamodb-expressions';
 
 import type { BatchState } from './BatchState';
 import type {
@@ -877,7 +877,7 @@ export class DataMapper {
    * expression object. To perform a version check manually, add a condition
    * expression:
    *
-   * ```typescript
+   * ```ts
    *  const currentVersion = 1;
    *  updateExpression.set('nameOfVersionAttribute', currentVersion + 1);
    *  const condition = {

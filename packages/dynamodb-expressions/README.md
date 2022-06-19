@@ -46,8 +46,8 @@ expressions are:
 
 Asserts that all of the subexpressions' conditions are satisfied.
 
-```typescript
-import { ConditionExpression } from 'ddb-expressions';
+```ts
+import { ConditionExpression } from '@driimus/dynamodb-expressions';
 
 const andExpression: ConditionExpression = {
   type: 'And',
@@ -61,8 +61,8 @@ const andExpression: ConditionExpression = {
 
 Asserts that at least one of the subexpressions' conditions are satisfied.
 
-```typescript
-import { ConditionExpression } from 'ddb-expressions';
+```ts
+import { ConditionExpression } from '@driimus/dynamodb-expressions';
 
 const orExpression: ConditionExpression = {
   type: 'Or',
@@ -76,8 +76,8 @@ const orExpression: ConditionExpression = {
 
 Asserts that the subexpression's condition is not satisfied.
 
-```typescript
-import { ConditionExpression } from 'ddb-expressions';
+```ts
+import { ConditionExpression } from '@driimus/dynamodb-expressions';
 
 const notExpression: ConditionExpression = {
   type: 'Not',
@@ -106,8 +106,8 @@ Creates a condition which is true if the defined `subject` is equal to the
 defined `object`. For example, the following predicate object asserts that the
 subject has a value of `'bar'`:
 
-```typescript
-import { ConditionExpression, ConditionExpressionPredicate } from 'ddb-expressions';
+```ts
+import { ConditionExpression, ConditionExpressionPredicate } from '@driimus/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
   type: 'Equals',
@@ -115,7 +115,7 @@ let equalsExpressionPredicate: ConditionExpressionPredicate = {
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import { equals } from 'ddb-expressions';
+import { equals } from '@driimus/dynamodb-expressions';
 
 equalsExpressionPredicate = equals('bar');
 
@@ -128,7 +128,7 @@ const equalsExpression: ConditionExpression = {
 
 `object` may be an [attribute path](#attribute-paths), an [attribute
 value](#attribute-values), or another type. If the lattermost type is received,
-it will be serialized using the `ddb-auto-marshaller` package.
+it will be serialized using the `@driimus/dynamodb-auto-marshaller` package.
 
 #### `NotEquals` expression predicate
 
@@ -136,8 +136,8 @@ Creates a condition which is true if the defined `subject` is NOT equal to the
 defined `object`. For example, the following predicate object asserts that the
 subject does not have a value of `'bar'`:
 
-```typescript
-import { ConditionExpression, ConditionExpressionPredicate } from 'ddb-expressions';
+```ts
+import { ConditionExpression, ConditionExpressionPredicate } from '@driimus/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
   type: 'NotEquals',
@@ -145,7 +145,7 @@ let equalsExpressionPredicate: ConditionExpressionPredicate = {
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import { notEquals } from 'ddb-expressions';
+import { notEquals } from '@driimus/dynamodb-expressions';
 
 equalsExpressionPredicate = notEquals('bar');
 
@@ -158,7 +158,7 @@ const equalsExpression: ConditionExpression = {
 
 `object` may be an [attribute path](#attribute-paths), an [attribute
 value](#attribute-values), or another type. If the lattermost type is received,
-it will be serialized using the `ddb-auto-marshaller` package.
+it will be serialized using the `@driimus/dynamodb-auto-marshaller` package.
 
 #### `LessThan` expression predicate
 
@@ -166,8 +166,8 @@ Creates a condition which is true if the defined `subject` is less than the
 defined `object`. For example, the following predicate object asserts that the
 subject is less than 10:
 
-```typescript
-import { ConditionExpression, ConditionExpressionPredicate } from 'ddb-expressions';
+```ts
+import { ConditionExpression, ConditionExpressionPredicate } from '@driimus/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
   type: 'LessThan',
@@ -175,7 +175,7 @@ let equalsExpressionPredicate: ConditionExpressionPredicate = {
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import { lessThan } from 'ddb-expressions';
+import { lessThan } from '@driimus/dynamodb-expressions';
 
 equalsExpressionPredicate = lessThan(10);
 
@@ -188,7 +188,7 @@ const equalsExpression: ConditionExpression = {
 
 `object` may be an [attribute path](#attribute-paths), an [attribute
 value](#attribute-values), or another type. If the lattermost type is received,
-it will be serialized using the `ddb-auto-marshaller` package.
+it will be serialized using the `@driimus/dynamodb-auto-marshaller` package.
 
 #### `LessThanOrEqualTo` expression predicate
 
@@ -196,8 +196,8 @@ Creates a condition which is true if the defined `subject` is less than or equal
 to the defined `object`. For example, the following predicate object asserts
 that the subject is less than or equal to 10:
 
-```typescript
-import { ConditionExpression, ConditionExpressionPredicate } from 'ddb-expressions';
+```ts
+import { ConditionExpression, ConditionExpressionPredicate } from '@driimus/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
   type: 'LessThanOrEqualTo',
@@ -205,7 +205,7 @@ let equalsExpressionPredicate: ConditionExpressionPredicate = {
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import { lessThanOrEqualTo } from 'ddb-expressions';
+import { lessThanOrEqualTo } from '@driimus/dynamodb-expressions';
 
 equalsExpressionPredicate = lessThanOrEqualTo(10);
 
@@ -218,7 +218,7 @@ const equalsExpression: ConditionExpression = {
 
 `object` may be an [attribute path](#attribute-paths), an [attribute
 value](#attribute-values), or another type. If the lattermost type is received,
-it will be serialized using the `ddb-auto-marshaller` package.
+it will be serialized using the `@driimus/dynamodb-auto-marshaller` package.
 
 #### `GreaterThan` expression predicate
 
@@ -226,8 +226,8 @@ Creates a condition which is true if the defined `subject` is greater than the
 defined `object`. For example, the following predicate object asserts that the
 subject is greater than 10:
 
-```typescript
-import { ConditionExpression, ConditionExpressionPredicate } from 'ddb-expressions';
+```ts
+import { ConditionExpression, ConditionExpressionPredicate } from '@driimus/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
   type: 'GreaterThan',
@@ -235,7 +235,7 @@ let equalsExpressionPredicate: ConditionExpressionPredicate = {
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import { greaterThan } from 'ddb-expressions';
+import { greaterThan } from '@driimus/dynamodb-expressions';
 
 equalsExpressionPredicate = greaterThan(10);
 
@@ -248,7 +248,7 @@ const equalsExpression: ConditionExpression = {
 
 `object` may be an [attribute path](#attribute-paths), an [attribute
 value](#attribute-values), or another type. If the lattermost type is received,
-it will be serialized using the `ddb-auto-marshaller` package.
+it will be serialized using the `@driimus/dynamodb-auto-marshaller` package.
 
 #### `GreaterThanOrEqualTo` expression predicate
 
@@ -256,8 +256,8 @@ Creates a condition which is true if the defined `subject` is greater than or
 equal to the defined `object`. For example, the following predicate object
 asserts that the subject is greater than or equal to 10:
 
-```typescript
-import { ConditionExpression, ConditionExpressionPredicate } from 'ddb-expressions';
+```ts
+import { ConditionExpression, ConditionExpressionPredicate } from '@driimus/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
   type: 'GreaterThanOrEqualTo',
@@ -265,7 +265,7 @@ let equalsExpressionPredicate: ConditionExpressionPredicate = {
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import { greaterThanOrEqualTo } from 'ddb-expressions';
+import { greaterThanOrEqualTo } from '@driimus/dynamodb-expressions';
 
 equalsExpressionPredicate = greaterThanOrEqualTo(10);
 
@@ -278,7 +278,7 @@ const equalsExpression: ConditionExpression = {
 
 `object` may be an [attribute path](#attribute-paths), an [attribute
 value](#attribute-values), or another type. If the lattermost type is received,
-it will be serialized using the `ddb-auto-marshaller` package.
+it will be serialized using the `@driimus/dynamodb-auto-marshaller` package.
 
 #### `Between` expression predicate
 
@@ -287,8 +287,8 @@ Creates a condition which is true if the defined `subject` is between a defined
 asserts that the subject is greater than or equal to 10 and less than or equal
 to 99:
 
-```typescript
-import { ConditionExpression, ConditionExpressionPredicate } from 'ddb-expressions';
+```ts
+import { ConditionExpression, ConditionExpressionPredicate } from '@driimus/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
   type: 'Between',
@@ -297,7 +297,7 @@ let equalsExpressionPredicate: ConditionExpressionPredicate = {
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import { between } from 'ddb-expressions';
+import { between } from '@driimus/dynamodb-expressions';
 
 equalsExpressionPredicate = between(10, 99);
 
@@ -310,7 +310,7 @@ const equalsExpression: ConditionExpression = {
 
 `lowerBound` and `upperBound` may both be an [attribute path](#attribute-paths),
 an [attribute value](#attribute-values), or another type. If the lattermost type
-is received, it will be serialized using the `ddb-auto-marshaller`
+is received, it will be serialized using the `@driimus/dynamodb-auto-marshaller`
 package.
 
 #### `Membership` expression predicate
@@ -319,8 +319,8 @@ Creates a condition which is true if the defined `subject` is equal to a member
 of a list of defined values. For example, the following predicate object asserts
 that the subject is one of `'fizz'`, `'buzz'`, or `'fizzbuzz'`:
 
-```typescript
-import { ConditionExpression, ConditionExpressionPredicate } from 'ddb-expressions';
+```ts
+import { ConditionExpression, ConditionExpressionPredicate } from '@driimus/dynamodb-expressions';
 
 let equalsExpressionPredicate: ConditionExpressionPredicate = {
   type: 'Membership',
@@ -328,7 +328,7 @@ let equalsExpressionPredicate: ConditionExpressionPredicate = {
 };
 
 // you can also define an equality predicate with the `equals` helper method
-import { inList } from 'ddb-expressions';
+import { inList } from '@driimus/dynamodb-expressions';
 
 equalsExpressionPredicate = inList('fizz', 'buzz', 'fizzbuzz');
 
@@ -341,7 +341,7 @@ const equalsExpression: ConditionExpression = {
 
 Each value in the `values` array may be an [attribute path](#attribute-paths),
 an [attribute value](#attribute-values), or another type. If the lattermost type
-is received, it will be serialized using the `ddb-auto-marshaller`
+is received, it will be serialized using the `@driimus/dynamodb-auto-marshaller`
 package.
 
 ### Serializing condition expressions
@@ -358,8 +358,8 @@ any expression. When a full DynamoDB request input is ready to be sent, you can
 retrieve a the `ExpressionAttributeNames` and `ExpressionAttributeValues` shapes
 to send alongside the input:
 
-```typescript
-import { AttributePath, AttributeValue, ExpressionAttributes } from 'ddb-expressions';
+```ts
+import { AttributePath, AttributeValue, ExpressionAttributes } from '@driimus/dynamodb-expressions';
 const DynamoDb = require('aws-sdk/clients/dynamodb');
 
 const attributes = new ExpressionAttributes();
@@ -394,10 +394,14 @@ arguments to pass to the function. These parameters may be instances of
 `AttributePath` (to have the function evaluate part of the DynamoDB document to
 which the function applies), `AttributeValue` (for already-marshalled
 AttributeValue objects), or arbitrary JavaScript values (these will be converted
-by the `ddb-auto-marshaller` package's `Marshaller`):
+by the `@driimus/dynamodb-auto-marshaller` package's `Marshaller`):
 
-```typescript
-import { AttributePath, ExpressionAttributes, FunctionExpression } from 'ddb-expressions';
+```ts
+import {
+  AttributePath,
+  ExpressionAttributes,
+  FunctionExpression,
+} from '@driimus/dynamodb-expressions';
 
 const expr = new FunctionExpression('list_append', new AttributePath('path.to.list'), 'foo');
 const attributes = new ExpressionAttributes();
@@ -412,8 +416,8 @@ console.log(attributes.values); // {':val3': {S: 'foo'}}
 Mathematical expressions are used in the `SET` clause of update expressions to
 add or subtract numbers from attribute properties containing number values:
 
-```typescript
-import { MathematicalExpression } from 'ddb-expressions';
+```ts
+import { MathematicalExpression } from '@driimus/dynamodb-expressions';
 
 const expr = new MathematicalExpression('version', '+', 1);
 ```
@@ -433,8 +437,8 @@ values in the record, one containing directives to remove attributes from the
 record, one containing directives to add values to a set, and the last
 containing directives to delete values from a set.
 
-```typescript
-import { AttributePath, FunctionExpression, UpdateExpression } from 'ddb-expressions';
+```ts
+import { AttributePath, FunctionExpression, UpdateExpression } from '@driimus/dynamodb-expressions';
 
 const expr = new UpdateExpression();
 

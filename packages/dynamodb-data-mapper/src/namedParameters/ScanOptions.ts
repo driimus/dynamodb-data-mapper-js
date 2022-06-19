@@ -1,5 +1,5 @@
-import type { ZeroArgumentsConstructor } from 'ddb-data-marshaller';
-import type { ConditionExpression, ProjectionExpression } from 'ddb-expressions';
+import type { ZeroArgumentsConstructor } from '@driimus/dynamodb-data-marshaller';
+import type { ConditionExpression, ProjectionExpression } from '@driimus/dynamodb-expressions';
 
 import type { StringToAnyObjectMap } from '../constants';
 import type { ReadConsistencyConfiguration } from './ReadConsistencyConfiguration';

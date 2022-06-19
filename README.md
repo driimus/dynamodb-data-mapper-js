@@ -7,15 +7,15 @@ document mapper for JavaScript applications using Amazon DynamoDB.
 
 ## Getting started
 
-[The `ddb-data-mapper` package](packages/dynamodb-data-mapper) provides
+[The `@driimus/dynamodb-data-mapper` package](packages/dynamodb-data-mapper) provides
 a simple way to persist and load an application's domain objects to and from
 Amazon DynamoDB. When used together with the decorators provided by [the
-`ddb-data-mapper-annotations` package](packages/dynamodb-data-mapper-annotations),
+`@driimus/dynamodb-data-mapper-annotations` package](packages/dynamodb-data-mapper-annotations),
 you can describe the relationship between a class and its representation in
 DynamoDB by adding a few decorators:
 
-```typescript
-import { attribute, hashKey, rangeKey, table } from 'ddb-data-mapper-annotations';
+```ts
+import { attribute, hashKey, rangeKey, table } from '@driimus/dynamodb-data-mapper-annotations';
 
 @table('table_name')
 class MyDomainObject {
@@ -33,9 +33,9 @@ class MyDomainObject {
 With domain classes defined, you can interact with records in DynamoDB via an
 instance of `DataMapper`:
 
-```typescript
-import { DataMapper } from 'ddb-data-mapper';
-import DynamoDB = require('aws-sdk/clients/dynamodb');
+```ts
+import { DataMapper } from '@driimus/dynamodb-data-mapper';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 const mapper = new DataMapper({
   client: new DynamoDB({ region: 'us-west-2' }), // the SDK client used to execute operations
@@ -52,7 +52,7 @@ perform the following operations:
 
 Creates (or overwrites) an item in the table
 
-```typescript
+```ts
 const toSave = Object.assign(new MyDomainObject(), { id: 'foo' });
 mapper.put(toSave).then((objectSaved) => {
   // the record has been saved
@@ -63,7 +63,7 @@ mapper.put(toSave).then((objectSaved) => {
 
 Retrieves an item from DynamoDB
 
-```typescript
+```ts
 mapper
   .get(Object.assign(new MyDomainObject(), { id: 'foo', createdAt: new Date(946684800000) }))
   .then((myItem) => {
@@ -81,7 +81,7 @@ mapper
 
 Updates an item in the table
 
-```typescript
+```ts
 const myItem = await mapper.get(
   Object.assign(new MyDomainObject(), { id: 'foo', createdAt: new Date(946684800000) })
 );
@@ -94,7 +94,7 @@ await mapper.update(myItem);
 
 Removes an item from the table
 
-```typescript
+```ts
 await mapper.delete(
   Object.assign(new MyDomainObject(), { id: 'foo', createdAt: new Date(946684800000) })
 );
@@ -104,7 +104,7 @@ await mapper.delete(
 
 Lists the items in a table or index
 
-```typescript
+```ts
 for await (const item of mapper.scan(MyDomainObject)) {
   // individual items will be yielded as the scan is performed
 }
@@ -119,7 +119,7 @@ for await (const item of mapper.scan(MyDomainObject, { indexName: 'myIndex' })) 
 
 Finds a specific item (or range of items) in a table or index
 
-```typescript
+```ts
 for await (const foo of mapper.query(MyDomainObject, { id: 'foo' })) {
   // individual items with a hash key of "foo" will be yielded as the query is performed
 }
@@ -137,7 +137,7 @@ automatically.
 
 Creates (or overwrites) multiple items in the table
 
-```typescript
+```ts
 const toSave = [
   Object.assign(new MyDomainObject(), { id: 'foo', completed: false }),
   Object.assign(new MyDomainObject(), { id: 'bar', completed: false }),
@@ -151,7 +151,7 @@ for await (const persisted of mapper.batchPut(toSave)) {
 
 Fetches multiple items from the table
 
-```typescript
+```ts
 const toGet = [
   Object.assign(new MyDomainObject(), { id: 'foo', createdAt: new Date(946684800000) }),
   Object.assign(new MyDomainObject(), { id: 'bar', createdAt: new Date(946684800001) }),
@@ -168,7 +168,7 @@ found, it will be omitted from the result.
 
 Removes multiple items from the table
 
-```typescript
+```ts
 const toRemove = [
   Object.assign(new MyDomainObject(), { id: 'foo', createdAt: new Date(946684800000) }),
   Object.assign(new MyDomainObject(), { id: 'bar', createdAt: new Date(946684800001) }),
@@ -187,7 +187,7 @@ import {
     AttributePath,
     FunctionExpression,
     UpdateExpression,
-} from 'ddb-expressions';
+} from '@driimus/dynamodb-expressions';
 
 const expr = new UpdateExpression();
 
@@ -229,7 +229,7 @@ mapper.put(aRecord, {
 
 Creates a table for the mapped class and waits for it to be initialized:
 
-```typescript
+```ts
 mapper.createTable(MyDomainObject, { readCapacityUnits: 5, writeCapacityUnits: 5 }).then(() => {
   // the table has been provisioned and is ready for use!
 });
@@ -239,7 +239,7 @@ mapper.createTable(MyDomainObject, { readCapacityUnits: 5, writeCapacityUnits: 5
 
 Like `createTable`, but only creates the table if it doesn't already exist:
 
-```typescript
+```ts
 mapper
   .ensureTableExists(MyDomainObject, { readCapacityUnits: 5, writeCapacityUnits: 5 })
   .then(() => {
@@ -251,7 +251,7 @@ mapper
 
 Deletes the table for the mapped class and waits for it to be removed:
 
-```typescript
+```ts
 await mapper.deleteTable(MyDomainObject);
 ```
 
@@ -259,7 +259,7 @@ await mapper.deleteTable(MyDomainObject);
 
 Like `deleteTable`, but only deletes the table if it exists:
 
-```typescript
+```ts
 await mapper.ensureTableNotExists(MyDomainObject);
 ```
 

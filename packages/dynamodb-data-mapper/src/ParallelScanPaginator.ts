@@ -1,12 +1,12 @@
 import type { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import type { Schema, ZeroArgumentsConstructor } from 'ddb-data-marshaller';
-import { marshallKey, unmarshallItem } from 'ddb-data-marshaller';
+import type { Schema, ZeroArgumentsConstructor } from '@driimus/dynamodb-data-marshaller';
+import { marshallKey, unmarshallItem } from '@driimus/dynamodb-data-marshaller';
 import type {
   ParallelScanInput,
   ParallelScanState as BaseParallelScanState,
   ScanState as BaseScanState,
-} from 'ddb-query-iterator';
-import { ParallelScanPaginator as BasePaginator } from 'ddb-query-iterator';
+} from '@driimus/dynamodb-query-iterator';
+import { ParallelScanPaginator as BasePaginator } from '@driimus/dynamodb-query-iterator';
 
 import { buildScanInput } from './buildScanInput';
 import type { ParallelScanOptions, ParallelScanState, ScanState } from './namedParameters';

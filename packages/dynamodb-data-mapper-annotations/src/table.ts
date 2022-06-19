@@ -1,4 +1,4 @@
-import { DynamoDbTable } from 'ddb-data-mapper';
+import { DynamoDbTable } from '@driimus/dynamodb-data-mapper';
 
 import type { ClassAnnotation } from './annotationShapes';
 

@@ -1,4 +1,4 @@
-import { DynamoDbTable } from 'ddb-data-mapper';
+import { DynamoDbTable } from '@driimus/dynamodb-data-mapper';
 import { table } from './table';
 
 describe('table', () => {

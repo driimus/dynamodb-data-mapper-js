@@ -1,4 +1,4 @@
-import type { ConditionExpression } from 'ddb-expressions';
+import type { ConditionExpression } from '@driimus/dynamodb-expressions';
 
 import type { OnMissingStrategy, StringToAnyObjectMap } from '../constants';
 

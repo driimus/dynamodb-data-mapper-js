@@ -20,7 +20,7 @@ import {
   UpdateTableCommand,
 } from '@aws-sdk/client-dynamodb';
 
-import { Schema } from 'ddb-data-marshaller';
+import { Schema } from '@driimus/dynamodb-data-marshaller';
 import {
   AttributePath,
   between,
@@ -28,7 +28,7 @@ import {
   FunctionExpression,
   inList,
   UpdateExpression,
-} from 'ddb-expressions';
+} from '@driimus/dynamodb-expressions';
 import { mockClient } from 'aws-sdk-client-mock';
 import { DataMapper } from './DataMapper';
 import { ItemNotFoundException } from './ItemNotFoundException';
