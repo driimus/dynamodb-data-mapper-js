@@ -10,6 +10,7 @@ importers:
       '@types/node': ^17.0.23
       '@typescript-eslint/eslint-plugin': ^5.28.0
       '@typescript-eslint/parser': ^5.28.0
+      aws-sdk-client-mock: ^1.0.0
       eslint: ^8.18.0
       eslint-config-prettier: ^8.5.0
       eslint-plugin-import: ^2.26.0
@@ -33,6 +34,7 @@ importers:
       '@types/node': 17.0.45
       '@typescript-eslint/eslint-plugin': 5.28.0_py5roj3ykd3sga4gtxlmfvv4pa
       '@typescript-eslint/parser': 5.28.0_b5e7v2qnwxfo6hmiq56u52mz3e
+      aws-sdk-client-mock: 1.0.0
       eslint: 8.18.0
       eslint-config-prettier: 8.5.0_eslint@8.18.0
       eslint-plugin-import: 2.26.0_6lykrgsjl6r2vncmjcievjkgyy
@@ -6159,7 +6161,7 @@ packages:
       }
     dependencies:
       '@sinonjs/commons': 1.8.3
-      '@sinonjs/fake-timers': 7.1.2
+      '@sinonjs/fake-timers': 8.1.0
       '@sinonjs/text-encoding': 0.7.1
       just-extend: 4.2.1
       path-to-regexp: 1.8.0
