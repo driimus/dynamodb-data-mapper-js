@@ -166,6 +166,7 @@ export function marshallValue(schemaType: SchemaType, input: any): AttributeValu
 
   if (schemaType.type === 'Set') {
     if (schemaType.memberType === 'Binary') {
+      // TODO: #212 marshalling entries should always occur
       if (!(input instanceof BinarySet)) {
         const set = new BinarySet();
         for (const item of input) {

@@ -1,7 +1,5 @@
-import { BinarySet } from '@driimus/dynamodb-auto-marshaller';
 import { marshallItem } from './marshallItem';
 import { CustomType, Schema } from './SchemaType';
-// import objectContaining = jasmine.objectContaining;
 
 describe('marshallItem', () => {
   it('should serialize fields to their attributeName if provided', () => {
@@ -136,7 +134,7 @@ describe('marshallItem', () => {
     });
   });
 
-  describe.skip('binary set fields', () => {
+  describe('binary set fields', () => {
     const schema: Schema = {
       binSet: { type: 'Set', memberType: 'Binary' },
     };
@@ -172,7 +170,7 @@ describe('marshallItem', () => {
     it('should remove empty values from sets', () => {
       expect(
         marshallItem(schema, {
-          binSet: new BinarySet([
+          binSet: new Set([
             new ArrayBuffer(0),
             new ArrayBuffer(1),
             new ArrayBuffer(2),

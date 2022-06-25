@@ -8,6 +8,30 @@ export type BinaryValue = ArrayBuffer | ArrayBufferView;
  * sequence and not by the identity or view window type of the provided value.
  */
 export class BinarySet extends ObjectSet<BinaryValue> {
+  /**
+   * Creates a new BinarySet and optionally seeds it with values.
+   *
+   * @param iterable An optional iterable of values to add to the set.
+   */
+  constructor(iterable?: Iterable<BinaryValue>) {
+    super(iterable);
+    this.constructor = Set;
+  }
+
+  /**
+   * Add a value to the set. If the value is already contained in the set, it
+   * will not be added a second time.
+   *
+   * @remarks empty values will not be added to the set
+   *
+   * @param value The value to add
+   */
+  add(value: BinaryValue): this {
+    if (value.byteLength > 0) super.add(value);
+
+    return this;
+  }
+
   delete(value: BinaryValue): boolean {
     const valueView = getBinaryView(value);
     const scrubbedValues = this._values.filter(
