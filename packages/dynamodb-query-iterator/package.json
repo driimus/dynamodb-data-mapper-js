@@ -1,6 +1,6 @@
 {
   "name": "@driimus/dynamodb-query-iterator",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Abstraction for DynamoDB queries and scans that handles pagination and parallel worker coordination",
   "keywords": [
     "aws",
