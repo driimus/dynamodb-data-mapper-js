@@ -1,5 +1,16 @@
 # @driimus/dynamodb-data-mapper-annotations
 
+## 0.9.1
+
+### Patch Changes
+
+- [`3a57dc4`](https://github.com/driimus/dynamodb-data-mapper-js/commit/3a57dc4f8b2bef2cd0fa6a7d0d59fc2197e14418) Thanks [@driimus](https://github.com/driimus)! - chore: point to new repo
+
+- Updated dependencies [[`3a57dc4`](https://github.com/driimus/dynamodb-data-mapper-js/commit/3a57dc4f8b2bef2cd0fa6a7d0d59fc2197e14418)]:
+  - @driimus/dynamodb-auto-marshaller@0.9.1
+  - @driimus/dynamodb-data-mapper@0.9.1
+  - @driimus/dynamodb-data-marshaller@0.9.1
+
 ## 0.9.0
 
 ### Patch Changes
