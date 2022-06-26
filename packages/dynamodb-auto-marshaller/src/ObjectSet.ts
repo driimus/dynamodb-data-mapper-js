@@ -20,7 +20,6 @@ export abstract class ObjectSet<T> implements Set<T> {
         this.add(item);
       }
     }
-    this.constructor = Set;
   }
 
   /**
