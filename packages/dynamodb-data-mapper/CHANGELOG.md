@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [[`4cf11cf`](https://github.com/driimus/dynamodb-data-mapper-js-v3/commit/4cf11cf3722663273f9be7a7edd8119cb566a052), [`cb2f34b`](https://github.com/driimus/dynamodb-data-mapper-js-v3/commit/cb2f34bfd217af6d97e3fd87362f7e7ff722522e)]:
+- Updated dependencies [[`4cf11cf`](https://github.com/driimus/dynamodb-data-mapper-js/commit/4cf11cf3722663273f9be7a7edd8119cb566a052), [`cb2f34b`](https://github.com/driimus/dynamodb-data-mapper-js/commit/cb2f34bfd217af6d97e3fd87362f7e7ff722522e)]:
   - @driimus/dynamodb-data-marshaller@0.9.0
   - @driimus/dynamodb-auto-marshaller@0.9.0
   - @driimus/dynamodb-expressions@0.9.0
@@ -15,11 +15,11 @@
 
 ### Minor Changes
 
-- [`f7cc6ff`](https://github.com/driimus/dynamodb-data-mapper-js-v3/commit/f7cc6ff9fccbdc9d292877eefcd3bf24f30cba0b) Thanks [@driimus](https://github.com/driimus)! - migrate to aws-sdk-js v3
+- [`f7cc6ff`](https://github.com/driimus/dynamodb-data-mapper-js/commit/f7cc6ff9fccbdc9d292877eefcd3bf24f30cba0b) Thanks [@driimus](https://github.com/driimus)! - migrate to aws-sdk-js v3
 
 ### Patch Changes
 
-- Updated dependencies [[`f7cc6ff`](https://github.com/driimus/dynamodb-data-mapper-js-v3/commit/f7cc6ff9fccbdc9d292877eefcd3bf24f30cba0b)]:
+- Updated dependencies [[`f7cc6ff`](https://github.com/driimus/dynamodb-data-mapper-js/commit/f7cc6ff9fccbdc9d292877eefcd3bf24f30cba0b)]:
   - @driimus/dynamodb-auto-marshaller@0.8.0
   - @driimus/dynamodb-batch-iterator@0.8.0
   - @driimus/dynamodb-data-marshaller@0.8.0

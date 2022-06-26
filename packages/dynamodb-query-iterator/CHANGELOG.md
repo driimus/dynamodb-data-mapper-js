@@ -6,7 +6,7 @@
 
 ### Minor Changes
 
-- [`f7cc6ff`](https://github.com/driimus/dynamodb-data-mapper-js-v3/commit/f7cc6ff9fccbdc9d292877eefcd3bf24f30cba0b) Thanks [@driimus](https://github.com/driimus)! - migrate to aws-sdk-js v3
+- [`f7cc6ff`](https://github.com/driimus/dynamodb-data-mapper-js/commit/f7cc6ff9fccbdc9d292877eefcd3bf24f30cba0b) Thanks [@driimus](https://github.com/driimus)! - migrate to aws-sdk-js v3
 
 All notable changes to this project will be documented in this file.
 

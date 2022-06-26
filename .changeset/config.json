@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@2.0.0/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "driimus/dynamodb-data-mapper-js-v3" }],
+  "changelog": ["@changesets/changelog-github", { "repo": "driimus/dynamodb-data-mapper-js" }],
   "commit": false,
   "fixed": [["@driimus/dynamodb-*"]],
   "linked": [],
