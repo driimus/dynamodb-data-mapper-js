@@ -1,6 +1,6 @@
 {
   "name": "@driimus/dynamodb-data-mapper",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "A schema-based data mapper for Amazon DynamoDB",
   "keywords": [
     "aws",
