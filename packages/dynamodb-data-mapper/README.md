@@ -147,11 +147,7 @@ backoff delay that is applied on a per-table basis.
 
 Returns an async iterable of items that have been deleted (deleted items are
 yielded when the delete has been accepted by DynamoDB). The results can be
-consumed with a `for-await-of` loop. If you are using TypeScript, you will need
-to include `esnext.asynciterable` in your `lib` declaration (as well as enabling
-`downlevelIteration` if targeting ES5 or lower). Please refer to [the TypeScript
-release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#async-iteration)
-for more information.
+consumed with a `for-await-of` loop.
 
 Takes one parameter:
 
@@ -209,11 +205,7 @@ that is applied on a per-table basis.
 
 Returns an async iterable of items that have been put (put items are yielded
 when the put has been accepted by DynamoDB). The results can be consumed with a
-`for-await-of` loop. If you are using TypeScript, you will need to include
-`esnext.asynciterable` in your `lib` declaration (as well as enabling
-`downlevelIteration` if targeting ES5 or lower). Please refer to [the TypeScript
-release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#async-iteration)
-for more information.
+`for-await-of` loop.
 
 Takes one parameter:
 
@@ -230,11 +222,7 @@ increasing backoff delay that is applied on a per-table basis.
 
 Returns an async iterable of tuples of the string 'put'|'delete' and the item on
 which the specified write action was performed. The results can be consumed with
-a `for-await-of` loop. If you are using TypeScript, you will need to include
-`esnext.asynciterable` in your `lib` declaration (as well as enabling
-`downlevelIteration` if targeting ES5 or lower). Please refer to [the TypeScript
-release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#async-iteration)
-for more information.
+a `for-await-of` loop.
 
 Takes one parameter:
 
@@ -320,11 +308,7 @@ attributes. Queries must target a single partition key value but may read
 multiple items with different range keys.
 
 This method is implemented as an async iterator and the results can be consumed
-with a `for-await-of` loop. If you are using TypeScript, you will need to
-include `esnext.asynciterable` in your `lib` declaration (as well as enabling
-`downlevelIteration` if targeting ES5 or lower). Please refer to [the TypeScript
-release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#async-iteration)
-for more information.
+with a `for-await-of` loop.
 
 Takes three parameters:
 
@@ -443,11 +427,7 @@ const newPaginator = mapper
 Retrieves all values in a table or index.
 
 This method is implemented as an async iterator and the results can be consumed
-with a `for-await-of` loop. If you are using TypeScript, you will need to
-include `esnext.asynciterable` in your `lib` declaration (as well as enabling
-`downlevelIteration` if targeting ES5 or lower). Please refer to [the TypeScript
-release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#async-iteration)
-for more information.
+with a `for-await-of` loop.
 
 Takes two parameters:
 
@@ -540,11 +520,7 @@ Retrieves all values in a table by dividing the table into segments, all of
 which are scanned in parallel.
 
 This method is implemented as an async iterator and the results can be consumed
-with a `for-await-of` loop. If you are using TypeScript, you will need to
-include `esnext.asynciterable` in your `lib` declaration (as well as enabling
-`downlevelIteration` if targeting ES5 or lower). Please refer to [the TypeScript
-release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#async-iteration)
-for more information.
+with a `for-await-of` loop.
 
 Takes three parameters:
 
