@@ -76,13 +76,13 @@ describe('Marshaller', () => {
         expect(new Marshaller().marshallValue(bin)).toEqual({ B: bin });
       });
 
-      it.skip('should convert empty binary values to null when onEmpty option set to "nullify"', () => {
+      it('should convert empty binary values to null when onEmpty option set to "nullify"', () => {
         expect(new Marshaller({ onEmpty: 'nullify' }).marshallValue(new Uint8Array(0))).toEqual({
           NULL: true,
         });
       });
 
-      it.skip('should omit empty binary values when onEmpty option set to "omit"', () => {
+      it('should omit empty binary values when onEmpty option set to "omit"', () => {
         expect(
           new Marshaller({ onEmpty: 'omit' }).marshallValue(new Uint8Array(0))
         ).toBeUndefined();
@@ -228,7 +228,7 @@ describe('Marshaller', () => {
         });
       });
 
-      it.skip('should omit map members whose keys are not strings when the onInvalid option is "omit"', () => {
+      it('should omit map members whose keys are not strings when the onInvalid option is "omit"', () => {
         const marshaller = new Marshaller({
           onInvalid: 'omit',
         });
@@ -244,7 +244,7 @@ describe('Marshaller', () => {
         });
       });
 
-      it.skip('should throw otherwise', () => {
+      it('should throw otherwise', () => {
         const marshaller = new Marshaller();
         const map = new Map<any, any>();
         map.set('a', 'a');
@@ -258,23 +258,23 @@ describe('Marshaller', () => {
     });
 
     describe('sets', () => {
-      it.skip('should omit empty sets when the onEmpty option is "omit"', () => {
+      it('should omit empty sets when the onEmpty option is "omit"', () => {
         const marshaller = new Marshaller({ onEmpty: 'omit' });
         expect(marshaller.marshallValue(new Set())).toBeUndefined();
       });
 
-      it.skip('should convert empty sets to null when the onEmpty option is "nullify"', () => {
+      it('should convert empty sets to null when the onEmpty option is "nullify"', () => {
         const marshaller = new Marshaller({ onEmpty: 'nullify' });
         expect(marshaller.marshallValue(new Set())).toEqual({
           NULL: true,
         });
       });
-      it.skip('should omit empty sets when the onEmpty option is "leave", as the kind of set cannot be inferred', () => {
+      it('should omit empty sets when the onEmpty option is "leave", as the kind of set cannot be inferred', () => {
         const marshaller = new Marshaller({ onEmpty: 'leave' });
         expect(marshaller.marshallValue(new Set())).toBeUndefined();
       });
 
-      it.skip('should omit sets with members of an unknown type when the onEmpty option is "omit"', () => {
+      it('should omit sets with members of an unknown type when the onEmpty option is "omit"', () => {
         const marshaller = new Marshaller({
           onInvalid: 'omit',
         });
@@ -290,26 +290,26 @@ describe('Marshaller', () => {
         expect(() => marshaller.marshallValue(set)).toThrow();
       });
 
-      it.skip('should drop invalid members when onInvalid option is set to "omit"', () => {
+      it('should drop invalid members when onInvalid option is set to "omit"', () => {
         const marshaller = new Marshaller({
           onInvalid: 'omit',
         });
         expect(marshaller.marshallValue(new Set(['a', 1, 'c']))).toEqual({ SS: ['a', 'c'] });
       });
 
-      it.skip('should throw on invalid members otherwise', () => {
+      it('should throw on invalid members otherwise', () => {
         const marshaller = new Marshaller();
         expect(() => marshaller.marshallValue(new Set(['a', 1, 'c']))).toThrow();
       });
 
-      it.skip('should return a NullAttributeValue for an emptied set when onEmpty is set to "nullify"', () => {
+      it('should return a NullAttributeValue for an emptied set when onEmpty is set to "nullify"', () => {
         const marshaller = new Marshaller({ onEmpty: 'nullify' });
         expect(marshaller.marshallValue(new Set(['']))).toEqual({
           NULL: true,
         });
       });
 
-      it.skip('should return undefined for an emptied set when onEmpty is set to "omit"', () => {
+      it('should return undefined for an emptied set when onEmpty is set to "omit"', () => {
         const marshaller = new Marshaller({ onEmpty: 'omit' });
         expect(marshaller.marshallValue(new Set(['']))).toBeUndefined();
       });
@@ -328,13 +328,13 @@ describe('Marshaller', () => {
           });
         });
 
-        it.skip('should drop empty members when onEmpty option is set to "nullify"', () => {
+        it('should drop empty members when onEmpty option is set to "nullify"', () => {
           expect(
             new Marshaller({ onEmpty: 'nullify' }).marshallValue(new Set<string>(['a', '', 'c']))
           ).toEqual({ SS: ['a', 'c'] });
         });
 
-        it.skip('should drop empty members when onEmpty option is set to "omit"', () => {
+        it('should drop empty members when onEmpty option is set to "omit"', () => {
           expect(
             new Marshaller({ onEmpty: 'omit' }).marshallValue(new Set<string>(['a', '', 'c']))
           ).toEqual({ SS: ['a', 'c'] });
@@ -361,7 +361,7 @@ describe('Marshaller', () => {
         });
       });
 
-      describe.skip('binary sets', () => {
+      describe('binary sets', () => {
         it('should convert sets with binary values into BinarySetAttributeValues', () => {
           const marshaller = new Marshaller();
           const converted = marshaller.marshallValue(

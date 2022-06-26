@@ -1,3 +1,4 @@
+import { BinarySet } from '@driimus/dynamodb-auto-marshaller';
 import { marshallItem } from './marshallItem';
 import { CustomType, Schema } from './SchemaType';
 
@@ -170,7 +171,7 @@ describe('marshallItem', () => {
     it('should remove empty values from sets', () => {
       expect(
         marshallItem(schema, {
-          binSet: new Set([
+          binSet: new BinarySet([
             new ArrayBuffer(0),
             new ArrayBuffer(1),
             new ArrayBuffer(2),
@@ -532,7 +533,7 @@ describe('marshallItem', () => {
       });
     });
 
-    it.skip('should remove undefined values from sets', () => {
+    it('should remove undefined values from sets', () => {
       expect(marshallItem(schema, { strSet: ['', 'a', 'b', 'c', ''] })).toEqual({
         strSet: { SS: ['a', 'b', 'c'] },
       });

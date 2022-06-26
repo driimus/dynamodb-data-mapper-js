@@ -1,5 +1,5 @@
 import type { AttributeValue } from '@aws-sdk/client-dynamodb';
-import { convertToAttr } from '@aws-sdk/util-dynamodb';
+import type { BinaryValue } from '@driimus/dynamodb-auto-marshaller';
 import { BinarySet, Marshaller } from '@driimus/dynamodb-auto-marshaller';
 import { Buffer } from 'node:buffer';
 
@@ -176,27 +176,19 @@ export function marshallValue(schemaType: SchemaType, input: any): AttributeValu
         input = set;
       }
 
-      return marshallSet(input);
+      return marshallSet(input, marshallBinary, (bin: BinaryValue) => bin.byteLength === 0, 'BS');
     }
 
     if (schemaType.memberType === 'Number') {
-      if (!(input instanceof Set)) {
-        input = new Set(input);
-      }
+      if (!(input instanceof Set)) input = new Set(input);
 
-      return marshallSet(input);
+      return marshallSet(input, marshallNumber, () => false, 'NS');
     }
 
     if (schemaType.memberType === 'String') {
-      // If (!(input instanceof Set)) {
-      // const original = input;
-      input = new Set<string>(input);
-      // For (const element of original) {
-      // 	input.add(element);
-      // }
-      // }
+      if (!(input instanceof Set)) input = new Set<string>(input);
 
-      return marshallSet(input);
+      return marshallSet(input, marshallString, (string: string) => string.length === 0, 'SS');
     }
 
     throw new InvalidSchemaError(
@@ -245,12 +237,28 @@ function marshallString(input: { toString(): string }): string {
   return input.toString();
 }
 
-function marshallSet<InputType>(value: Iterable<InputType>): AttributeValue {
-  return convertToAttr(value as Set<any>, {
-    convertEmptyValues: true,
-    removeUndefinedValues: true,
-    // ConvertClassInstanceToMap: true,
-  });
+function marshallSet<InputType, MarshalledElementType>(
+  value: Iterable<InputType>,
+  marshaller: (element: InputType) => MarshalledElementType,
+  isEmpty: (member: MarshalledElementType) => boolean,
+  setTag: 'BS' | 'NS' | 'SS'
+): AttributeValue {
+  const collected: Array<MarshalledElementType> = [];
+  for (const member of value) {
+    const marshalled = marshaller(member);
+    if (isEmpty(marshalled)) {
+      // DynamoDB sets cannot contain empty values
+      continue;
+    }
+
+    collected.push(marshalled);
+  }
+
+  if (collected.length === 0) {
+    return { NULL: true };
+  }
+
+  return { [setTag]: collected } as unknown as AttributeValue;
 }
 
 function isArrayBuffer(arg: any): arg is ArrayBuffer {

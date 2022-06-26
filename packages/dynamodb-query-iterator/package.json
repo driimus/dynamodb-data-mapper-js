@@ -43,7 +43,6 @@
     "@aws-sdk/client-dynamodb": "^3.113.0"
   },
   "dependencies": {
-    "@aws-sdk/util-dynamodb": "^3.113.0",
     "tslib": "^2.4.0"
   }
 }
