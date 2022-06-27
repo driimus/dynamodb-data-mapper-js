@@ -1,10 +1,4 @@
 import {
-  AttributePath,
-  FunctionExpression,
-  MathematicalExpression,
-  UpdateExpression,
-} from '@driimus/dynamodb-expressions';
-import {
   marshallConditionExpression,
   marshallFunctionExpression,
   marshallMathematicalExpression,
@@ -12,6 +6,12 @@ import {
   marshallUpdateExpression,
 } from './marshallExpression';
 import { Schema } from './SchemaType';
+import {
+  AttributePath,
+  FunctionExpression,
+  MathematicalExpression,
+  UpdateExpression,
+} from '@driimus/dynamodb-expressions';
 
 const schema: Schema = {
   foo: {
@@ -47,27 +47,22 @@ describe('marshallConditionExpression', () => {
     ).toEqual({
       expression: '#attr0 = :val1',
       ExpressionAttributeNames: { '#attr0': 'bar' },
-      ExpressionAttributeValues: { ':val1': 'baz' },
+      ExpressionAttributeValues: { ':val1': { S: 'baz' } },
     });
   });
 
   it('should map nested keys to their attributeName equivalents in bounding conditions', () => {
     expect(
       marshallConditionExpression(
-        {
-          type: 'Between',
-          subject: 'fizz',
-          lowerBound: 1,
-          upperBound: 5,
-        },
+        { type: 'Between', subject: 'fizz', lowerBound: 1, upperBound: 5 },
         schema
       )
     ).toEqual({
       expression: '#attr0 BETWEEN :val1 AND :val2',
       ExpressionAttributeNames: { '#attr0': 'buzz' },
       ExpressionAttributeValues: {
-        ':val1': 1,
-        ':val2': 5,
+        ':val1': { N: '1' },
+        ':val2': { N: '5' },
       },
     });
   });
@@ -75,20 +70,16 @@ describe('marshallConditionExpression', () => {
   it('should map nested keys to their attributeName equivalents in membership conditions', () => {
     expect(
       marshallConditionExpression(
-        {
-          type: 'Membership',
-          subject: 'foo',
-          values: ['bar', 'baz', 'quux'],
-        },
+        { type: 'Membership', subject: 'foo', values: ['bar', 'baz', 'quux'] },
         schema
       )
     ).toEqual({
       expression: '#attr0 IN (:val1, :val2, :val3)',
       ExpressionAttributeNames: { '#attr0': 'bar' },
       ExpressionAttributeValues: {
-        ':val1': 'bar',
-        ':val2': 'baz',
-        ':val3': 'quux',
+        ':val1': { S: 'bar' },
+        ':val2': { S: 'baz' },
+        ':val3': { S: 'quux' },
       },
     });
   });
@@ -96,20 +87,13 @@ describe('marshallConditionExpression', () => {
   it('should map nested keys to their attributeName equivalents in negated conditions', () => {
     expect(
       marshallConditionExpression(
-        {
-          type: 'Not',
-          condition: {
-            type: 'Equals',
-            subject: 'foo',
-            object: 'baz',
-          },
-        },
+        { type: 'Not', condition: { type: 'Equals', subject: 'foo', object: 'baz' } },
         schema
       )
     ).toEqual({
       expression: 'NOT (#attr0 = :val1)',
       ExpressionAttributeNames: { '#attr0': 'bar' },
-      ExpressionAttributeValues: { ':val1': 'baz' },
+      ExpressionAttributeValues: { ':val1': { S: 'baz' } },
     });
   });
 
@@ -120,12 +104,7 @@ describe('marshallConditionExpression', () => {
           type: 'And',
           conditions: [
             { type: 'Equals', subject: 'foo', object: 'baz' },
-            {
-              type: 'Between',
-              subject: 'fizz',
-              lowerBound: 1,
-              upperBound: 5,
-            },
+            { type: 'Between', subject: 'fizz', lowerBound: 1, upperBound: 5 },
           ],
         },
         schema
@@ -137,9 +116,9 @@ describe('marshallConditionExpression', () => {
         '#attr2': 'buzz',
       },
       ExpressionAttributeValues: {
-        ':val1': 'baz',
-        ':val3': 1,
-        ':val4': 5,
+        ':val1': { S: 'baz' },
+        ':val3': { N: '1' },
+        ':val4': { N: '5' },
       },
     });
   });
@@ -162,11 +141,7 @@ describe('marshallConditionExpression', () => {
 
     expect(
       marshallConditionExpression(
-        {
-          type: 'Function',
-          name: 'attribute_exists',
-          subject: 'nested.nested.scalar',
-        },
+        { type: 'Function', name: 'attribute_exists', subject: 'nested.nested.scalar' },
         schema
       )
     ).toEqual({
@@ -197,7 +172,7 @@ describe('marshallConditionExpression', () => {
         '#attr2': 'nested_scalar',
       },
       ExpressionAttributeValues: {
-        ':val3': 'substr',
+        ':val3': { S: 'substr' },
       },
     });
   });
@@ -235,7 +210,7 @@ describe('marshallFunctionExpression', () => {
         '#attr2': 'nested_scalar',
       },
       ExpressionAttributeValues: {
-        ':val3': 'foo',
+        ':val3': { S: 'foo' },
       },
     });
   });
@@ -251,7 +226,7 @@ describe('marshallMathematicalExpression', () => {
         '#attr0': 'buzz',
       },
       ExpressionAttributeValues: {
-        ':val1': 2,
+        ':val1': { N: '2' },
       },
     });
   });
@@ -291,8 +266,8 @@ describe('marshallUpdateExpression', () => {
         '#attr6': 'bar',
       },
       ExpressionAttributeValues: {
-        ':val5': 'boo',
-        ':val1': 1,
+        ':val5': { S: 'boo' },
+        ':val1': { N: '1' },
       },
     });
   });

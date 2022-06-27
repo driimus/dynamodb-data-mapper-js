@@ -25,6 +25,7 @@ import {
   waitUntilTableExists,
   waitUntilTableNotExists,
 } from '@aws-sdk/client-dynamodb';
+import { Marshaller } from '@driimus/dynamodb-auto-marshaller';
 import type { PerTableOptions, TableOptions, WriteRequest } from '@driimus/dynamodb-batch-iterator';
 import { BatchGet, BatchWrite } from '@driimus/dynamodb-batch-iterator';
 import type {
@@ -113,6 +114,7 @@ export class DataMapper {
   private readonly readConsistency: ReadConsistency;
   private readonly skipVersionCheck: boolean;
   private readonly tableNamePrefix: string;
+  private readonly marshaller = new Marshaller();
 
   constructor({
     client,
@@ -465,7 +467,13 @@ export class DataMapper {
       }
 
       if (Object.keys(attributes.values).length > 0) {
-        request.ExpressionAttributeValues = attributes.values;
+        request.ExpressionAttributeValues = {};
+        for (const key of Object.keys(attributes.values)) {
+          const val = attributes.values[key];
+          request.ExpressionAttributeValues[key] = AttributeValue.isAttributeValue(val)
+            ? val.marshalled
+            : (this.marshaller.marshallValue(val) as _AttributeValue);
+        }
       }
     }
 
@@ -717,7 +725,13 @@ export class DataMapper {
       }
 
       if (Object.keys(attributes.values).length > 0) {
-        request.ExpressionAttributeValues = attributes.values;
+        request.ExpressionAttributeValues = {};
+        for (const key of Object.keys(attributes.values)) {
+          const val = attributes.values[key];
+          request.ExpressionAttributeValues[key] = AttributeValue.isAttributeValue(val)
+            ? val.marshalled
+            : (this.marshaller.marshallValue(val) as _AttributeValue);
+        }
       }
     }
 
@@ -954,7 +968,13 @@ export class DataMapper {
     }
 
     if (Object.keys(attributes.values).length > 0) {
-      request.ExpressionAttributeValues = attributes.values;
+      request.ExpressionAttributeValues = {};
+      for (const key of Object.keys(attributes.values)) {
+        const val = attributes.values[key];
+        request.ExpressionAttributeValues[key] = AttributeValue.isAttributeValue(val)
+          ? val.marshalled
+          : (this.marshaller.marshallValue(val) as _AttributeValue);
+      }
     }
 
     const rawResponse = await this.client.send(new UpdateItemCommand(request));

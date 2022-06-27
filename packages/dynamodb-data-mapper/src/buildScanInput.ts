@@ -1,14 +1,17 @@
-import type { ScanInput } from '@aws-sdk/client-dynamodb';
+import type { AttributeValue as _AttributeValue, ScanInput } from '@aws-sdk/client-dynamodb';
+import { Marshaller } from '@driimus/dynamodb-auto-marshaller';
 import type { ZeroArgumentsConstructor } from '@driimus/dynamodb-data-marshaller';
 import {
   marshallConditionExpression,
   marshallProjectionExpression,
 } from '@driimus/dynamodb-data-marshaller';
-import { ExpressionAttributes } from '@driimus/dynamodb-expressions';
+import { AttributeValue, ExpressionAttributes } from '@driimus/dynamodb-expressions';
 
 import { marshallStartKey } from './marshallStartKey';
 import type { SequentialScanOptions } from './namedParameters';
 import { getSchema, getTableName } from './protocols';
+
+const marshaller = new Marshaller();
 
 /**
  * @internal
@@ -62,7 +65,13 @@ export function buildScanInput<T>(
   }
 
   if (Object.keys(attributes.values).length > 0) {
-    request.ExpressionAttributeValues = attributes.values;
+    request.ExpressionAttributeValues = {};
+    for (const key of Object.keys(attributes.values)) {
+      const val = attributes.values[key];
+      request.ExpressionAttributeValues[key] = AttributeValue.isAttributeValue(val)
+        ? val.marshalled
+        : (marshaller.marshallValue(val) as _AttributeValue);
+    }
   }
 
   if (startKey) {

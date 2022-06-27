@@ -1,3 +1,4 @@
+import { Marshaller } from '@driimus/dynamodb-auto-marshaller';
 import type {
   ConditionExpression,
   ExpressionAttributeNameMap,
@@ -16,6 +17,8 @@ import {
 
 import type { Schema } from './SchemaType';
 import { toSchemaName } from './toSchemaName';
+
+const marshaller = new Marshaller();
 
 /**
  * A DynamoDB expression serialized to a string and accompanied by the name and
@@ -62,7 +65,7 @@ export function marshallConditionExpression(
   return {
     expression: serialized,
     ExpressionAttributeNames: attributes.names,
-    ExpressionAttributeValues: attributes.values,
+    ExpressionAttributeValues: marshaller.marshallItem(attributes.values),
   };
 }
 
@@ -85,7 +88,7 @@ export function marshallFunctionExpression(
   return {
     expression: serialized,
     ExpressionAttributeNames: attributes.names,
-    ExpressionAttributeValues: attributes.values,
+    ExpressionAttributeValues: marshaller.marshallItem(attributes.values),
   };
 }
 
@@ -108,7 +111,7 @@ export function marshallMathematicalExpression(
   return {
     expression: serialized,
     ExpressionAttributeNames: attributes.names,
-    ExpressionAttributeValues: attributes.values,
+    ExpressionAttributeValues: marshaller.marshallItem(attributes.values),
   };
 }
 
@@ -134,7 +137,7 @@ export function marshallProjectionExpression(
   return {
     expression: serialized,
     ExpressionAttributeNames: attributes.names,
-    ExpressionAttributeValues: attributes.values,
+    ExpressionAttributeValues: marshaller.marshallItem(attributes.values),
   };
 }
 
@@ -157,7 +160,7 @@ export function marshallUpdateExpression(
   return {
     expression: serialized,
     ExpressionAttributeNames: attributes.names,
-    ExpressionAttributeValues: attributes.values,
+    ExpressionAttributeValues: marshaller.marshallItem(attributes.values),
   };
 }
 
