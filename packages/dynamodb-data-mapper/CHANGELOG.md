@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.10.0
+
+### Patch Changes
+
+- Updated dependencies [[`a0febe2`](https://github.com/driimus/dynamodb-data-mapper-js/commit/a0febe2d5fd93d3629c509307e5007b72b8e0b2c)]:
+  - @driimus/dynamodb-data-marshaller@0.10.0
+  - @driimus/dynamodb-auto-marshaller@0.10.0
+  - @driimus/dynamodb-batch-iterator@0.10.0
+  - @driimus/dynamodb-expressions@0.10.0
+  - @driimus/dynamodb-query-iterator@0.10.0
+
 ## 0.9.1
 
 ### Patch Changes
