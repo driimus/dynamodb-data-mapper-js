@@ -43,7 +43,6 @@
     "@aws-sdk/client-dynamodb": "^3.113.0"
   },
   "dependencies": {
-    "@driimus/dynamodb-auto-marshaller": "workspace:*",
     "tslib": "^2.4.0"
   }
 }
