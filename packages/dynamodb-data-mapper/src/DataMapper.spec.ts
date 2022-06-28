@@ -1500,7 +1500,7 @@ describe('DataMapper', () => {
       expect(mockDynamoDbClient.commandCalls(DeleteItemCommand)[0].args[0].input).toMatchObject({
         ConditionExpression: '#attr0 = :val1',
         ExpressionAttributeNames: { '#attr0': 'pop' },
-        ExpressionAttributeValues: { ':val1': 21 },
+        ExpressionAttributeValues: { ':val1': { N: '21' } },
       });
     });
 
@@ -1614,8 +1614,8 @@ describe('DataMapper', () => {
           '#attr2': 'pop',
         },
         ExpressionAttributeValues: {
-          ':val1': 600_000,
-          ':val3': 21,
+          ':val1': { N: '600000' },
+          ':val3': { N: '21' },
         },
       });
     });
@@ -2863,7 +2863,7 @@ describe('DataMapper', () => {
         },
         ConditionExpression: '#attr0 = :val1',
         ExpressionAttributeNames: { '#attr0': 'pop' },
-        ExpressionAttributeValues: { ':val1': 21 },
+        ExpressionAttributeValues: { ':val1': { N: '21' } },
       });
     });
 
@@ -2983,8 +2983,8 @@ describe('DataMapper', () => {
           '#attr2': 'pop',
         },
         ExpressionAttributeValues: {
-          ':val1': 600_000,
-          ':val3': 21,
+          ':val1': { N: '600000' },
+          ':val3': { N: '21' },
         },
       });
     });
@@ -3268,8 +3268,8 @@ describe('DataMapper', () => {
           '#attr2': 'fizz',
         },
         ExpressionAttributeValues: {
-          ':val1': 'crackle',
-          ':val3': 'buz',
+          ':val1': { S: 'crackle' },
+          ':val3': { S: 'buz' },
         },
       });
     });
@@ -3289,9 +3289,9 @@ describe('DataMapper', () => {
           '#attr2': 'pop',
         },
         ExpressionAttributeValues: {
-          ':val1': 'crackle',
-          ':val3': 10,
-          ':val4': 20,
+          ':val1': { S: 'crackle' },
+          ':val3': { N: '10' },
+          ':val4': { N: '20' },
         },
       });
     });
@@ -3317,9 +3317,9 @@ describe('DataMapper', () => {
           '#attr2': 'fizzes',
         },
         ExpressionAttributeValues: {
-          ':val1': 'crackle',
-          ':val3': 'buzz',
-          ':val4': 'pop',
+          ':val1': { S: 'crackle' },
+          ':val3': { S: 'buzz' },
+          ':val4': { S: 'pop' },
         },
       });
     });
@@ -3340,7 +3340,7 @@ describe('DataMapper', () => {
           '#attr2': 'fizzes',
         },
         ExpressionAttributeValues: {
-          ':val1': 'crackle',
+          ':val1': { S: 'crackle' },
         },
       });
     });
@@ -3470,7 +3470,7 @@ describe('DataMapper', () => {
             KeyConditionExpression: '#attr0 = :val1',
             ExpressionAttributeNames: { '#attr0': 'snap' },
             ExpressionAttributeValues: {
-              ':val1': 'crackle',
+              ':val1': { S: 'crackle' },
             },
           },
         ],
@@ -3481,7 +3481,7 @@ describe('DataMapper', () => {
             KeyConditionExpression: '#attr0 = :val1',
             ExpressionAttributeNames: { '#attr0': 'snap' },
             ExpressionAttributeValues: {
-              ':val1': 'crackle',
+              ':val1': { S: 'crackle' },
             },
             ExclusiveStartKey: {
               snap: { S: 'pop' },
@@ -3495,7 +3495,7 @@ describe('DataMapper', () => {
             KeyConditionExpression: '#attr0 = :val1',
             ExpressionAttributeNames: { '#attr0': 'snap' },
             ExpressionAttributeValues: {
-              ':val1': 'crackle',
+              ':val1': { S: 'crackle' },
             },
             ExclusiveStartKey: {
               snap: { S: 'fizz' },
@@ -3753,7 +3753,7 @@ describe('DataMapper', () => {
           '#attr0': 'fizzes',
         },
         ExpressionAttributeValues: {
-          ':val1': 'buzz',
+          ':val1': { S: 'buzz' },
         },
       });
     });
@@ -4080,14 +4080,12 @@ describe('DataMapper', () => {
           },
           ExpressionAttributeValues: {
             ':val1': {
-              marshalled: {
-                L: [
-                  { N: '1' },
-                  {
-                    B: Uint8Array.from([0xde, 0xad, 0xbe, 0xef]),
-                  },
-                ],
-              },
+              L: [
+                { N: '1' },
+                {
+                  B: Uint8Array.from([0xde, 0xad, 0xbe, 0xef]),
+                },
+              ],
             },
           },
           UpdateExpression: 'SET #attr0 = :val1 REMOVE #attr2',
@@ -4110,14 +4108,12 @@ describe('DataMapper', () => {
           },
           ExpressionAttributeValues: {
             ':val1': {
-              marshalled: {
-                L: [
-                  { N: '1' },
-                  {
-                    B: Uint8Array.from([0xde, 0xad, 0xbe, 0xef]),
-                  },
-                ],
-              },
+              L: [
+                { N: '1' },
+                {
+                  B: Uint8Array.from([0xde, 0xad, 0xbe, 0xef]),
+                },
+              ],
             },
           },
           UpdateExpression: 'SET #attr0 = :val1',
@@ -4242,16 +4238,14 @@ describe('DataMapper', () => {
               },
               ExpressionAttributeValues: {
                 ':val2': {
-                  marshalled: {
-                    L: [
-                      { N: '1' },
-                      {
-                        B: Uint8Array.from([0xde, 0xad, 0xbe, 0xef]),
-                      },
-                    ],
-                  },
+                  L: [
+                    { N: '1' },
+                    {
+                      B: Uint8Array.from([0xde, 0xad, 0xbe, 0xef]),
+                    },
+                  ],
                 },
-                ':val3': 0,
+                ':val3': { N: '0' },
               },
               UpdateExpression: 'SET #attr1 = :val2, #attr0 = :val3',
             }
@@ -4278,18 +4272,16 @@ describe('DataMapper', () => {
                 '#attr2': 'buzz',
               },
               ExpressionAttributeValues: {
-                ':val1': 10,
+                ':val1': { N: '10' },
                 ':val3': {
-                  marshalled: {
-                    L: [
-                      { N: '1' },
-                      {
-                        B: Uint8Array.from([0xde, 0xad, 0xbe, 0xef]),
-                      },
-                    ],
-                  },
+                  L: [
+                    { N: '1' },
+                    {
+                      B: Uint8Array.from([0xde, 0xad, 0xbe, 0xef]),
+                    },
+                  ],
                 },
-                ':val4': 1,
+                ':val4': { N: '1' },
               },
               UpdateExpression: 'SET #attr2 = :val3, #attr0 = #attr0 + :val4',
             }
@@ -4349,18 +4341,15 @@ describe('DataMapper', () => {
                 '#attr2': 'baz',
               },
               ExpressionAttributeValues: {
-                ':val1': 600_000,
-                ':val3': 10,
+                ':val1': { N: '600000' },
+                ':val3': { N: '10' },
                 ':val4': {
-                  // Need to get rid of this
-                  marshalled: {
-                    L: [
-                      { N: '1' },
-                      {
-                        B: Uint8Array.from([0xde, 0xad, 0xbe, 0xef]),
-                      },
-                    ],
-                  },
+                  L: [
+                    { N: '1' },
+                    {
+                      B: Uint8Array.from([0xde, 0xad, 0xbe, 0xef]),
+                    },
+                  ],
                 },
               },
             }
@@ -4400,9 +4389,7 @@ describe('DataMapper', () => {
             '#attr0': 'buzz',
           },
           ExpressionAttributeValues: {
-            // TODO: is this shit intended?
-            ':val1': Uint8Array.from([0xde, 0xad, 0xbe, 0xef]),
-            // ":val1": { B: Uint8Array.from([0xde, 0xad, 0xbe, 0xef]) },
+            ':val1': { B: Uint8Array.from([0xde, 0xad, 0xbe, 0xef]) },
           },
           UpdateExpression: 'SET #attr0[1] = :val1',
         });

@@ -17,7 +17,6 @@ export type ExpressionAttributeValueMap = Record<string, AttributeValueModel>;
 export class ExpressionAttributes {
   readonly names: ExpressionAttributeNameMap = {};
   readonly values: ExpressionAttributeValueMap = {};
-  // Readonly marshaller = new Marshaller();
 
   private readonly nameMap: Record<string, string> = {};
   private _ctr = 0;
@@ -51,10 +50,6 @@ export class ExpressionAttributes {
    * @returns The substitution value to use in the expression.
    */
   addValue(value: any): string {
-    // Const modeledAttrValue = AttributeValue.isAttributeValue(value)
-    //         ? value.marshalled as AttributeValueModel
-    //         : this.marshaller.marshallValue(value) as AttributeValueModel;
-
     const substitution = `:val${this._ctr++}`;
     this.values[substitution] = value as AttributeValueModel;
 
