@@ -1,5 +1,16 @@
 # @driimus/dynamodb-data-mapper-annotations
 
+## 0.10.1
+
+### Patch Changes
+
+- [`468b34f`](https://github.com/driimus/dynamodb-data-mapper-js/commit/468b34f4a61f3ce634cbaa99ec2c5beda708c779) Thanks [@driimus](https://github.com/driimus)! - chore: bump minimum aws sdk version
+
+- Updated dependencies [[`468b34f`](https://github.com/driimus/dynamodb-data-mapper-js/commit/468b34f4a61f3ce634cbaa99ec2c5beda708c779)]:
+  - @driimus/dynamodb-auto-marshaller@0.10.1
+  - @driimus/dynamodb-data-mapper@0.10.1
+  - @driimus/dynamodb-data-marshaller@0.10.1
+
 ## 0.10.0
 
 ### Patch Changes

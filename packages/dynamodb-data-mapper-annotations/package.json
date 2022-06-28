@@ -1,6 +1,6 @@
 {
   "name": "@driimus/dynamodb-data-mapper-annotations",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Annotations providing easy integration between TypeScript domain objects and the @driimus/dynamodb-data-mapper library",
   "keywords": [
     "aws",
