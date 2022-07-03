@@ -182,45 +182,42 @@ for await (const found of mapper.batchDelete(toRemove)) {
 
 ##### Aplication example
 
-```js
-import {
-    AttributePath,
-    FunctionExpression,
-    UpdateExpression,
-} from '@driimus/dynamodb-expressions';
+```ts
+import { AttributePath, FunctionExpression, UpdateExpression } from '@driimus/dynamodb-expressions';
 
 const expr = new UpdateExpression();
 
-// given the anotation bellow
 @table('tableName')
 class MyRecord {
-    @hashKey()
-    email?: string;
+  @hashKey()
+  email?: string;
 
-    @attribute()
-    passwordHash?: string;
+  @attribute()
+  passwordHash?: string;
 
-    @attribute()
-    passwordSalt?: string;
+  @attribute()
+  passwordSalt?: string;
 
-    @attribute()
-    verified?: boolean;
+  @attribute()
+  verified?: boolean;
 
-    @attribute()
-    verifyToken?: string;
+  @attribute()
+  verifyToken?: string;
 }
 
-// you make a mapper operation as follows
 const aRecord = Object.assign(new MyRecord(), {
-    email,
-    passwordHash: password,
-    passwordSalt: salt,
-    verified: false,
-    verifyToken: token,
+  email,
+  passwordHash: password,
+  passwordSalt: salt,
+  verified: false,
+  verifyToken: token,
 });
-mapper.put(aRecord, {
-    condition: new FunctionExpression('attribute_not_exists', new AttributePath('email')
-}).then( /* result handler */ );
+
+mapper
+  .put(aRecord, {
+    condition: new FunctionExpression('attribute_not_exists', new AttributePath('email')),
+  })
+  .then(/* result handler */);
 ```
 
 #### Table lifecycle operations
@@ -265,7 +262,6 @@ await mapper.ensureTableNotExists(MyDomainObject);
 
 ## Constituent packages
 
-The DataMapper is developed as a monorepo using [`lerna`](https://github.com/lerna/lerna).
 More detailed documentation about the mapper's constituent packages is available
 by viewing those packages directly.
 
