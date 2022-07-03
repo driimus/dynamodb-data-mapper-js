@@ -11,16 +11,16 @@ env:
   PNPM_CACHE_FOLDER: .pnpm-store
 
 jobs:
-  version:
+  packages:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - name: checkout code repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Install pnpm
+      - name: install pnpm
         uses: pnpm/action-setup@v2.0.1
         with:
           version: 7.4.0
@@ -44,3 +44,29 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  website:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: install pnpm
+        uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 7.4.0
+
+      - name: setup node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'pnpm'
+
+      - name: install dependencies
+        run: pnpm install
+
+      - name: deploy website
+        run: pnpm run -r deploy
