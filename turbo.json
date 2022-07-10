@@ -4,7 +4,7 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["build/**"]
+      "outputs": ["build/**", ".docusarus/**"]
     },
     "test": {
       "dependsOn": ["^build"],
