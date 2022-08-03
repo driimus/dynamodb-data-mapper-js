@@ -2,46 +2,77 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Installation
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Configure Data Mapper for your project **in less than 5 minutes**.
+
+## What you'll need
+
+- [Node.js](https://nodejs.org/en/download/) version 14 or above:
+  - When installing Node.js, you are recommended to tick all checkboxes related to dependencies.
 
 ## Getting Started
 
-Get started by **creating a new site**.
+[The `@driimus/dynamodb-data-mapper` package](packages/dynamodb-data-mapper) provides
+a simple way to persist and load an application's domain objects to and from
+Amazon DynamoDB. The documentation covers all of the data mapper's constituent packages:
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
-
-### What you'll need
-
-- [Node.js](https://nodejs.org/en/download/) version 14 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
-
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
+```sh
+pnpm i @driimus/dynamodb-data-mapper
 ```
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+You can use it in conjunction with [`@driimus/dynamodb-data-mapper-annotations`](packages/dynamodb-data-mapper-annotations) to describe the relationship between a class and its representation in
+DynamoDB by adding a few decorators.
 
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
+```sh
+pnpm i @driimus/dynamodb-data-mapper-annotations
 ```
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+### Building expressions without the Data Mapper
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+[The `@driimus/dynamodb-expressions` package](packages/dynamodb-data-mapper) has been updated to support expression building without marshalling attribute values. It comes with no extraneous dependencies, so feel free to plug whichever marshaller you feel like.
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+If you're looking for a minimal setup, you can use it with `@aws-sdk/lib-dynamodb`, which handles data marshalling under the hood:
+
+```ts
+import {
+  ExpressionAttributes,
+  serializeConditionExpression,
+  equals,
+  beginsWith,
+} from '@driimus/dynamodb-expressions';
+
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
+
+const documentClient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+
+type QueryParams = {
+  PK: string;
+  SKPrefix: string;
+};
+
+async function query({ PK, SKPrefix }: QueryParams) {
+  const attributes = new ExpressionAttributes();
+
+  const KeyConditionExpression = serializeConditionExpression(
+    {
+      type: 'And',
+      conditions: [
+        { subject: 'PK', ...equals(PK) },
+        { subject: 'SK', ...beginsWith(SKPrefix) },
+      ],
+    },
+    attributes
+  );
+
+  return documentClient.send(
+    new QueryCommand({
+      TableName: 'my_table',
+      KeyConditionExpression,
+      ExpressionAttributeNames: attributes.names,
+      ExpressionAttributeValues: attributes.values,
+    })
+  );
+}
+```
