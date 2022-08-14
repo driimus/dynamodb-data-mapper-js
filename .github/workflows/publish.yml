@@ -1,8 +1,8 @@
 name: Changesets
 on:
   push:
-    branches:
-      - feat/v3
+    # branches:
+    #   - feat/v3
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -11,40 +11,6 @@ env:
   PNPM_CACHE_FOLDER: .pnpm-store
 
 jobs:
-  packages:
-    timeout-minutes: 15
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout code repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: install pnpm
-        uses: pnpm/action-setup@v2.0.1
-        with:
-          version: 7.4.0
-
-      - name: setup node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: 'pnpm'
-
-      - name: install dependencies
-        run: pnpm install
-
-      - name: create and publish versions
-        uses: changesets/action@v1
-        with:
-          version: pnpm ci:version
-          commit: 'chore: update versions'
-          title: 'chore: update versions'
-          publish: pnpm ci:publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
   website:
     timeout-minutes: 15
     runs-on: ubuntu-latest
@@ -69,4 +35,10 @@ jobs:
         run: pnpm install
 
       - name: deploy website
-        run: pnpm run -r deploy
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "gh-actions"
+          pnpm run -r deploy
+        env:
+          GIT_USER: ${{ github.actor }}
+          GIT_PASS: ${{ secrets.GITHUB_TOKEN }}
