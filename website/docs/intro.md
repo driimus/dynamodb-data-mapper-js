@@ -13,7 +13,7 @@ Configure Data Mapper for your project **in less than 5 minutes**.
 
 ## Getting Started
 
-[The `@driimus/dynamodb-data-mapper` package](packages/dynamodb-data-mapper) provides
+The `@driimus/dynamodb-data-mapper` package provides
 a simple way to persist and load an application's domain objects to and from
 Amazon DynamoDB. The documentation covers all of the data mapper's constituent packages:
 
@@ -21,7 +21,7 @@ Amazon DynamoDB. The documentation covers all of the data mapper's constituent p
 pnpm i @driimus/dynamodb-data-mapper
 ```
 
-You can use it in conjunction with [`@driimus/dynamodb-data-mapper-annotations`](packages/dynamodb-data-mapper-annotations) to describe the relationship between a class and its representation in
+You can use it in conjunction with `@driimus/dynamodb-data-mapper-annotations` to describe the relationship between a class and its representation in
 DynamoDB by adding a few decorators.
 
 ```sh
@@ -30,7 +30,7 @@ pnpm i @driimus/dynamodb-data-mapper-annotations
 
 ### Building expressions without the Data Mapper
 
-[The `@driimus/dynamodb-expressions` package](packages/dynamodb-data-mapper) has been updated to support expression building without marshalling attribute values. It comes with no extraneous dependencies, so feel free to plug whichever marshaller you feel like.
+The `@driimus/dynamodb-expressions` package has been updated to support expression building without marshalling attribute values. It comes with no extraneous dependencies, so feel free to plug whichever marshaller you feel like.
 
 If you're looking for a minimal setup, you can use it with `@aws-sdk/lib-dynamodb`, which handles data marshalling under the hood:
 
