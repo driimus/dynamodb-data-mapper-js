@@ -69,4 +69,10 @@ jobs:
         run: pnpm install
 
       - name: deploy website
-        run: pnpm run -r deploy
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "gh-actions"
+          pnpm run -r deploy
+        env:
+          GIT_USER: ${{ github.actor }}
+          GIT_PASS: ${{ secrets.GITHUB_TOKEN }}
