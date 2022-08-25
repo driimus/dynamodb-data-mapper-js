@@ -8,8 +8,9 @@ export type ComparisonOperand =
   | AttributeValue
   | FunctionExpression
   | string
-  | number;
-// | any;
+  | number
+  | boolean
+  | null;
 
 export interface BinaryComparisonPredicate {
   /**
