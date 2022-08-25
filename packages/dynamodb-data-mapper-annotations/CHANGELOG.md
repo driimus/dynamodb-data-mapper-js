@@ -1,5 +1,14 @@
 # @driimus/dynamodb-data-mapper-annotations
 
+## 0.11.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @driimus/dynamodb-data-mapper@0.11.0
+  - @driimus/dynamodb-data-marshaller@0.11.0
+  - @driimus/dynamodb-auto-marshaller@0.11.0
+
 ## 0.10.1
 
 ### Patch Changes

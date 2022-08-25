@@ -1,5 +1,11 @@
 # @driimus/dynamodb-expressions
 
+## 0.11.0
+
+### Minor Changes
+
+- [#33](https://github.com/driimus/dynamodb-data-mapper-js/pull/33) [`ff7b292`](https://github.com/driimus/dynamodb-data-mapper-js/commit/ff7b2924f64a527f335ea8199d1d0f1e031928b1) Thanks [@driimus](https://github.com/driimus)! - fix(dynamodb-expressions): extend supported operand types
+
 ## 0.10.1
 
 ### Patch Changes
