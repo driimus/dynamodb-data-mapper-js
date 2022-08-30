@@ -13,7 +13,7 @@ importers:
       '@types/node': ^14.18.21
       '@typescript-eslint/eslint-plugin': ^5.28.0
       '@typescript-eslint/parser': ^5.28.0
-      aws-sdk-client-mock: ^1.0.0
+      aws-sdk-client-mock: ^2.0.0
       eslint: ^8.18.0
       eslint-config-prettier: ^8.5.0
       eslint-plugin-import: ^2.26.0
@@ -38,7 +38,7 @@ importers:
       '@types/node': 14.18.21
       '@typescript-eslint/eslint-plugin': 5.28.0_py5roj3ykd3sga4gtxlmfvv4pa
       '@typescript-eslint/parser': 5.28.0_b5e7v2qnwxfo6hmiq56u52mz3e
-      aws-sdk-client-mock: 1.0.0
+      aws-sdk-client-mock: 2.0.0
       eslint: 8.18.0
       eslint-config-prettier: 8.5.0_eslint@8.18.0
       eslint-plugin-import: 2.26.0_6lykrgsjl6r2vncmjcievjkgyy
@@ -4868,8 +4868,8 @@ packages:
       postcss-value-parser: 4.2.0
     dev: false
 
-  /aws-sdk-client-mock/1.0.0:
-    resolution: {integrity: sha512-qd7TJXI1nplTXNh8NdIEwFyHTnNRdUcGDUAEmWW55j9dZg6AGB9zgkzgu9yWCEkAWnpxRIc48ajE8H5FFeioVw==}
+  /aws-sdk-client-mock/2.0.0:
+    resolution: {integrity: sha512-yjC39Ud78Cgwu9jLc7LoFILT8xtyvR9doCfd8tjeqaOI4oQ5IeTaIYDezWpWKndmrjXZzVLw/odWKP1hpuvsVQ==}
     dependencies:
       '@types/sinon': 10.0.10
       sinon: 11.1.2
