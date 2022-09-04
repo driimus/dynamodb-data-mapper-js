@@ -1,7 +1,8 @@
+import { Buffer } from 'node:buffer';
+
 import type { AttributeValue } from '@aws-sdk/client-dynamodb';
 import type { BinaryValue } from '@driimus/dynamodb-auto-marshaller';
 import { BinarySet, Marshaller } from '@driimus/dynamodb-auto-marshaller';
-import { Buffer } from 'node:buffer';
 
 import { InvalidSchemaError } from './InvalidSchemaError';
 import { InvalidValueError } from './InvalidValueError';

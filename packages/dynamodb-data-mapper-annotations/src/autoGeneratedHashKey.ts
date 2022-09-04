@@ -1,5 +1,6 @@
-import type { StringType } from '@driimus/dynamodb-data-marshaller';
 import { randomUUID } from 'node:crypto';
+
+import type { StringType } from '@driimus/dynamodb-data-marshaller';
 
 import type { PropertyAnnotation } from './annotationShapes';
 import { hashKey } from './hashKey';

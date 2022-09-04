@@ -1,5 +1,6 @@
-import type { AttributeValue } from '@aws-sdk/client-dynamodb';
 import { Buffer } from 'node:buffer';
+
+import type { AttributeValue } from '@aws-sdk/client-dynamodb';
 
 import type { AttributeMap, WriteRequest } from './types';
 
