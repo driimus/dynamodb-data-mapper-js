@@ -458,7 +458,7 @@ function serializeBinaryComparison(
   attributes: ExpressionAttributes,
   comparator: string
 ): string {
-  return `${attributes.addName(cond.subject)} ${comparator} ${serializeOperand(
+  return `${serializeOperand(cond.subject, attributes)} ${comparator} ${serializeOperand(
     cond.object,
     attributes
   )}`;
