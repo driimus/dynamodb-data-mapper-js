@@ -1,7 +1,8 @@
+/** @type {import("eslint").Linter.Config} */
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'jest', 'simple-import-sort', 'import', 'unicorn'],
+  plugins: ['@typescript-eslint', 'jest', 'simple-import-sort', 'import', 'unicorn', 'turbo'],
   env: {
     node: true,
     es6: true,
@@ -13,6 +14,9 @@ module.exports = {
     project: ['./tsconfig.json', './packages/*/tsconfig.json'],
   },
   ignorePatterns: ['*.spec.ts', '*.integ.ts', '*.fixture.ts', '*.d.ts'],
+  rules: {
+    'turbo/no-undeclared-env-vars': 'error',
+  },
   overrides: [
     {
       files: ['*.ts'],
