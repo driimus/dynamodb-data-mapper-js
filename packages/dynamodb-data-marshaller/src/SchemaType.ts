@@ -322,7 +322,7 @@ export type SchemaType =
   | CustomType<unknown>
   | CollectionType
   | DateType
-  | DocumentType<unknown>
+  | DocumentType<Record<string, unknown>>
   | HashType
   | ListType
   | MapType

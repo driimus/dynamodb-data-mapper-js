@@ -2,8 +2,10 @@ import type { ConsumedCapacity } from '@aws-sdk/client-dynamodb';
 
 import type { Paginator as AbstractPaginator } from './Paginator';
 
-export abstract class Iterator<T, Paginator extends AbstractPaginator<T>>
-  implements AsyncIterableIterator<T>
+export abstract class Iterator<
+  T extends Record<string, unknown>,
+  Paginator extends AbstractPaginator<T>
+> implements AsyncIterableIterator<T>
 {
   protected lastYielded?: T;
 

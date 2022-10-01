@@ -10,7 +10,7 @@ import { Paginator } from './Paginator';
  * Iterates over each page of items returned by a DynamoDB scan until no more
  * pages are available.
  */
-export class ScanPaginator<T> extends Paginator<T> {
+export class ScanPaginator<T extends Record<string, unknown>> extends Paginator<T> {
   constructor(
     client: DynamoDBClient,
     itemConstructor: ZeroArgumentsConstructor<T>,

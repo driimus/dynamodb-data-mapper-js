@@ -29,12 +29,12 @@ export type NumberSetAttributeValue = NumberAttributeValue[];
  * @param valueConstructor  A zero-argument constructor used to create the
  *                          object onto which the input should be unmarshalled
  */
-export function unmarshallItem<T = Record<string, unknown>>(
+export function unmarshallItem<T extends Record<string, unknown> = Record<string, unknown>>(
   schema: Schema,
   input: AttributeMap,
   ValueConstructor?: ZeroArgumentsConstructor<T>
 ): T {
-  const unmarshalled: Record<string, unknown> = ValueConstructor ? new ValueConstructor() : {};
+  const unmarshalled = ValueConstructor ? new ValueConstructor() : ({} as Record<string, unknown>);
 
   for (const key of Object.keys(schema)) {
     const { attributeName = key } = schema[key];
