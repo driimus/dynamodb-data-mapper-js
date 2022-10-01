@@ -1,5 +1,15 @@
 # @driimus/dynamodb-data-marshaller
 
+## 0.11.1
+
+### Patch Changes
+
+- [#45](https://github.com/driimus/dynamodb-data-mapper-js/pull/45) [`81114f1`](https://github.com/driimus/dynamodb-data-mapper-js/commit/81114f1ae298284696f5c80a73c14cdac047c96e) Thanks [@renovate](https://github.com/apps/renovate)! - fix(data-marshaller): constrain unmarshallItem to objects
+
+- Updated dependencies []:
+  - @driimus/dynamodb-auto-marshaller@0.11.1
+  - @driimus/dynamodb-expressions@0.11.1
+
 ## 0.11.0
 
 ### Patch Changes
