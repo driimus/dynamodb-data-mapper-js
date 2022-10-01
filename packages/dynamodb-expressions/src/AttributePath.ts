@@ -100,10 +100,11 @@ const parseIdentifier = (
   iter: IterableIterator<string>
 ) => {
   switch (curr.value) {
-    case LEFT_BRACKET:
+    case LEFT_BRACKET: {
       state = ParseState.listIndex;
+    }
     // Fallthrough
-    case PATH_DELIMITER:
+    case PATH_DELIMITER: {
       if (collected === '') {
         throw new Error(`Invalid control character encountered in path: ${path}`);
       }
@@ -111,7 +112,8 @@ const parseIdentifier = (
       elements.push({ type: 'AttributeName', name: collected });
       collected = '';
       break;
-    case ESCAPE_CHARACTER:
+    }
+    case ESCAPE_CHARACTER: {
       if (
         peek.value === PATH_DELIMITER ||
         peek.value === LEFT_BRACKET ||
@@ -120,10 +122,12 @@ const parseIdentifier = (
         curr = peek;
         peek = iter.next();
       }
+    }
 
     // Fallthrough
-    default:
+    default: {
       collected += curr.value as string;
+    }
   }
 
   return { curr, state, collected, peek };
@@ -158,11 +162,13 @@ const parseListIndex = (
     case '6':
     case '7':
     case '8':
-    case '9':
+    case '9': {
       collected += curr.value;
       break;
-    default:
+    }
+    default: {
       throw new Error(`Invalid array index character (${curr.value}) encountered in path: ${path}`);
+    }
   }
 
   return { collected, state };
@@ -174,14 +180,17 @@ const parseControlCharacter = (
   path: string
 ) => {
   switch (curr.value) {
-    case LEFT_BRACKET:
+    case LEFT_BRACKET: {
       state = ParseState.listIndex;
       break;
-    case PATH_DELIMITER:
+    }
+    case PATH_DELIMITER: {
       state = ParseState.identifier;
       break;
-    default:
+    }
+    default: {
       throw new Error(`Bare identifier encountered between list index accesses in path: ${path}`);
+    }
   }
 
   return state;

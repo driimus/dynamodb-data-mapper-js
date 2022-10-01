@@ -269,27 +269,35 @@ export function isConditionExpressionPredicate(arg: any): arg is ConditionExpres
       case 'LessThan':
       case 'LessThanOrEqualTo':
       case 'GreaterThan':
-      case 'GreaterThanOrEqualTo':
+      case 'GreaterThanOrEqualTo': {
         return arg.object !== undefined;
-      case 'Between':
+      }
+      case 'Between': {
         return arg.lowerBound !== undefined && arg.upperBound !== undefined;
-      case 'Membership':
+      }
+      case 'Membership': {
         return Array.isArray(arg.values);
-      case 'Function':
+      }
+      case 'Function': {
         switch (arg.name) {
           case 'attribute_exists':
-          case 'attribute_not_exists':
+          case 'attribute_not_exists': {
             return true;
+          }
           case 'attribute_type':
           case 'begins_with':
-          case 'contains':
+          case 'contains': {
             return typeof arg.expected === 'string';
-          default:
+          }
+          default: {
             return false;
+          }
         }
+      }
 
-      default:
+      default: {
         return false;
+      }
     }
   }
 
@@ -356,15 +364,18 @@ export function isConditionExpression(arg: any): arg is ConditionExpression {
 
   if (Boolean(arg) && typeof arg === 'object') {
     switch (arg.type) {
-      case 'Not':
+      case 'Not': {
         return isConditionExpression(arg.condition);
+      }
       case 'And':
-      case 'Or':
+      case 'Or': {
         return Array.isArray(arg.conditions)
           ? (arg.conditions as unknown[]).every((c) => isConditionExpression(c))
           : false;
-      default:
+      }
+      default: {
         return isConditionExpressionSubject(arg) && isConditionExpressionPredicate(arg);
+      }
     }
   }
 
@@ -385,27 +396,35 @@ export function serializeConditionExpression(
   }
 
   switch (condition.type) {
-    case 'Equals':
+    case 'Equals': {
       return serializeBinaryComparison(condition, attributes, '=');
-    case 'NotEquals':
+    }
+    case 'NotEquals': {
       return serializeBinaryComparison(condition, attributes, '<>');
-    case 'LessThan':
+    }
+    case 'LessThan': {
       return serializeBinaryComparison(condition, attributes, '<');
-    case 'LessThanOrEqualTo':
+    }
+    case 'LessThanOrEqualTo': {
       return serializeBinaryComparison(condition, attributes, '<=');
-    case 'GreaterThan':
+    }
+    case 'GreaterThan': {
       return serializeBinaryComparison(condition, attributes, '>');
-    case 'GreaterThanOrEqualTo':
+    }
+    case 'GreaterThanOrEqualTo': {
       return serializeBinaryComparison(condition, attributes, '>=');
-    case 'Between':
+    }
+    case 'Between': {
       return `${attributes.addName(condition.subject)} BETWEEN ${serializeOperand(
         condition.lowerBound,
         attributes
       )} AND ${serializeOperand(condition.upperBound, attributes)}`;
-    case 'Membership':
+    }
+    case 'Membership': {
       return `${attributes.addName(condition.subject)} IN (${condition.values
         .map((value) => serializeOperand(value, attributes))
         .join(', ')})`;
+    }
     case 'Function': {
       const subject = AttributePath.isAttributePath(condition.subject)
         ? condition.subject
@@ -414,10 +433,11 @@ export function serializeConditionExpression(
       return serializeFunctionConditionExpression(condition, subject, attributes);
     }
 
-    case 'Not':
+    case 'Not': {
       return `NOT (${serializeConditionExpression(condition.condition, attributes)})`;
+    }
     case 'And':
-    case 'Or':
+    case 'Or': {
       if (condition.conditions.length === 1) {
         return serializeConditionExpression(condition.conditions[0], attributes);
       }
@@ -425,6 +445,7 @@ export function serializeConditionExpression(
       return condition.conditions
         .map((cond) => `(${serializeConditionExpression(cond, attributes)})`)
         .join(` ${condition.type.toUpperCase()} `);
+    }
     // No default
   }
 }
@@ -441,14 +462,16 @@ function serializeFunctionConditionExpression(
 ) {
   switch (condition.name) {
     case 'attribute_exists':
-    case 'attribute_not_exists':
+    case 'attribute_not_exists': {
       return new FunctionExpression(condition.name, subject).serialize(attributes);
+    }
     case 'attribute_type':
     case 'begins_with':
-    case 'contains':
+    case 'contains': {
       return new FunctionExpression(condition.name, subject, condition.expected).serialize(
         attributes
       );
+    }
     // No default
   }
 }

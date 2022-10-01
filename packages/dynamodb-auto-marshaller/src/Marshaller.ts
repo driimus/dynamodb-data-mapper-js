@@ -136,23 +136,29 @@ export class Marshaller {
    */
   public marshallValue(value: any): AttributeValue | undefined {
     switch (typeof value) {
-      case 'boolean':
+      case 'boolean': {
         return { BOOL: value };
+      }
       case 'number':
-      case 'bigint':
+      case 'bigint': {
         return { N: value.toString(10) };
-      case 'object':
+      }
+      case 'object': {
         return this.marshallComplexType(value);
-      case 'string':
+      }
+      case 'string': {
         return value ? { S: value } : this.handleEmptyString(value);
-      case 'undefined':
+      }
+      case 'undefined': {
         return undefined;
+      }
       case 'function':
       case 'symbol':
-      default:
+      default: {
         if (this.onInvalid === 'throw') {
           throw new Error(`Cannot serialize values of the ${typeof value} type`);
         }
+      }
     }
   }
 
@@ -321,21 +327,26 @@ export class Marshaller {
 
   private marshallSet(arg: Set<any>): AttributeValue | undefined {
     switch (getSetType(arg[Symbol.iterator]().next().value)) {
-      case 'binary':
+      case 'binary': {
         return this.collectSet(arg, isBinaryEmpty, 'BS', 'binary');
-      case 'number':
+      }
+      case 'number': {
         return this.collectSet(arg, isNumberEmpty, 'NS', 'number', stringifyNumber);
-      case 'string':
+      }
+      case 'string': {
         return this.collectSet(arg, isStringEmpty, 'SS', 'string');
-      case 'unknown':
+      }
+      case 'unknown': {
         if (this.onInvalid === 'throw') {
           throw new Error('Sets must be composed of strings,' + ' binary values, or numbers');
         }
         return undefined;
-      case 'undefined':
+      }
+      case 'undefined': {
         if (this.onEmpty === 'nullify') {
           return { NULL: true };
         }
+      }
     }
   }
 
@@ -374,10 +385,12 @@ export class Marshaller {
 
   private handleEmptyString(value: string): AttributeValue | undefined {
     switch (this.onEmpty) {
-      case 'leave':
+      case 'leave': {
         return { S: value };
-      case 'nullify':
+      }
+      case 'nullify': {
         return { NULL: true };
+      }
     }
   }
 }
