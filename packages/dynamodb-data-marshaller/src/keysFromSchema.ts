@@ -53,19 +53,23 @@ function attributeType(
   fieldSchema: BinaryType | CustomType<any> | DateType | NumberType | StringType
 ): ScalarAttributeType {
   switch (fieldSchema.type) {
-    case 'Binary':
+    case 'Binary': {
       return 'B';
-    case 'Custom':
+    }
+    case 'Custom': {
       if (!fieldSchema.attributeType) {
         throw new Error('Invalid schema: no attribute type defined for custom field');
       }
 
       return fieldSchema.attributeType;
+    }
     case 'Date':
-    case 'Number':
+    case 'Number': {
       return 'N';
-    case 'String':
+    }
+    case 'String': {
       return 'S';
+    }
     // No default
   }
 }

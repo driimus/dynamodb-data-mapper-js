@@ -17,7 +17,7 @@ import { getSchema } from './protocols';
  * Iterates over each page of items returned by a parallel DynamoDB scan until
  * no more pages are available.
  */
-export class ParallelScanPaginator<T> extends Paginator<T> {
+export class ParallelScanPaginator<T extends Record<string, unknown>> extends Paginator<T> {
   private readonly _ctor: ZeroArgumentsConstructor<T>;
   private readonly _paginator: BasePaginator;
   private readonly _schema: Schema;

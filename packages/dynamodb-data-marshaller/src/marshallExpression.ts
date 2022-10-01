@@ -178,59 +178,67 @@ function normalizeConditionExpression(
     case 'LessThan':
     case 'LessThanOrEqualTo':
     case 'GreaterThan':
-    case 'GreaterThanOrEqualTo':
+    case 'GreaterThanOrEqualTo': {
       return {
         ...expression,
         subject: toSchemaName(expression.subject, schema),
         object: normalizeIfPath(expression.object, schema),
       };
+    }
 
-    case 'Function':
+    case 'Function': {
       switch (expression.name) {
         case 'attribute_exists':
-        case 'attribute_not_exists':
+        case 'attribute_not_exists': {
           return {
             ...expression,
             subject: toSchemaName(expression.subject, schema),
           };
+        }
         case 'attribute_type':
         case 'begins_with':
-        case 'contains':
+        case 'contains': {
           return {
             ...expression,
             subject: toSchemaName(expression.subject, schema),
           };
+        }
         // No default
       }
 
       break;
+    }
 
-    case 'Between':
+    case 'Between': {
       return {
         ...expression,
         subject: toSchemaName(expression.subject, schema),
         lowerBound: normalizeIfPath(expression.lowerBound, schema),
         upperBound: normalizeIfPath(expression.upperBound, schema),
       };
-    case 'Membership':
+    }
+    case 'Membership': {
       return {
         ...expression,
         subject: toSchemaName(expression.subject, schema),
         values: expression.values.map((arg) => normalizeIfPath(arg, schema)),
       };
-    case 'Not':
+    }
+    case 'Not': {
       return {
         ...expression,
         condition: normalizeConditionExpression(expression.condition, schema),
       };
+    }
     case 'And':
-    case 'Or':
+    case 'Or': {
       return {
         ...expression,
         conditions: expression.conditions.map((condition) =>
           normalizeConditionExpression(condition, schema)
         ),
       };
+    }
     // No default
   }
 }

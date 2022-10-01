@@ -322,7 +322,7 @@ export type SchemaType =
   | CustomType<unknown>
   | CollectionType
   | DateType
-  | DocumentType<unknown>
+  | DocumentType<Record<string, unknown>>
   | HashType
   | ListType
   | MapType
@@ -342,29 +342,36 @@ export function isSchemaType(arg: any, alreadyVisited: Set<any> = new Set()): ar
     switch (arg.type) {
       case 'Binary':
       case 'Date':
-      case 'String':
+      case 'String': {
         return isKeyableType(arg);
-      case 'Custom':
+      }
+      case 'Custom': {
         return (
           isKeyableType(arg) &&
           typeof (arg as CustomType<any>).marshall === 'function' &&
           typeof (arg as CustomType<any>).unmarshall === 'function' &&
           [undefined, 'S', 'N', 'B'].includes((arg as CustomType<any>).attributeType)
         );
-      case 'Document':
+      }
+      case 'Document': {
         return isDocumentType(arg, alreadyVisited);
+      }
       case 'List':
-      case 'Map':
+      case 'Map': {
         return isSchemaType((arg as ListType).memberType, alreadyVisited);
-      case 'Number':
+      }
+      case 'Number': {
         return (
           isKeyableType(arg) &&
           ['boolean', 'undefined'].includes(typeof (arg as NumberType).versionAttribute)
         );
-      case 'Tuple':
+      }
+      case 'Tuple': {
         return isTupleType(arg, alreadyVisited);
-      default:
+      }
+      default: {
         return true;
+      }
     }
   }
 

@@ -32,7 +32,7 @@ const marshaller = new Marshaller();
  * Iterates over each page of items returned by a DynamoDB query until no more
  * pages are available.
  */
-export class QueryPaginator<T> extends Paginator<T> {
+export class QueryPaginator<T extends Record<string, unknown>> extends Paginator<T> {
   constructor(
     client: DynamoDBClient,
     valueConstructor: ZeroArgumentsConstructor<T>,

@@ -9,7 +9,9 @@ import type { DynamoDbPaginatorInterface } from '@driimus/dynamodb-query-iterato
 
 import { getSchema } from './protocols';
 
-export abstract class Paginator<T> implements AsyncIterableIterator<T[]> {
+export abstract class Paginator<T extends Record<string, unknown>>
+  implements AsyncIterableIterator<T[]>
+{
   private readonly itemSchema: Schema;
   private lastKey?: T;
   private lastResolved: Promise<IteratorResult<T[]>> = Promise.resolve() as any;

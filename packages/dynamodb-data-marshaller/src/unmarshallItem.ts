@@ -29,12 +29,12 @@ export type NumberSetAttributeValue = NumberAttributeValue[];
  * @param valueConstructor  A zero-argument constructor used to create the
  *                          object onto which the input should be unmarshalled
  */
-export function unmarshallItem<T = Record<string, unknown>>(
+export function unmarshallItem<T extends Record<string, unknown> = Record<string, unknown>>(
   schema: Schema,
   input: AttributeMap,
   ValueConstructor?: ZeroArgumentsConstructor<T>
 ): T {
-  const unmarshalled: Record<string, unknown> = ValueConstructor ? new ValueConstructor() : {};
+  const unmarshalled = ValueConstructor ? new ValueConstructor() : ({} as Record<string, unknown>);
 
   for (const key of Object.keys(schema)) {
     const { attributeName = key } = schema[key];
@@ -60,61 +60,77 @@ function unmarshallValue(schemaType: SchemaType, input: AttributeValue): unknown
       return autoMarshaller.unmarshallValue(input);
     }
 
-    case 'Binary':
+    case 'Binary': {
       if (input.NULL) {
         return new Uint8Array(0);
       }
 
       return input.B;
-    case 'Boolean':
+    }
+    case 'Boolean': {
       return input.BOOL;
-    case 'Custom':
+    }
+    case 'Custom': {
       return schemaType.unmarshall(input);
-    case 'Date':
+    }
+    case 'Date': {
       return input.N ? new Date(Number(input.N) * 1000) : undefined;
-    case 'Document':
+    }
+    case 'Document': {
       return input.M
         ? unmarshallItem(schemaType.members, input.M, schemaType.valueConstructor)
         : undefined;
-    case 'List':
+    }
+    case 'List': {
       return input.L ? unmarshallList(schemaType, input.L) : undefined;
-    case 'Map':
+    }
+    case 'Map': {
       return input.M ? unmarshallMap(schemaType, input.M) : undefined;
-    case 'Null':
+    }
+    case 'Null': {
       return input.NULL ? null : undefined;
-    case 'Number':
+    }
+    case 'Number': {
       return typeof input.N === 'string' ? Number(input.N) : undefined;
-    case 'Set':
+    }
+    case 'Set': {
       switch (schemaType.memberType) {
-        case 'Binary':
+        case 'Binary': {
           if (input.NULL) {
             return new BinarySet();
           }
 
           return typeof input.BS === 'undefined' ? undefined : new BinarySet(input.BS);
-        case 'Number':
+        }
+        case 'Number': {
           if (input.NULL) {
             return new Set<number>();
           }
 
           return input.NS ? unmarshallNumberSet(input.NS) : undefined;
-        case 'String':
+        }
+        case 'String': {
           if (input.NULL) {
             return new Set<string>();
           }
 
           return input.SS ? unmarshallStringSet(input.SS) : undefined;
-        default:
+        }
+        default: {
           throw new InvalidSchemaError(
             schemaType,
             `Unrecognized set member type: ${(schemaType as Record<string, string>)?.memberType}`
           );
+        }
       }
+    }
 
-    case 'String':
+    case 'String': {
       return input.NULL ? '' : input.S;
-    case 'Tuple':
+    }
+    case 'Tuple': {
       return input.L ? unmarshallTuple(schemaType, input.L) : undefined;
+    }
     // No default
   }
 
