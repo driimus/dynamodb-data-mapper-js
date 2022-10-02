@@ -1,5 +1,6 @@
 # Amazon DynamoDB Automarshaller
 
+[![npm](https://img.shields.io/npm/v/oasin.svg?style=flat)](https://www.npmjs.com/package/@driimus/dynamodb-auto-marshaller)
 [![Apache 2 License](https://img.shields.io/github/license/awslabs/dynamodb-data-mapper-js.svg?style=flat)](http://aws.amazon.com/apache-2-0/)
 
 This library provides a `Marshaller` class that converts native JavaScript

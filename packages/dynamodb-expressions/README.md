@@ -1,5 +1,6 @@
 # Amazon DynamoDB Expressions
 
+[![npm](https://img.shields.io/npm/v/oasin.svg?style=flat)](https://www.npmjs.com/package/@driimus/dynamodb-expressions)
 [![Apache 2 License](https://img.shields.io/github/license/awslabs/dynamodb-data-mapper-js.svg?style=flat)](http://aws.amazon.com/apache-2-0/)
 
 This library provides a number of abstractions designed to make dealing with
