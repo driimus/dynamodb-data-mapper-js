@@ -19,7 +19,7 @@ importers:
       eslint-plugin-import: ^2.26.0
       eslint-plugin-jest: ^27.0.0
       eslint-plugin-prettier: ^4.0.0
-      eslint-plugin-simple-import-sort: ^8.0.0
+      eslint-plugin-simple-import-sort: ^10.0.0
       eslint-plugin-turbo: ^0.0.9
       eslint-plugin-unicorn: ^44.0.0
       husky: ^8.0.1
@@ -45,7 +45,7 @@ importers:
       eslint-plugin-import: 2.26.0_6lykrgsjl6r2vncmjcievjkgyy
       eslint-plugin-jest: 27.0.0_eczmxhtsl7ing5ue26eyoa7isi
       eslint-plugin-prettier: 4.0.0_xu6ewijrtliw5q5lksq5uixwby
-      eslint-plugin-simple-import-sort: 8.0.0_eslint@8.18.0
+      eslint-plugin-simple-import-sort: 10.0.0_eslint@8.18.0
       eslint-plugin-turbo: 0.0.9_eslint@8.18.0
       eslint-plugin-unicorn: 44.0.0_eslint@8.18.0
       husky: 8.0.1
@@ -6413,8 +6413,8 @@ packages:
       prettier-linter-helpers: 1.0.0
     dev: true
 
-  /eslint-plugin-simple-import-sort/8.0.0_eslint@8.18.0:
-    resolution: {integrity: sha512-bXgJQ+lqhtQBCuWY/FUWdB27j4+lqcvXv5rUARkzbeWLwea+S5eBZEQrhnO+WgX3ZoJHVj0cn943iyXwByHHQw==}
+  /eslint-plugin-simple-import-sort/10.0.0_eslint@8.18.0:
+    resolution: {integrity: sha512-AeTvO9UCMSNzIHRkg8S6c3RPy5YEwKWSQPx3DYghLedo2ZQxowPFLGDN1AZ2evfg6r6mjBSZSLxLFsWSu3acsw==}
     peerDependencies:
       eslint: '>=5.0.0'
     dependencies:
