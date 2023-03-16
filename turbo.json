@@ -3,13 +3,17 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["build/**", ".docusarus/**"]
+      "outputs": ["build/**", ".docusarus/**"],
+      "inputs": ["!**/*.spec.ts", "!**/*.integ.ts", "!**/*jest.config.js"],
+      "outputMode": "new-only"
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "outputs": [],
+      "outputMode": "new-only"
     },
     "lint": {
+      "dependsOn": ["^build"],
       "outputs": []
     },
     "format": {
