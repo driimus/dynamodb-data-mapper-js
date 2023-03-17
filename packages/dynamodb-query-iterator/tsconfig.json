@@ -10,7 +10,9 @@
     "sourceMap": true,
     "inlineSources": true,
     "rootDir": "./src",
-    "outDir": "./build"
+    "outDir": "./build",
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true
   },
-  "exclude": ["src/*.spec.ts", "node_modules", "build", "src/*.integ.ts"]
+  "exclude": ["src/*.spec.ts", "src/*.integ.ts"]
 }
