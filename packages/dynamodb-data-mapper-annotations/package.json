@@ -35,14 +35,13 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-sdk/client-dynamodb": "^3.118.1",
-    "typescript": "^5.0.0"
+    "@aws-sdk/client-dynamodb": "^3.118.1"
   },
   "dependencies": {
     "@driimus/dynamodb-auto-marshaller": "workspace:*",
     "@driimus/dynamodb-data-mapper": "workspace:*",
     "@driimus/dynamodb-data-marshaller": "workspace:*",
     "reflect-metadata": "^0.1.13",
-    "tslib": "^2.4.0"
+    "tslib": "^2.5.0"
   }
 }
