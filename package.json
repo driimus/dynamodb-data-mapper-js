@@ -3,7 +3,7 @@
   "private": true,
   "engines": {
     "node": ">=14.17",
-    "pnpm": ">=7.4.0"
+    "pnpm": ">=7.30.0"
   },
   "scripts": {
     "build": "turbo run build",
@@ -60,5 +60,5 @@
       "prettier --write"
     ]
   },
-  "packageManager": "pnpm@7.29.3"
+  "packageManager": "pnpm@7.30.0"
 }
