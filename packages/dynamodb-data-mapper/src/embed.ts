@@ -15,7 +15,7 @@ export interface DocumentTypeOptions<T> {
 // 	[DynamoDbSchema]?: Schema;
 // }
 
-export function embed<T>(
+export function embed<T extends Record<string, any>>(
   documentConstructor: ZeroArgumentsConstructor<T>,
   { attributeName, defaultProvider }: DocumentTypeOptions<T> = {}
 ): DocumentType {
