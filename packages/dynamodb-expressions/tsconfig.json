@@ -1,13 +1,9 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "es2020",
-    "importHelpers": true,
-    "module": "commonjs",
-    "strict": true,
-    "declaration": true,
-    "sourceMap": true,
     "rootDir": "./src",
     "outDir": "./build"
   },
-  "exclude": ["src/*.spec.ts", "node_modules", "build", "src/*.integ.ts"]
+  "include": ["src"],
+  "exclude": ["src/*.spec.ts", "src/*.integ.ts"]
 }

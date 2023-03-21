@@ -3,7 +3,14 @@
     "target": "es2020",
     "module": "commonjs",
     "strict": true,
+    "noUnusedLocals": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "importHelpers": true,
+    "declaration": true,
+    "sourceMap": true
   }
 }
