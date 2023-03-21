@@ -20,7 +20,7 @@ importers:
       eslint-plugin-jest: ^27.0.0
       eslint-plugin-prettier: ^4.0.0
       eslint-plugin-simple-import-sort: ^8.0.0
-      eslint-plugin-turbo: ^0.0.9
+      eslint-plugin-turbo: ^0.0.10
       eslint-plugin-unicorn: ^44.0.0
       husky: ^8.0.1
       is-ci: ^3.0.1
@@ -46,7 +46,7 @@ importers:
       eslint-plugin-jest: 27.0.0_eczmxhtsl7ing5ue26eyoa7isi
       eslint-plugin-prettier: 4.0.0_xu6ewijrtliw5q5lksq5uixwby
       eslint-plugin-simple-import-sort: 8.0.0_eslint@8.18.0
-      eslint-plugin-turbo: 0.0.9_eslint@8.18.0
+      eslint-plugin-turbo: 0.0.10_eslint@8.18.0
       eslint-plugin-unicorn: 44.0.0_eslint@8.18.0
       husky: 8.0.1
       is-ci: 3.0.1
@@ -3000,7 +3000,7 @@ packages:
     peerDependencies:
       react: '*'
     dependencies:
-      '@types/react': 18.0.15
+      '@types/react': 17.0.47
       prop-types: 15.8.1
       react: 17.0.2
 
@@ -3068,7 +3068,7 @@ packages:
       '@docusaurus/plugin-content-pages': 2.2.0_sfoxds7t5ydpegc3knd667wn6m
       '@docusaurus/utils': 2.2.0_@docusaurus+types@2.2.0
       '@types/history': 4.7.11
-      '@types/react': 18.0.15
+      '@types/react': 17.0.47
       '@types/react-router-config': 5.0.6
       clsx: 1.2.1
       parse-numeric-range: 1.3.0
@@ -4259,7 +4259,7 @@ packages:
     resolution: {integrity: sha512-YYknwy0D0iOwKQgz9v8nOzt2J6l4gouBmDnWqUUznltOTaon+r8US8ky8HvN0tXvc38U9m6z/t2RsVsnd1zM0g==}
     dependencies:
       '@types/history': 4.7.11
-      '@types/react': 18.0.15
+      '@types/react': 17.0.47
 
   /@types/react/17.0.47:
     resolution: {integrity: sha512-mk0BL8zBinf2ozNr3qPnlu1oyVTYq+4V7WA76RgxUAtf0Em/Wbid38KN6n4abEkvO4xMTBWmnP1FtQzgkEiJoA==}
@@ -6421,8 +6421,8 @@ packages:
       eslint: 8.18.0
     dev: true
 
-  /eslint-plugin-turbo/0.0.9_eslint@8.18.0:
-    resolution: {integrity: sha512-fEsuSnYU3GLtT+s66mUuzDL1LaSieIx5uk3tPO0ToGv7hI2XzOfP24aPkQItTBGl7kq2JaVkRzPwcnfz8hkp0w==}
+  /eslint-plugin-turbo/0.0.10_eslint@8.18.0:
+    resolution: {integrity: sha512-T7QRwF4rjBQCJD9AHLHn9ShtHCHNkfIZW5Oio92WtQYhoU5jZCU3ynU+ONFXLuvoUx4dJ19WergIyHL+DwL2+g==}
     peerDependencies:
       eslint: '>6.6.0'
     dependencies:
