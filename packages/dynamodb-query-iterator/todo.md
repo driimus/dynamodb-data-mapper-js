@@ -1,4 +1,0 @@
-- [ ] use `xo` for linting
-- [ ] pnpm workspaces
-- [ ] fix test harness
-- [ ] CI/CD pipeline
