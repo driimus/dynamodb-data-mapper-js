@@ -1,4 +1,23 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base", ":preserveSemverRanges"]
+  "extends": ["config:base", ":preserveSemverRanges"],
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["^@aws-sdk/", "^aws-sdk-client-mock"],
+      "groupName": "aws-sdk v3"
+    },
+    {
+      "matchPackageNames": ["turbo", "eslint-plugin-turbo"],
+      "groupName": "turborepo"
+    },
+    {
+      "matchPackageNames": ["jest", "@types/jest", "@swc/core", "@swc/jest"],
+      "groupName": "jest"
+    },
+    {
+      "matchPackageNames": ["eslint", "prettier", "lint-staged"],
+      "matchPackagePatterns": ["^eslint-plugin", "^eslint-config", "^@typescript-eslint/"],
+      "groupName": "linter"
+    }
+  ]
 }
