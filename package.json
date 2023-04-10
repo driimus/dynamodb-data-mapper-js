@@ -60,5 +60,5 @@
       "prettier --write"
     ]
   },
-  "packageManager": "pnpm@7.30.5"
+  "packageManager": "pnpm@7.32.0"
 }
