@@ -18,10 +18,8 @@
   "types": "./build/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "integ": "npm run pretest && jest --config=jest.integration.js",
     "prepublishOnly": "npm run build",
-    "pretest": "tsc -p tsconfig.test.json",
-    "test": "jest",
+    "test": "vitest run",
     "lint": "eslint --ext .ts .",
     "format": "eslint --fix --ext .ts ."
   },

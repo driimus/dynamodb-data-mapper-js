@@ -18,8 +18,7 @@
   "types": "./build/index.d.ts",
   "scripts": {
     "prepublishOnly": "tsc",
-    "pretest": "tsc -p tsconfig.test.json",
-    "test": "jest",
+    "test": "vitest run",
     "lint": "eslint --ext .ts .",
     "format": "eslint --fix --ext .ts .",
     "build": "tsc"

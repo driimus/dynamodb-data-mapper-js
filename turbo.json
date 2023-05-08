@@ -4,7 +4,7 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["build/**", ".docusarus/**"],
-      "inputs": ["!**/*.spec.ts", "!**/*.integ.ts", "!**/*jest.config.js"],
+      "inputs": ["!**/*.spec.ts", "!**/*.integ.ts"],
       "outputMode": "new-only"
     },
     "test": {
