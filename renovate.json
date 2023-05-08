@@ -11,10 +11,6 @@
       "groupName": "turborepo"
     },
     {
-      "matchPackageNames": ["jest", "@types/jest", "@swc/core", "@swc/jest"],
-      "groupName": "jest"
-    },
-    {
       "matchPackageNames": ["eslint", "prettier", "lint-staged"],
       "matchPackagePatterns": ["^eslint-plugin", "^eslint-config", "^@typescript-eslint/"],
       "groupName": "linter"

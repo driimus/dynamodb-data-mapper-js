@@ -129,7 +129,7 @@ function metadataToSchemaType(
           break;
         }
 
-        default:
+        default: {
           if (ctor === Date || ctor.prototype instanceof Date) {
             type = 'Date';
           } else if (ctor === BinarySet || ctor.prototype instanceof BinarySet) {
@@ -165,6 +165,7 @@ function metadataToSchemaType(
           } else {
             type = 'Any';
           }
+        }
       }
     } else {
       type = 'Any';
