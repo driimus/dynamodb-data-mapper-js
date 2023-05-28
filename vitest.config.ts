@@ -9,5 +9,5 @@ export default defineConfig({
       provider: 'c8',
     },
   },
-  plugins: [swc.vite()],
+  plugins: [swc.vite({ root: './' })],
 });
