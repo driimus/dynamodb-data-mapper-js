@@ -29,7 +29,7 @@
     "@aws-sdk/util-dynamodb": "^3.118.1",
     "@changesets/changelog-github": "^0.4.5",
     "@changesets/cli": "^2.23.0",
-    "@types/node": "^14.18.21",
+    "@types/node": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.28.0",
     "@typescript-eslint/parser": "^5.28.0",
     "aws-sdk-client-mock": "^2.0.0",
