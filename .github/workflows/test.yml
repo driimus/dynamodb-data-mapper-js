@@ -8,3 +8,9 @@ jobs:
     secrets:
       turbo_token: ${{ secrets.TURBO_TOKEN }}
       turbo_team: ${{ secrets.TURBO_TEAM }}
+
+  lint:
+    uses: driimus/shared-workflows/.github/workflows/lint.yml@main
+    secrets:
+      turbo_token: ${{ secrets.TURBO_TOKEN }}
+      turbo_team: ${{ secrets.TURBO_TEAM }}
