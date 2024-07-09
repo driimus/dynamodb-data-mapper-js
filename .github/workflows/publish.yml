@@ -7,8 +7,7 @@ on:
 jobs:
   packages:
     uses: driimus/shared-workflows/.github/workflows/publish.yml@main
-    secrets:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    secrets: inherit
 
   website:
     timeout-minutes: 15
